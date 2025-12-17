@@ -1,0 +1,40 @@
+# Default configuration for Sentry Bundle
+# This bundle extends the official Sentry Symfony bundle with enhanced event listeners
+
+nowo_sentry:
+    # Request Listener Configuration
+    # Enriches Sentry reports with request context (domain, environment, user, session)
+    request_listener:
+        enabled: true                    # Enable/disable the request listener
+        set_domain_tag: true            # Set domain tag in Sentry scope
+        set_environment_tag: true       # Set environment tag in Sentry scope
+        set_user_info: true             # Set user information in Sentry scope
+        set_session_id: true            # Set session ID in Sentry scope extra data
+        priority: 0                      # Event listener priority
+
+    # Ignore Access Denied Listener Configuration
+    # Prevents AccessDeniedException from being reported to Sentry
+    ignore_access_denied_listener:
+        enabled: true                    # Enable/disable the access denied filter
+        priority: 255                    # Event listener priority (higher = earlier execution)
+
+    # Uptime Bot Listener Configuration
+    # Handles requests from uptime monitoring bots
+    uptime_bot_listener:
+        enabled: true                    # Enable/disable the uptime bot handler
+        user_agents:                     # List of user agent prefixes to detect as uptime bots
+            - 'SentryUptimeBot/1.0'
+            # - 'Uptime-Kuma'
+            # - 'kube-probe'
+        paths:                           # List of paths that should return OK for uptime bots
+            - '/'
+            - '/login'
+            # - '/dashboard'
+
+        priority: 255                    # Event listener priority (higher = earlier execution)
+
+    # Error Reporter Service Configuration
+    # Safe service for reporting errors to Sentry without breaking the application
+    error_reporter:
+        enabled: true                    # Enable/disable the error reporter service
+

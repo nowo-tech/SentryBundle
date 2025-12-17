@@ -1,0 +1,38 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentry-demo-symfony8-php
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ../..:/bundle
+      - composer-cache:/root/.composer/cache
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+    command: php-fpm
+    networks:
+      - sentry-demo-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: sentry-demo-symfony8-nginx
+    ports:
+      - "${PORT:-8001}:80"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+    networks:
+      - sentry-demo-network
+
+volumes:
+  composer-cache:
+    driver: local
+
+networks:
+  sentry-demo-network:
+    driver: bridge
+

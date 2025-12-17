@@ -1,0 +1,19 @@
+The default configuration file has been created at config/packages/nowo_sentry.yaml
+
+This bundle extends the official Sentry Symfony bundle with enhanced event listeners and a safe error reporter service.
+
+Key features:
+- Enhanced request context with user and session information
+- Automatic filtering of access denied exceptions
+- Uptime bot detection and handling
+- Safe error reporter service (SentryErrorReporter) that never breaks your application
+
+The bundle works out of the box with default settings. You can customize the behavior by editing the configuration file.
+
+Important: Make sure you have configured Sentry DSN in your config/packages/sentry.yaml file.
+
+For more information, see the bundle documentation:
+- README.md for usage examples
+- docs/CONFIGURATION.md for complete configuration reference
+- docs/UPGRADE.md for upgrade instructions
+

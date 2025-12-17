@@ -1,0 +1,34 @@
+---
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Nowo\SentryBundle\EventListener\SentryRequestListener:
+    class: Nowo\SentryBundle\EventListener\SentryRequestListener
+    arguments:
+      $config: '%nowo_sentry.request_listener%'
+      $environment: '%kernel.environment%'
+    # Tags are added conditionally in NowoSentryExtension based on configuration
+
+  Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener:
+    class: Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener
+    arguments:
+      $config: '%nowo_sentry.ignore_access_denied_listener%'
+    # Tags are added conditionally in NowoSentryExtension based on configuration
+
+  Nowo\SentryBundle\EventListener\SentryUptimeBotListener:
+    class: Nowo\SentryBundle\EventListener\SentryUptimeBotListener
+    arguments:
+      $config: '%nowo_sentry.uptime_bot_listener%'
+    # Tags are added conditionally in NowoSentryExtension based on configuration
+
+  Nowo\SentryBundle\Service\SentryErrorReporter:
+    class: Nowo\SentryBundle\Service\SentryErrorReporter
+    arguments:
+      $sentryHub: '@Sentry\State\HubInterface'
+      $logger: '@?logger'
+      $config: '%nowo_sentry.error_reporter%'
+    public: true
+
