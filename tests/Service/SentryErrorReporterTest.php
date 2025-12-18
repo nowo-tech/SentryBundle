@@ -8,6 +8,7 @@ use Nowo\SentryBundle\Service\SentryErrorReporter;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Sentry\EventId;
 use Sentry\Severity;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
@@ -41,10 +42,11 @@ class SentryErrorReporterTest extends TestCase
                 return true;
             }));
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureException')
             ->with($exception)
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureException($exception, [], 'Custom message');
@@ -120,9 +122,10 @@ class SentryErrorReporterTest extends TestCase
                 return true;
             }));
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureException')
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureException($exception, $context);
@@ -138,10 +141,11 @@ class SentryErrorReporterTest extends TestCase
         $hub = $this->createMock(HubInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureMessage')
             ->with('Test message', $this->isInstanceOf(Severity::class))
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureMessage('Test message', 'error');
@@ -199,7 +203,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('captureMessage')
-            ->willReturn('event-id-123');
+            ->willReturn(EventId::generate());
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureMessage('Test message', 'error', $context);
@@ -217,7 +221,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('captureMessage')
-            ->willReturn('event-id-123');
+            ->willReturn(EventId::generate());
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureError('Test error', ['context' => 'data']);
@@ -240,8 +244,11 @@ class SentryErrorReporterTest extends TestCase
                 $scope->expects($this->once())
                     ->method('addBreadcrumb')
                     ->with($this->callback(function ($breadcrumb) {
-                        return isset($breadcrumb['message']) && isset($breadcrumb['level']);
-                    }));
+                        return isset($breadcrumb['message']) 
+                            && isset($breadcrumb['level'])
+                            && isset($breadcrumb['data']);
+                    }))
+                    ->willReturnSelf();
                 $callback($scope);
 
                 return true;
@@ -385,7 +392,7 @@ class SentryErrorReporterTest extends TestCase
         // Test all level mappings
         $hub->expects($this->exactly(6))
             ->method('captureMessage')
-            ->willReturn('event-id-123');
+            ->willReturn(EventId::generate());
 
         $reporter->captureMessage('debug', 'debug');
         $reporter->captureMessage('info', 'info');
@@ -403,10 +410,11 @@ class SentryErrorReporterTest extends TestCase
         $hub = $this->createMock(HubInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureMessage')
             ->with('Test', $this->isInstanceOf(Severity::class))
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $reporter->captureMessage('Test', 'unknown-level');
@@ -444,10 +452,11 @@ class SentryErrorReporterTest extends TestCase
         $hub->expects($this->never())
             ->method('configureScope');
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureException')
             ->with($exception)
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureException($exception);
@@ -508,7 +517,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('captureMessage')
-            ->willReturn('event-id-123');
+            ->willReturn(EventId::generate());
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureMessage('Test message', 'error');
@@ -552,8 +561,11 @@ class SentryErrorReporterTest extends TestCase
                 $scope->expects($this->once())
                     ->method('addBreadcrumb')
                     ->with($this->callback(function ($breadcrumb) {
-                        return isset($breadcrumb['message']) && isset($breadcrumb['level']) && isset($breadcrumb['data']);
-                    }));
+                        return isset($breadcrumb['message']) 
+                            && isset($breadcrumb['level'])
+                            && isset($breadcrumb['data']);
+                    }))
+                    ->willReturnSelf();
                 $callback($scope);
 
                 return true;
@@ -746,10 +758,11 @@ class SentryErrorReporterTest extends TestCase
         $hub = $this->createMock(HubInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureMessage')
             ->with('Critical message', $this->isInstanceOf(Severity::class))
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureMessage('Critical message', 'critical');
@@ -778,9 +791,10 @@ class SentryErrorReporterTest extends TestCase
                 return true;
             }));
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureException')
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureException($exception, [], 'Only message');
@@ -810,9 +824,10 @@ class SentryErrorReporterTest extends TestCase
                 return true;
             }));
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureException')
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureException($exception, $context);
@@ -842,9 +857,10 @@ class SentryErrorReporterTest extends TestCase
                 return true;
             }));
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureException')
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureException($exception, $context, 'Custom message');
@@ -869,10 +885,11 @@ class SentryErrorReporterTest extends TestCase
 
         foreach ($exceptions as $exception) {
             $hub = $this->createMock(HubInterface::class);
+            $eventId = EventId::generate();
             $hub->expects($this->once())
                 ->method('captureException')
                 ->with($exception)
-                ->willReturn('event-id-123');
+                ->willReturn($eventId);
 
             $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
             $result = $reporter->captureException($exception);
@@ -893,10 +910,11 @@ class SentryErrorReporterTest extends TestCase
 
         foreach ($levels as $level) {
             $hub = $this->createMock(HubInterface::class);
+            $eventId = EventId::generate();
             $hub->expects($this->once())
                 ->method('captureMessage')
                 ->with('Test message', $this->isInstanceOf(Severity::class))
-                ->willReturn('event-id-123');
+                ->willReturn($eventId);
 
             $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
             $result = $reporter->captureMessage('Test message', $level);
@@ -981,10 +999,11 @@ class SentryErrorReporterTest extends TestCase
         $hub = $this->createMock(HubInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureMessage')
             ->with('', $this->isInstanceOf(Severity::class))
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureMessage('', 'error');
@@ -1007,8 +1026,12 @@ class SentryErrorReporterTest extends TestCase
                 $scope->expects($this->once())
                     ->method('addBreadcrumb')
                     ->with($this->callback(function ($breadcrumb) {
-                        return isset($breadcrumb['message']) && $breadcrumb['message'] === '';
-                    }));
+                        return isset($breadcrumb['message']) 
+                            && $breadcrumb['message'] === ''
+                            && isset($breadcrumb['level'])
+                            && isset($breadcrumb['data']);
+                    }))
+                    ->willReturnSelf();
                 $callback($scope);
 
                 return true;
@@ -1054,10 +1077,11 @@ class SentryErrorReporterTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
 
         // This should not happen in practice, but we test the default case
+        $eventId = EventId::generate();
         $hub->expects($this->once())
             ->method('captureMessage')
             ->with('Test', $this->isInstanceOf(Severity::class))
-            ->willReturn('event-id-123');
+            ->willReturn($eventId);
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         // Use an unknown level to trigger default case
@@ -1079,7 +1103,8 @@ class SentryErrorReporterTest extends TestCase
             ->with($this->callback(function ($callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->once())
-                    ->method('addBreadcrumb');
+                    ->method('addBreadcrumb')
+                    ->willReturnSelf();
                 $callback($scope);
 
                 return true;
@@ -1146,7 +1171,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('captureMessage')
-            ->willReturn('event-id-123');
+            ->willReturn(EventId::generate());
 
         $reporter = new SentryErrorReporter($hub, $logger, ['enabled' => true]);
         $result = $reporter->captureError('Test error', $context, 'error');

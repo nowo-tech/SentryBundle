@@ -1,6 +1,8 @@
 # Sentry Bundle
 
-[![CI](https://github.com/nowo-tech/sentry-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/sentry-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/sentry-bundle/v)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://poser.pugx.org/nowo-tech/sentry-bundle/license)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/sentry-bundle/require/php)](https://packagist.org/packages/nowo-tech/sentry-bundle)
+[![CI](https://github.com/nowo-tech/sentry-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/sentry-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/sentry-bundle/v)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://poser.pugx.org/nowo-tech/sentry-bundle/license)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/sentry-bundle/require/php)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/sentry-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/sentry-bundle)
+
+> ⭐ **Found this project useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
 Symfony bundle extending Sentry integration with enhanced event listeners and configuration options.
 

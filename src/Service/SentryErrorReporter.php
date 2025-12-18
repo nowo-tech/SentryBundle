@@ -35,7 +35,7 @@ final readonly class SentryErrorReporter
      * @param array<string, mixed> $config    Service configuration
      */
     public function __construct(
-        private HubInterface $sentryHub,
+        private ?HubInterface $sentryHub,
         private ?LoggerInterface $logger = null,
         private array $config = []
     ) {
@@ -59,6 +59,11 @@ final readonly class SentryErrorReporter
         array $context = [],
         ?string $message = null
     ): bool {
+        // Verify Sentry is available
+        if ($this->sentryHub === null) {
+            return false;
+        }
+
         try {
             // Add context and message before capturing exception
             if (!empty($context) || $message !== null) {
@@ -106,6 +111,11 @@ final readonly class SentryErrorReporter
         string $level = 'error',
         array $context = []
     ): bool {
+        // Verify Sentry is available
+        if ($this->sentryHub === null) {
+            return false;
+        }
+
         try {
             $sentryLevel = $this->mapLogLevelToSentryLevel($level);
 
@@ -168,6 +178,11 @@ final readonly class SentryErrorReporter
         string $level = 'info',
         array $data = []
     ): bool {
+        // Verify Sentry is available
+        if ($this->sentryHub === null) {
+            return false;
+        }
+
         try {
             $sentryLevel = $this->mapLogLevelToSentryLevel($level);
 
@@ -205,6 +220,11 @@ final readonly class SentryErrorReporter
      */
     public function setUser(array $userData): bool
     {
+        // Verify Sentry is available
+        if ($this->sentryHub === null) {
+            return false;
+        }
+
         try {
             $this->sentryHub->configureScope(function ($scope) use ($userData): void {
                 $scope->setUser($userData);
@@ -233,6 +253,11 @@ final readonly class SentryErrorReporter
      */
     public function setContext(array $context): bool
     {
+        // Verify Sentry is available
+        if ($this->sentryHub === null) {
+            return false;
+        }
+
         try {
             $this->sentryHub->configureScope(function ($scope) use ($context): void {
                 foreach ($context as $key => $value) {

@@ -8,6 +8,7 @@ services:
   Nowo\SentryBundle\EventListener\SentryRequestListener:
     class: Nowo\SentryBundle\EventListener\SentryRequestListener
     arguments:
+      $sentryHub: '@?Sentry\State\HubInterface'
       $config: '%nowo_sentry.request_listener%'
       $environment: '%kernel.environment%'
     # Tags are added conditionally in NowoSentryExtension based on configuration
@@ -15,6 +16,7 @@ services:
   Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener:
     class: Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener
     arguments:
+      $sentryHub: '@?Sentry\State\HubInterface'
       $config: '%nowo_sentry.ignore_access_denied_listener%'
     # Tags are added conditionally in NowoSentryExtension based on configuration
 
@@ -27,7 +29,7 @@ services:
   Nowo\SentryBundle\Service\SentryErrorReporter:
     class: Nowo\SentryBundle\Service\SentryErrorReporter
     arguments:
-      $sentryHub: '@Sentry\State\HubInterface'
+      $sentryHub: '@?Sentry\State\HubInterface'
       $logger: '@?logger'
       $config: '%nowo_sentry.error_reporter%'
     public: true

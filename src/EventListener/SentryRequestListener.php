@@ -34,7 +34,7 @@ final readonly class SentryRequestListener
      * @param Security|null        $security    The security service for accessing authenticated user information
      */
     public function __construct(
-        private HubInterface $sentryHub,
+        private ?HubInterface $sentryHub,
         private array $config,
         private string $environment,
         private ?Security $security = null
@@ -84,27 +84,43 @@ final readonly class SentryRequestListener
             }
         }
 
-        $this->sentryHub->configureScope(
-            callback: function (Scope $scope) use ($host, $userIdentifier, $session, $user): void {
-                if ($this->config['set_domain_tag'] ?? true) {
-                    $scope->setTag(key: 'domain', value: $host);
-                }
-
-                if ($this->config['set_environment_tag'] ?? true) {
-                    $scope->setTag(key: 'environment', value: $this->environment);
-                }
-
-                if ($userIdentifier && ($this->config['set_user_info'] ?? true)) {
-                    $scope->setUser(user: [
-                        'id' => $userIdentifier ?? 'anonymous',
-                        'username' => method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null,
-                    ]);
-                }
-
-                if ($session instanceof SessionInterface && $session->isStarted() && ($this->config['set_session_id'] ?? true)) {
-                    $scope->setExtra(key: 'session_id', value: $session->getId());
-                }
+        try {
+            // Verify Sentry is properly configured and hub is available
+            if ($this->sentryHub === null || !interface_exists(HubInterface::class)) {
+                return;
             }
-        );
+
+            $this->sentryHub->configureScope(
+                callback: function (Scope $scope) use ($host, $userIdentifier, $session, $user): void {
+                    try {
+                        if ($this->config['set_domain_tag'] ?? true) {
+                            $scope->setTag(key: 'domain', value: $host);
+                        }
+
+                        if ($this->config['set_environment_tag'] ?? true) {
+                            $scope->setTag(key: 'environment', value: $this->environment);
+                        }
+
+                        if ($userIdentifier && ($this->config['set_user_info'] ?? true)) {
+                            $scope->setUser(user: [
+                                'id' => $userIdentifier ?? 'anonymous',
+                                'username' => method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null,
+                            ]);
+                        }
+
+                        if ($session instanceof SessionInterface && $session->isStarted() && ($this->config['set_session_id'] ?? true)) {
+                            $scope->setExtra(key: 'session_id', value: $session->getId());
+                        }
+                    } catch (\Throwable $e) {
+                        // Silently ignore Sentry configuration errors to prevent breaking the application
+                        // This handles cases where Sentry credentials are invalid or package is not properly installed
+                    }
+                }
+            );
+        } catch (\Throwable $e) {
+            // Silently ignore Sentry errors to prevent breaking the application
+            // This handles cases where Sentry is not configured, credentials are invalid,
+            // or the sentry/sentry-symfony package is not installed
+        }
     }
 }

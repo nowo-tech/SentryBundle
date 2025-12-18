@@ -53,14 +53,15 @@ help:
 	@echo "Access URLs:"
 	@for demo in $(DEMOS); do \
 		version=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
+		port="8001"; \
 		if [ -f demo-$$demo/.env ]; then \
-			port=$$(grep -E '^PORT=' demo-$$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+			env_port=$$(grep -E '^PORT=' demo-$$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1); \
+			[ -n "$$env_port" ] && port="$$env_port"; \
 		elif [ -f demo-$$demo/.env.example ]; then \
-			port=$$(grep -E '^PORT=' demo-$$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
-		else \
-			port=8001; \
+			env_port=$$(grep -E '^PORT=' demo-$$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1); \
+			[ -n "$$env_port" ] && port="$$env_port"; \
 		fi; \
-		echo "  $$version: http://localhost:$$port"; \
+		echo "  $$version: http://localhost:$${port}"; \
 	done
 
 # Generate up targets for each demo
@@ -93,8 +94,8 @@ up-$(1):
 		fi; \
 		echo "⏳ Attempt $$ATTEMPT/$$MAX_ATTEMPTS: Waiting for demo to respond..."; \
 		sleep 5; \
-		ATTEMPT=$$((ATTEMPT + 1)); \
-	done && \
+		ATTEMPT=$$(($$ATTEMPT + 1)); \
+	done; \
 	echo "❌ Demo did not respond with HTTP 200 after $$MAX_ATTEMPTS attempts" && \
 	exit 1
 endef
