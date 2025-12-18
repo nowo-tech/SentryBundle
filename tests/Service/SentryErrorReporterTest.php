@@ -244,7 +244,7 @@ class SentryErrorReporterTest extends TestCase
                 $scope->expects($this->once())
                     ->method('addBreadcrumb')
                     ->with($this->callback(function ($breadcrumb) {
-                        return isset($breadcrumb['message']) 
+                        return isset($breadcrumb['message'])
                             && isset($breadcrumb['level'])
                             && isset($breadcrumb['data']);
                     }))
@@ -561,7 +561,7 @@ class SentryErrorReporterTest extends TestCase
                 $scope->expects($this->once())
                     ->method('addBreadcrumb')
                     ->with($this->callback(function ($breadcrumb) {
-                        return isset($breadcrumb['message']) 
+                        return isset($breadcrumb['message'])
                             && isset($breadcrumb['level'])
                             && isset($breadcrumb['data']);
                     }))
@@ -1026,7 +1026,7 @@ class SentryErrorReporterTest extends TestCase
                 $scope->expects($this->once())
                     ->method('addBreadcrumb')
                     ->with($this->callback(function ($breadcrumb) {
-                        return isset($breadcrumb['message']) 
+                        return isset($breadcrumb['message'])
                             && $breadcrumb['message'] === ''
                             && isset($breadcrumb['level'])
                             && isset($breadcrumb['data']);
