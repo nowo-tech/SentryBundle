@@ -80,20 +80,18 @@ final readonly class SentryRequestListener
             $user = $this->security->getUser();
 
             if ($user instanceof UserInterface) {
-                $userIdentifier = method_exists($user, 'getUserIdentifier')
-                    ? $user->getUserIdentifier()
-                    : (string) $user;
+                $userIdentifier = $user->getUserIdentifier();
             }
         }
 
         try {
             // Verify Sentry is properly configured and hub is available
-            if (!$this->sentryHub instanceof \Sentry\State\HubInterface || !interface_exists(HubInterface::class)) {
+            if (!$this->sentryHub instanceof HubInterface || !interface_exists(HubInterface::class)) {
                 return;
             }
 
             $this->sentryHub->configureScope(
-                callback: function (Scope $scope) use ($host, $userIdentifier, $session, $user): void {
+                callback: function (Scope $scope) use ($host, $userIdentifier, $session): void {
                     try {
                         if ($this->config['set_domain_tag'] ?? true) {
                             $scope->setTag(key: 'domain', value: $host);
@@ -105,8 +103,8 @@ final readonly class SentryRequestListener
 
                         if ($userIdentifier && ($this->config['set_user_info'] ?? true)) {
                             $scope->setUser(user: [
-                                'id'       => $userIdentifier ?? 'anonymous',
-                                'username' => method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null,
+                                'id'       => $userIdentifier,
+                                'username' => $userIdentifier,
                             ]);
                         }
 

@@ -311,7 +311,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('configureScope')
-            ->willReturnCallback(function (callable $callback) use ($scope): void {
+            ->willReturnCallback(static function (callable $callback) use ($scope): void {
                 $callback($scope);
             });
 
@@ -350,10 +350,10 @@ class SentryErrorReporterTest extends TestCase
         $scope = $this->createMock(Scope::class);
         $scope->method('addBreadcrumb')->willReturnSelf();
         $hub = $this->createMock(HubInterface::class);
-        $hub->method('configureScope')->willReturnCallback(function (callable $cb) use ($scope) {
+        $hub->method('configureScope')->willReturnCallback(static function (callable $cb) use ($scope) {
             $cb($scope);
         });
-        $logger  = $this->createMock(LoggerInterface::class);
+        $logger   = $this->createMock(LoggerInterface::class);
         $reporter = new SentryErrorReporter($hub, $logger);
 
         $this->assertTrue($reporter->addBreadcrumb('d', 'debug'));
@@ -373,7 +373,7 @@ class SentryErrorReporterTest extends TestCase
         $hub->method('configureScope')->willThrowException(new RuntimeException('Sentry error'));
 
         $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())->method('error')->willThrowException(new \RuntimeException('Logger error'));
+        $logger->expects($this->once())->method('error')->willThrowException(new RuntimeException('Logger error'));
 
         $reporter = new SentryErrorReporter($hub, $logger);
         $result   = $reporter->addBreadcrumb('Test', 'info');
@@ -658,7 +658,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('configureScope')
-            ->willReturnCallback(function (callable $callback) use ($scope): void {
+            ->willReturnCallback(static function (callable $callback) use ($scope): void {
                 $callback($scope);
             });
 
@@ -1114,7 +1114,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('configureScope')
-            ->willReturnCallback(function (callable $callback) use ($scope): void {
+            ->willReturnCallback(static function (callable $callback) use ($scope): void {
                 $callback($scope);
             });
 
@@ -1183,7 +1183,7 @@ class SentryErrorReporterTest extends TestCase
 
         $hub->expects($this->once())
             ->method('configureScope')
-            ->willReturnCallback(function (callable $callback) use ($scope): void {
+            ->willReturnCallback(static function (callable $callback) use ($scope): void {
                 $callback($scope);
             });
 

@@ -59,7 +59,7 @@ final readonly class SentryErrorReporter
         ?string $message = null
     ): bool {
         // Verify Sentry is available
-        if (!$this->sentryHub instanceof \Sentry\State\HubInterface) {
+        if (!$this->sentryHub instanceof HubInterface) {
             return false;
         }
 
@@ -109,7 +109,7 @@ final readonly class SentryErrorReporter
         array $context = []
     ): bool {
         // Verify Sentry is available
-        if (!$this->sentryHub instanceof \Sentry\State\HubInterface) {
+        if (!$this->sentryHub instanceof HubInterface) {
             return false;
         }
 
@@ -176,7 +176,7 @@ final readonly class SentryErrorReporter
         array $data = []
     ): bool {
         // Verify Sentry is available
-        if (!$this->sentryHub instanceof \Sentry\State\HubInterface) {
+        if (!$this->sentryHub instanceof HubInterface) {
             return false;
         }
 
@@ -187,7 +187,7 @@ final readonly class SentryErrorReporter
                 Breadcrumb::TYPE_DEFAULT,
                 'app',
                 $message,
-                $data
+                $data,
             );
 
             $this->sentryHub->configureScope(static function ($scope) use ($breadcrumb): void {
@@ -220,7 +220,7 @@ final readonly class SentryErrorReporter
     public function setUser(array $userData): bool
     {
         // Verify Sentry is available
-        if (!$this->sentryHub instanceof \Sentry\State\HubInterface) {
+        if (!$this->sentryHub instanceof HubInterface) {
             return false;
         }
 
@@ -246,14 +246,14 @@ final readonly class SentryErrorReporter
      * This method sets extra data that will be included in all subsequent
      * error reports until the scope is cleared or changed.
      *
-     * @param array<string, mixed> $context Context data
+     * @param array<int|string, mixed> $context Context data (keys cast to string for Sentry)
      *
      * @return bool True if the context was successfully set, false otherwise
      */
     public function setContext(array $context): bool
     {
         // Verify Sentry is available
-        if (!$this->sentryHub instanceof \Sentry\State\HubInterface) {
+        if (!$this->sentryHub instanceof HubInterface) {
             return false;
         }
 
@@ -321,7 +321,7 @@ final readonly class SentryErrorReporter
      */
     private function logError(string $message, array $context = []): void
     {
-        if ($this->logger instanceof \Psr\Log\LoggerInterface) {
+        if ($this->logger instanceof LoggerInterface) {
             try {
                 $this->logger->error($message, $context);
             } catch (Throwable) {

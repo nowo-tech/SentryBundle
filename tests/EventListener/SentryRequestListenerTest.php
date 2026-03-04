@@ -9,11 +9,11 @@ use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use PHPUnit\Framework\TestCase;
 use Redis\Exception\RedisException;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\Request as BaseRequest;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request as BaseRequest;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -205,8 +205,8 @@ class SentryRequestListenerTest extends TestCase
      */
     public function testOnKernelRequestWithSession(): void
     {
-        $scope = $this->createMock(Scope::class);
-        $hub   = $this->createMock(HubInterface::class);
+        $scope    = $this->createMock(Scope::class);
+        $hub      = $this->createMock(HubInterface::class);
         $security = $this->createMock(Security::class);
         $session  = $this->createMock(SessionInterface::class);
         $session->method('isStarted')->willReturn(true);
@@ -242,8 +242,8 @@ class SentryRequestListenerTest extends TestCase
      */
     public function testOnKernelRequestWhenGetSessionThrows(): void
     {
-        $scope    = $this->createMock(Scope::class);
-        $hub      = $this->createMock(HubInterface::class);
+        $scope = $this->createMock(Scope::class);
+        $hub   = $this->createMock(HubInterface::class);
         $hub->expects($this->once())->method('configureScope')->with($this->callback(static function ($cb) use ($scope) {
             $cb($scope);
 
@@ -259,7 +259,7 @@ class SentryRequestListenerTest extends TestCase
 
             public function getSession(): SessionInterface
             {
-                throw new \RuntimeException('Session unavailable');
+                throw new RuntimeException('Session unavailable');
             }
         };
         $request->headers->set('Host', 'example.com');
@@ -279,8 +279,8 @@ class SentryRequestListenerTest extends TestCase
      */
     public function testOnKernelRequestWhenGetSessionThrowsRedisException(): void
     {
-        $scope    = $this->createMock(Scope::class);
-        $hub      = $this->createMock(HubInterface::class);
+        $scope = $this->createMock(Scope::class);
+        $hub   = $this->createMock(HubInterface::class);
         $hub->expects($this->once())->method('configureScope')->with($this->callback(static function ($cb) use ($scope) {
             $cb($scope);
 
@@ -316,7 +316,7 @@ class SentryRequestListenerTest extends TestCase
      */
     public function testOnKernelRequestWhenConfigureScopeThrows(): void
     {
-        $hub     = $this->createMock(HubInterface::class);
+        $hub = $this->createMock(HubInterface::class);
         $hub->method('configureScope')->willThrowException(new Exception('Sentry error'));
         $security = $this->createMock(Security::class);
 
@@ -337,8 +337,8 @@ class SentryRequestListenerTest extends TestCase
     public function testOnKernelRequestWhenScopeCallbackThrows(): void
     {
         $scope = $this->createMock(Scope::class);
-        $scope->method('setTag')->willThrowException(new \RuntimeException('Sentry scope error'));
-        $hub     = $this->createMock(HubInterface::class);
+        $scope->method('setTag')->willThrowException(new RuntimeException('Sentry scope error'));
+        $hub = $this->createMock(HubInterface::class);
         $hub->expects($this->once())
             ->method('configureScope')
             ->with($this->callback(static function ($callback) use ($scope) {

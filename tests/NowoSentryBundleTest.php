@@ -84,7 +84,9 @@ class NowoSentryBundleTest extends TestCase
 
         $configPath = $configDir . '/nowo_sentry.yaml';
         $this->assertFileExists($configPath);
-        $this->assertStringContainsString('nowo_sentry:', file_get_contents($configPath));
+        $content = file_get_contents($configPath);
+        $this->assertNotFalse($content);
+        $this->assertStringContainsString('nowo_sentry:', $content);
 
         unlink($configPath);
         rmdir($configDir);
@@ -111,7 +113,9 @@ class NowoSentryBundleTest extends TestCase
 
         $configPath = $configDir . '/nowo_sentry.yaml';
         $this->assertFileExists($configPath);
-        $this->assertStringContainsString('nowo_sentry:', file_get_contents($configPath));
+        $content = file_get_contents($configPath);
+        $this->assertNotFalse($content);
+        $this->assertStringContainsString('nowo_sentry:', $content);
 
         unlink($configPath);
         unlink($configDir . '/framework.yaml');

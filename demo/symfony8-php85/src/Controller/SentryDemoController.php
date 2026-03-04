@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Nowo\SentryBundle\Service\SentryErrorReporter;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
+use function sprintf;
 
 /**
  * Demo controller to test all Sentry Bundle use cases (SentryErrorReporter, listeners).
@@ -23,15 +26,15 @@ class SentryDemoController extends AbstractController
         return $this->render('sentry_demo/index.html.twig', [
             'routes' => [
                 'capture_exception' => $this->generateUrl('sentry_demo_capture_exception'),
-                'capture_message' => $this->generateUrl('sentry_demo_capture_message'),
-                'capture_error' => $this->generateUrl('sentry_demo_capture_error'),
-                'add_breadcrumb' => $this->generateUrl('sentry_demo_add_breadcrumb'),
-                'set_user' => $this->generateUrl('sentry_demo_set_user'),
-                'set_context' => $this->generateUrl('sentry_demo_set_context'),
-                'complete_example' => $this->generateUrl('sentry_demo_complete_example'),
-                'safe_operation' => $this->generateUrl('sentry_demo_safe_operation'),
-                'access_denied' => $this->generateUrl('sentry_demo_access_denied'),
-                'trigger_error' => $this->generateUrl('sentry_demo_trigger_error'),
+                'capture_message'   => $this->generateUrl('sentry_demo_capture_message'),
+                'capture_error'     => $this->generateUrl('sentry_demo_capture_error'),
+                'add_breadcrumb'    => $this->generateUrl('sentry_demo_add_breadcrumb'),
+                'set_user'          => $this->generateUrl('sentry_demo_set_user'),
+                'set_context'       => $this->generateUrl('sentry_demo_set_context'),
+                'complete_example'  => $this->generateUrl('sentry_demo_complete_example'),
+                'safe_operation'    => $this->generateUrl('sentry_demo_safe_operation'),
+                'access_denied'     => $this->generateUrl('sentry_demo_access_denied'),
+                'trigger_error'     => $this->generateUrl('sentry_demo_trigger_error'),
             ],
         ]);
     }
@@ -39,17 +42,17 @@ class SentryDemoController extends AbstractController
     #[Route(path: '/capture-exception', name: 'capture_exception', methods: ['GET'])]
     public function captureException(SentryErrorReporter $errorReporter): Response
     {
-        $exception = new \RuntimeException('Demo exception for Sentry (captureException)');
+        $exception = new RuntimeException('Demo exception for Sentry (captureException)');
         $errorReporter->captureException(
             $exception,
             ['demo' => true, 'route' => 'sentry/capture-exception'],
-            'Custom message: exception captured safely'
+            'Custom message: exception captured safely',
         );
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'captureException',
-            'title' => 'captureException',
-            'message' => 'Exception was captured and sent to Sentry (if DSN is set). Application continued normally.',
+            'title'    => 'captureException',
+            'message'  => 'Exception was captured and sent to Sentry (if DSN is set). Application continued normally.',
         ]);
     }
 
@@ -60,13 +63,13 @@ class SentryDemoController extends AbstractController
         $errorReporter->captureMessage(
             'Demo message from Sentry Bundle (captureMessage)',
             $level,
-            ['demo' => true, 'level' => $level]
+            ['demo' => true, 'level' => $level],
         );
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'captureMessage',
-            'title' => 'captureMessage',
-            'message' => sprintf('Message sent to Sentry with level "%s".', $level),
+            'title'    => 'captureMessage',
+            'message'  => sprintf('Message sent to Sentry with level "%s".', $level),
         ]);
     }
 
@@ -77,8 +80,8 @@ class SentryDemoController extends AbstractController
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'captureError',
-            'title' => 'captureError',
-            'message' => 'Error captured via captureError (convenience method).',
+            'title'    => 'captureError',
+            'message'  => 'Error captured via captureError (convenience method).',
         ]);
     }
 
@@ -90,8 +93,8 @@ class SentryDemoController extends AbstractController
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'addBreadcrumb',
-            'title' => 'addBreadcrumb',
-            'message' => 'Breadcrumbs were added. They will appear in the next Sentry event.',
+            'title'    => 'addBreadcrumb',
+            'message'  => 'Breadcrumbs were added. They will appear in the next Sentry event.',
         ]);
     }
 
@@ -99,15 +102,15 @@ class SentryDemoController extends AbstractController
     public function setUser(SentryErrorReporter $errorReporter): Response
     {
         $errorReporter->setUser([
-            'id' => 'demo-user-123',
-            'email' => 'demo@example.com',
+            'id'       => 'demo-user-123',
+            'email'    => 'demo@example.com',
             'username' => 'sentry_demo_user',
         ]);
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'setUser',
-            'title' => 'setUser',
-            'message' => 'User context set. Next Sentry events will include this user.',
+            'title'    => 'setUser',
+            'message'  => 'User context set. Next Sentry events will include this user.',
         ]);
     }
 
@@ -115,15 +118,15 @@ class SentryDemoController extends AbstractController
     public function setContext(SentryErrorReporter $errorReporter): Response
     {
         $errorReporter->setContext([
-            'feature' => 'sentry_demo',
-            'action' => 'set_context',
+            'feature'   => 'sentry_demo',
+            'action'    => 'set_context',
             'timestamp' => date('c'),
         ]);
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'setContext',
-            'title' => 'setContext',
-            'message' => 'Extra context set. It will be attached to the next Sentry event.',
+            'title'    => 'setContext',
+            'message'  => 'Extra context set. It will be attached to the next Sentry event.',
         ]);
     }
 
@@ -138,8 +141,8 @@ class SentryDemoController extends AbstractController
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'completeExample',
-            'title' => 'completeExample',
-            'message' => 'User, breadcrumbs and message were sent. Check Sentry for the full context.',
+            'title'    => 'completeExample',
+            'message'  => 'User, breadcrumbs and message were sent. Check Sentry for the full context.',
         ]);
     }
 
@@ -147,13 +150,13 @@ class SentryDemoController extends AbstractController
     public function safeOperation(SentryErrorReporter $errorReporter): Response
     {
         // Even if Sentry is down or DSN is invalid, this never throws
-        $errorReporter->captureException(new \RuntimeException('This should never break the app'));
+        $errorReporter->captureException(new RuntimeException('This should never break the app'));
         $errorReporter->captureMessage('Safe message', 'info');
 
         return $this->render('sentry_demo/result.html.twig', [
             'use_case' => 'safeOperation',
-            'title' => 'safeOperation',
-            'message' => 'SentryErrorReporter never throws. Application always continues.',
+            'title'    => 'safeOperation',
+            'message'  => 'SentryErrorReporter never throws. Application always continues.',
         ]);
     }
 
@@ -172,6 +175,6 @@ class SentryDemoController extends AbstractController
     #[Route(path: '/trigger-error', name: 'trigger_error', methods: ['GET'])]
     public function triggerError(): never
     {
-        throw new \RuntimeException('Demo uncaught exception: Sentry SDK will capture this automatically.');
+        throw new RuntimeException('Demo uncaught exception: Sentry SDK will capture this automatically.');
     }
 }

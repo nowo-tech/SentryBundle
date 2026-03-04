@@ -31,16 +31,34 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ## Releasing
 
-1. Update `docs/CHANGELOG.md` with the new version and changes (see [Keep a Changelog](https://keepachangelog.com/)).
-2. Commit the changelog: `git add docs/CHANGELOG.md && git commit -m "Prepare release X.Y.Z"`.
-3. Create an annotated tag:
+1. Update `docs/CHANGELOG.md`: add a new `## [X.Y.Z] - YYYY-MM-DD` section with the changes and move them from `[Unreleased]` (see [Keep a Changelog](https://keepachangelog.com/)).
+2. Update `docs/UPGRADING.md` if the new version has upgrade notes (release date, breaking changes, new config).
+3. Commit: `git add docs/CHANGELOG.md docs/UPGRADING.md && git commit -m "Prepare release X.Y.Z"`.
+4. Create an annotated tag:
    ```bash
    git tag -a vX.Y.Z -m "Release vX.Y.Z"
    git push origin vX.Y.Z
    ```
-4. GitHub Actions will create or update the GitHub Release from the tag and attach the changelog entry.
+5. GitHub Actions will create the GitHub Release from the tag and attach the changelog entry for that version.
 
 ## After release
 
 - Verify the release on Packagist and that the Flex recipe (if used) applies correctly.
 - Optionally announce in your usual channels.
+
+## Example: releasing 1.1.0
+
+After CHANGELOG and UPGRADING are updated and committed:
+
+```bash
+# 1. Run pre-release checks
+make release-check
+
+# 2. Commit release docs (if not already committed)
+git add docs/CHANGELOG.md docs/UPGRADING.md docs/RELEASE.md
+git commit -m "Prepare release 1.1.0"
+
+# 3. Create and push tag (triggers GitHub Release via Actions)
+git tag -a v1.1.0 -m "Release v1.1.0"
+git push origin v1.1.0
+```

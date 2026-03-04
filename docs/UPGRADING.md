@@ -13,9 +13,9 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
-### Upgrading to 1.1.0 (Unreleased)
+### Upgrading to 1.1.0
 
-**Release Date**: TBD
+**Release Date**: 2025-03-04
 
 #### What's New
 

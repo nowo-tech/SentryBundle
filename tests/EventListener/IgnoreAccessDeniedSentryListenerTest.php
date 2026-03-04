@@ -113,7 +113,7 @@ class IgnoreAccessDeniedSentryListenerTest extends TestCase
     public function testInvokeWhenGetClientThrows(): void
     {
         $hub = $this->createMock(HubInterface::class);
-        $hub->method('getClient')->willThrowException(new \RuntimeException('Sentry error'));
+        $hub->method('getClient')->willThrowException(new RuntimeException('Sentry error'));
 
         $config   = ['enabled' => true];
         $listener = new IgnoreAccessDeniedSentryListener($hub, $config);

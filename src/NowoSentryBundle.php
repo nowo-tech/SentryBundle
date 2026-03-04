@@ -9,6 +9,7 @@ use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+use function is_string;
 use function sprintf;
 
 /**
@@ -57,7 +58,7 @@ class NowoSentryBundle extends Bundle
             $this->extension = new NowoSentryExtension();
         }
 
-        return $this->extension;
+        return $this->extension instanceof ExtensionInterface ? $this->extension : null;
     }
 
     /**
@@ -67,11 +68,15 @@ class NowoSentryBundle extends Bundle
     {
         parent::boot();
 
-        if (!$this->container->hasParameter('kernel.project_dir')) {
+        if (!$this->container instanceof \Symfony\Component\DependencyInjection\ContainerInterface || !$this->container->hasParameter('kernel.project_dir')) {
             return;
         }
 
-        $projectDir  = $this->container->getParameter('kernel.project_dir');
+        $projectDir = $this->container->getParameter('kernel.project_dir');
+        if (!is_string($projectDir)) {
+            return;
+        }
+
         $aliasBundle = Configuration::ALIAS;
         $configPath  = $projectDir . sprintf('/config/packages/%s.yaml', $aliasBundle);
         $configDir   = $projectDir . '/config/packages';
@@ -98,8 +103,8 @@ class NowoSentryBundle extends Bundle
         }
 
         $files = array_merge(
-            glob($configDir . '/*.yaml'),
-            glob($configDir . '/*.yml'),
+            glob($configDir . '/*.yaml') ?: [],
+            glob($configDir . '/*.yml') ?: [],
         );
 
         foreach ($files as $file) {

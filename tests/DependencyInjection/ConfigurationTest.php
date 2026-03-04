@@ -40,7 +40,7 @@ class ConfigurationTest extends TestCase
      */
     public function testGenerateConfigFile(): void
     {
-        $configDir = sys_get_temp_dir() . '/sentry-bundle-test-' . uniqid('', true);
+        $configDir  = sys_get_temp_dir() . '/sentry-bundle-test-' . uniqid('', true);
         $configPath = $configDir . '/nowo_sentry.yaml';
 
         $this->assertDirectoryDoesNotExist($configDir);
@@ -50,6 +50,7 @@ class ConfigurationTest extends TestCase
 
         $this->assertFileExists($configPath);
         $content = file_get_contents($configPath);
+        $this->assertNotFalse($content);
         $this->assertStringContainsString('nowo_sentry:', $content);
         $this->assertStringContainsString('request_listener:', $content);
         $this->assertStringContainsString('ignore_access_denied_listener:', $content);

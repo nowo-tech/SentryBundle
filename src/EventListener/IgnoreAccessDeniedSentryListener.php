@@ -58,7 +58,7 @@ final readonly class IgnoreAccessDeniedSentryListener
         if ($exception instanceof AccessDeniedException) {
             try {
                 // Verify Sentry is properly configured and hub is available
-                if (!$this->sentryHub instanceof \Sentry\State\HubInterface || !interface_exists(HubInterface::class)) {
+                if (!$this->sentryHub instanceof HubInterface || !interface_exists(HubInterface::class)) {
                     $event->allowCustomResponseCode();
 
                     return;

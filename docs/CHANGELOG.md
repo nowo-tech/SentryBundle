@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No changes yet._
+
+## [1.1.0] - 2025-03-04
+
 ### Added
 - **SentryErrorReporter Service**: New service for safely reporting errors to Sentry without breaking the application
   - `captureException()`: Safely capture exceptions with context and custom messages
@@ -24,18 +28,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Usage examples in README.md
   - Complete configuration reference in docs/CONFIGURATION.md
   - Service methods documented with PHPDoc
-- **Code Quality**: Added PHP CS Fixer configuration (`.php-cs-fixer.dist.php`)
+- **Code Quality**: Added PHP CS Fixer configuration (`.php-cs-fixer.dist.php`), PHPStan level 8 with bootstrap for Redis stub
 - **Branching Strategy**: Added `docs/BRANCHING.md` with Git Flow workflow documentation
 - **Symfony Flex Recipe**: Added Flex recipe for automatic bundle registration and configuration
   - Automatically registers bundle in `config/bundles.php`
   - Creates default configuration file `config/packages/nowo_sentry.yaml`
   - Recipe location: `.symfony/recipes/nowo-tech/sentry-bundle/1.0.0/`
   - Ready to publish to `symfony/recipes-contrib` when bundle is on Packagist
+- **Demo apps**: Bootstrap UI and navigation; Sentry demo routes with use-case labels and log/Sentry hints; `make down-all` in demo Makefile; `.env.example` and `SENTRY_DSN` in demos
 
 ### Changed
 - Updated `src/Resources/config/services.yaml` to register the new `SentryErrorReporter` service
 - Updated `src/DependencyInjection/Configuration.php` to include `error_reporter` configuration
 - Updated `src/DependencyInjection/NowoSentryExtension.php` to pass error reporter configuration
+- **Package distribution**: The `demo/` folder is no longer included when the bundle is installed via Composer (`.gitattributes` export-ignore and `composer.json` archive exclude). Demo apps remain in the repository for development and CI only.
+
+### Fixed
+- PHPStan level 8 compliance: type safety in `SentryRequestListener` (UserInterface, null checks), `NowoSentryBundle` (container/extension/projectDir/glob), `NowoSentryExtension::load()` configs type, `SentryErrorReporter::setContext()` array type, and test assertions
 
 ## [1.0.0] - Initial Release
 

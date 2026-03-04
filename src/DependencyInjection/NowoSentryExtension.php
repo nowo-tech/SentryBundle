@@ -26,7 +26,7 @@ final class NowoSentryExtension extends Extension
     /**
      * Loads the bundle configuration and services.
      *
-     * @param array<string, mixed> $configs The configuration array
+     * @param array<int, array<string, mixed>> $configs The configuration arrays (from config files)
      * @param ContainerBuilder $container The container builder
      */
     public function load(array $configs, ContainerBuilder $container): void
