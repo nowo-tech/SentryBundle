@@ -26,13 +26,13 @@ final class NowoSentryExtension extends Extension
     /**
      * Loads the bundle configuration and services.
      *
-     * @param array<string, mixed> $configs   The configuration array
-     * @param ContainerBuilder     $container The container builder
+     * @param array<string, mixed> $configs The configuration array
+     * @param ContainerBuilder $container The container builder
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
-        $config = $this->processConfiguration($configuration, $configs);
+        $config        = $this->processConfiguration($configuration, $configs);
 
         // Set configuration parameters
         $container->setParameter(Configuration::ALIAS . '.request_listener', $config['request_listener']);
@@ -56,8 +56,8 @@ final class NowoSentryExtension extends Extension
     /**
      * Registers event listeners conditionally based on configuration.
      *
-     * @param ContainerBuilder     $container The container builder
-     * @param array<string, mixed> $config    The processed configuration
+     * @param ContainerBuilder $container The container builder
+     * @param array<string, mixed> $config The processed configuration
      */
     private function registerListeners(ContainerBuilder $container, array $config): void
     {
@@ -67,8 +67,8 @@ final class NowoSentryExtension extends Extension
                 $definition = $container->getDefinition(SentryRequestListener::class);
                 $definition->clearTags();
                 $definition->addTag('kernel.event_listener', [
-                    'event' => 'kernel.request',
-                    'method' => 'onKernelRequest',
+                    'event'    => 'kernel.request',
+                    'method'   => 'onKernelRequest',
                     'priority' => $config['request_listener']['priority'],
                 ]);
             }
@@ -82,8 +82,8 @@ final class NowoSentryExtension extends Extension
                 $definition = $container->getDefinition(IgnoreAccessDeniedSentryListener::class);
                 $definition->clearTags();
                 $definition->addTag('kernel.event_listener', [
-                    'event' => 'kernel.exception',
-                    'method' => '__invoke',
+                    'event'    => 'kernel.exception',
+                    'method'   => '__invoke',
                     'priority' => $config['ignore_access_denied_listener']['priority'],
                 ]);
             }
@@ -97,8 +97,8 @@ final class NowoSentryExtension extends Extension
                 $definition = $container->getDefinition(SentryUptimeBotListener::class);
                 $definition->clearTags();
                 $definition->addTag('kernel.event_listener', [
-                    'event' => 'kernel.request',
-                    'method' => 'onKernelRequest',
+                    'event'    => 'kernel.request',
+                    'method'   => 'onKernelRequest',
                     'priority' => $config['uptime_bot_listener']['priority'],
                 ]);
             }

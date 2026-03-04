@@ -25,16 +25,16 @@ class SentryUptimeBotListenerTest extends TestCase
     public function testOnKernelRequestWithSentryUptimeBot(): void
     {
         $config = [
-            'enabled' => true,
+            'enabled'     => true,
             'user_agents' => ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'],
-            'paths' => ['/dashboard', '/', '/login'],
+            'paths'       => ['/dashboard', '/', '/login'],
         ];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/dashboard');
+        $request  = Request::create('/dashboard');
         $request->headers->set('User-Agent', 'SentryUptimeBot/1.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 
@@ -51,16 +51,16 @@ class SentryUptimeBotListenerTest extends TestCase
     public function testOnKernelRequestWithUptimeKuma(): void
     {
         $config = [
-            'enabled' => true,
+            'enabled'     => true,
             'user_agents' => ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'],
-            'paths' => ['/dashboard', '/', '/login'],
+            'paths'       => ['/dashboard', '/', '/login'],
         ];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/');
+        $request  = Request::create('/');
         $request->headers->set('User-Agent', 'Uptime-Kuma/1.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 
@@ -75,16 +75,16 @@ class SentryUptimeBotListenerTest extends TestCase
     public function testOnKernelRequestWithKubeProbe(): void
     {
         $config = [
-            'enabled' => true,
+            'enabled'     => true,
             'user_agents' => ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'],
-            'paths' => ['/dashboard', '/', '/login'],
+            'paths'       => ['/dashboard', '/', '/login'],
         ];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/login');
+        $request  = Request::create('/login');
         $request->headers->set('User-Agent', 'kube-probe/1.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 
@@ -99,16 +99,16 @@ class SentryUptimeBotListenerTest extends TestCase
     public function testOnKernelRequestWithRegularRequest(): void
     {
         $config = [
-            'enabled' => true,
+            'enabled'     => true,
             'user_agents' => ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'],
-            'paths' => ['/dashboard', '/', '/login'],
+            'paths'       => ['/dashboard', '/', '/login'],
         ];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/dashboard');
+        $request  = Request::create('/dashboard');
         $request->headers->set('User-Agent', 'Mozilla/5.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 
@@ -121,16 +121,16 @@ class SentryUptimeBotListenerTest extends TestCase
     public function testOnKernelRequestWithNonMonitoredPath(): void
     {
         $config = [
-            'enabled' => true,
+            'enabled'     => true,
             'user_agents' => ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'],
-            'paths' => ['/dashboard', '/', '/login'],
+            'paths'       => ['/dashboard', '/', '/login'],
         ];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/api/test');
+        $request  = Request::create('/api/test');
         $request->headers->set('User-Agent', 'SentryUptimeBot/1.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 
@@ -142,17 +142,40 @@ class SentryUptimeBotListenerTest extends TestCase
      */
     public function testOnKernelRequestWhenDisabled(): void
     {
-        $config = ['enabled' => false];
+        $config   = ['enabled' => false];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/dashboard');
+        $request  = Request::create('/dashboard');
         $request->headers->set('User-Agent', 'SentryUptimeBot/1.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 
         $this->assertFalse($event->hasResponse());
+    }
+
+    /**
+     * Test that path prefix match works (path !== '/' && str_starts_with(pathInfo, path)).
+     */
+    public function testOnKernelRequestWithPathPrefixMatch(): void
+    {
+        $config = [
+            'enabled'     => true,
+            'user_agents' => ['SentryUptimeBot/1.0'],
+            'paths'       => ['/login', '/api/health'],
+        ];
+        $listener = new SentryUptimeBotListener($config);
+        $request  = Request::create('/login/check');
+        $request->headers->set('User-Agent', 'SentryUptimeBot/1.0');
+
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+
+        $listener->onKernelRequest($event);
+
+        $this->assertTrue($event->hasResponse());
+        $this->assertEquals(Response::HTTP_OK, $event->getResponse()->getStatusCode());
     }
 
     /**
@@ -161,16 +184,16 @@ class SentryUptimeBotListenerTest extends TestCase
     public function testOnKernelRequestWithCustomConfig(): void
     {
         $config = [
-            'enabled' => true,
+            'enabled'     => true,
             'user_agents' => ['MyCustomBot'],
-            'paths' => ['/health', '/status'],
+            'paths'       => ['/health', '/status'],
         ];
         $listener = new SentryUptimeBotListener($config);
-        $request = Request::create('/health');
+        $request  = Request::create('/health');
         $request->headers->set('User-Agent', 'MyCustomBot/1.0');
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $listener->onKernelRequest($event);
 

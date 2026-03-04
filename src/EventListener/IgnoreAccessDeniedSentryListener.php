@@ -7,9 +7,10 @@ namespace Nowo\SentryBundle\EventListener;
 use Sentry\State\HubInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Throwable;
 
 /**
- * Listener that prevents Sentry from reporting AccessDeniedException errors
+ * Listener that prevents Sentry from reporting AccessDeniedException errors.
  *
  * This listener intercepts AccessDeniedException events before they reach Sentry
  * and marks them as handled to prevent them from being reported. This is useful
@@ -25,10 +26,10 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 final readonly class IgnoreAccessDeniedSentryListener
 {
     /**
-     * Constructs the ignore access denied Sentry listener
+     * Constructs the ignore access denied Sentry listener.
      *
-     * @param HubInterface         $sentryHub The Sentry hub instance for configuring error reporting
-     * @param array<string, mixed> $config    The listener configuration
+     * @param HubInterface $sentryHub The Sentry hub instance for configuring error reporting
+     * @param array<string, mixed> $config The listener configuration
      */
     public function __construct(
         private ?HubInterface $sentryHub,
@@ -37,7 +38,7 @@ final readonly class IgnoreAccessDeniedSentryListener
     }
 
     /**
-     * Filters out AccessDeniedException from Sentry reporting
+     * Filters out AccessDeniedException from Sentry reporting.
      *
      * This method is invoked when an exception event occurs. If the exception
      * is an AccessDeniedException, it prevents Sentry from reporting it by
@@ -57,7 +58,7 @@ final readonly class IgnoreAccessDeniedSentryListener
         if ($exception instanceof AccessDeniedException) {
             try {
                 // Verify Sentry is properly configured and hub is available
-                if ($this->sentryHub === null || !interface_exists(HubInterface::class)) {
+                if (!$this->sentryHub instanceof \Sentry\State\HubInterface || !interface_exists(HubInterface::class)) {
                     $event->allowCustomResponseCode();
 
                     return;
@@ -66,13 +67,11 @@ final readonly class IgnoreAccessDeniedSentryListener
                 // Marcar como "handled", para que SentryBundle no lo reporte
                 $event->allowCustomResponseCode();
                 $client = $this->sentryHub->getClient();
-                if ($client !== null) {
+                if ($client instanceof \Sentry\ClientInterface) {
                     $options = $client->getOptions();
-                    if ($options !== null) {
-                        $options->setBeforeSendCallback(fn (): null => null);
-                    }
+                    $options->setBeforeSendCallback(static fn (): null => null);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Silently ignore Sentry errors to prevent breaking the application
                 // This handles cases where Sentry credentials are invalid or package is not properly installed
                 // Still allow custom response code even if Sentry configuration fails

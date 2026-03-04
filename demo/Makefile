@@ -1,21 +1,12 @@
 # Makefile for Sentry Bundle Demo
-# Each demo has its own docker-compose.yml and can be run independently
+# Delegates to each demo's Makefile (demo/symfony7, demo/symfony8, demo/symfony8-php85)
 
-# Define available demos
 DEMOS := symfony7 symfony8 symfony8-php85
-DEMO_DIRS := $(addprefix demo-,$(DEMOS))
 
-# Helper function to get port from .env file (defaults to 8001)
-get-port = $(shell grep -E '^PORT=' $(1)/.env 2>/dev/null | cut -d '=' -f2 || echo "8001")
+.PHONY: help clean demo-down test-all test-coverage-all verify-all release-verify up-all down-all
+.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
+.PHONY: up down restart build install test test-coverage shell logs
 
-# Helper function to get demo version name
-get-version = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/')
-
-.PHONY: help clean test-all test-coverage-all verify-all
-.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) install-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo))
-.PHONY: up down install test shell logs test-coverage
-
-# Default target
 help:
 	@echo "Sentry Bundle - Demo Commands"
 	@echo ""
@@ -23,263 +14,193 @@ help:
 	@echo ""
 	@for demo in $(DEMOS); do \
 		version=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
-		echo "$$version Demo (Port 8001):"; \
-		echo "  up-$$demo        Start $$version demo containers"; \
-		echo "  down-$$demo      Stop $$version demo containers"; \
-		echo "  install-$$demo   Install dependencies for $$version demo"; \
-		echo "  shell-$$demo     Open shell in $$version PHP container"; \
-		echo "  logs-$$demo      Show $$version container logs"; \
-		echo "  test-$$demo      Run tests for $$version demo"; \
-		echo "  test-coverage-$$demo  Run tests with coverage for $$version demo"; \
+		echo "$$version Demo:"; \
+		echo "  up-$$demo        Start $$version demo"; \
+		echo "  down-$$demo      Stop $$version demo"; \
+		echo "  restart-$$demo   Restart $$version demo"; \
+		echo "  build-$$demo     Rebuild $$version demo image"; \
+		echo "  install-$$demo   Install dependencies"; \
+		echo "  update-bundle-$$demo  Update sentry-bundle in demo"; \
+		echo "  shell-$$demo     Open shell in container"; \
+		echo "  logs-$$demo      Show logs"; \
+		echo "  test-$$demo      Run tests"; \
+		echo "  test-coverage-$$demo  Run tests with coverage"; \
+		echo "  verify-$$demo    Verify HTTP 200"; \
 		echo ""; \
 	done
 	@echo "Testing:"
 	@echo "  test-all           Run tests for all demos"
 	@echo "  test-coverage-all  Run tests with coverage for all demos"
-	@echo "  verify-all         Verify all demos are running correctly (HTTP 200)"
+	@echo "  verify-all         Verify all demos (HTTP 200)"
+	@echo "  release-verify     For release-check: up → verify → down per demo"
 	@echo ""
-	@echo "Generic commands (use with DEMO=<name>):"
-	@echo "  up <demo>         Start a specific demo (e.g., make up DEMO=symfony7)"
-	@echo "  down <demo>        Stop a specific demo (e.g., make down DEMO=symfony7)"
-	@echo "  install <demo>     Install dependencies (e.g., make install DEMO=symfony7)"
-	@echo "  test <demo>        Run tests (e.g., make test DEMO=symfony7)"
-	@echo "  test-coverage <demo>  Run tests with coverage (e.g., make test-coverage DEMO=symfony7)"
-	@echo "  shell <demo>       Open shell in a specific demo container"
-	@echo "  logs <demo>        Show logs of a specific demo"
+	@echo "All demos:"
+	@echo "  up-all           Start all demos (build + composer install per demo)"
+	@echo "  down-all         Stop all demos"
 	@echo ""
-	@echo "Other commands:"
-	@echo "  clean              Remove vendor and cache from all demos"
+	@echo "Generic (use DEMO=<name>):"
+	@echo "  up, down, restart, build, install, test, test-coverage, shell, logs"
+	@echo "  e.g. make up DEMO=symfony7"
 	@echo ""
-	@echo "Access URLs:"
+	@echo "Other:"
+	@echo "  demo-down          Stop all demos"
+	@echo "  clean              Remove vendor/var/cache from all demos"
+	@echo ""
+	@echo "Access URLs (default port 8001):"
 	@for demo in $(DEMOS); do \
 		version=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
 		port="8001"; \
-		if [ -f demo-$$demo/.env ]; then \
-			env_port=$$(grep -E '^PORT=' demo-$$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1); \
-			[ -n "$$env_port" ] && port="$$env_port"; \
-		elif [ -f demo-$$demo/.env.example ]; then \
-			env_port=$$(grep -E '^PORT=' demo-$$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1); \
-			[ -n "$$env_port" ] && port="$$env_port"; \
-		fi; \
+		[ -f $$demo/.env ] && port=$$(grep -E '^PORT=' $$demo/.env 2>/dev/null | cut -d= -f2 | head -1) || true; \
 		echo "  $$version: http://localhost:$${port}"; \
 	done
 
-# Generate up targets for each demo
-define up-target-template
+# Per-demo targets: delegate to demo's Makefile
+define up-target
 up-$(1):
-	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
-	echo "🚀 Starting $$VERSION demo..."; \
-	cd demo-$(1) && \
-	if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi && \
-	PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
-	echo "🔍 Checking port $$PORT..."; \
-	CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
-	if [ -n "$$CONTAINER" ]; then \
-		echo "⚠️  Port $$PORT is in use by container: $$CONTAINER"; \
-		echo "🛑 Stopping container $$CONTAINER..."; \
-		docker stop $$CONTAINER 2>/dev/null || true; \
-		docker rm $$CONTAINER 2>/dev/null || true; \
-		echo "✅ Port $$PORT is now free"; \
-	fi && \
-	docker-compose build && \
-	docker-compose up -d && \
-	echo "⏳ Waiting for demo to be ready..." && \
-	sleep 5 && \
-	MAX_ATTEMPTS=12; \
-	ATTEMPT=1; \
-	while [ $$ATTEMPT -le $$MAX_ATTEMPTS ]; do \
-		if curl -s -o /dev/null -w "%{http_code}" http://localhost:$$PORT | grep -q "200"; then \
-			echo "✅ $$VERSION demo is running and responding at http://localhost:$$PORT"; \
-			exit 0; \
-		fi; \
-		echo "⏳ Attempt $$ATTEMPT/$$MAX_ATTEMPTS: Waiting for demo to respond..."; \
-		sleep 5; \
-		ATTEMPT=$$(($$ATTEMPT + 1)); \
-	done; \
-	echo "❌ Demo did not respond with HTTP 200 after $$MAX_ATTEMPTS attempts" && \
-	exit 1
+	@$(MAKE) -C $(1) up
 endef
-
-# Generate down targets for each demo
-define down-target-template
+define down-target
 down-$(1):
-	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
-	echo "🛑 Stopping $$VERSION demo..."; \
-	cd demo-$(1) && docker-compose down; \
-	echo "✅ $$VERSION demo stopped!"
+	@$(MAKE) -C $(1) down
 endef
-
-# Generate install targets for each demo
-define install-target-template
+define restart-target
+restart-$(1):
+	@$(MAKE) -C $(1) restart
+endef
+define build-target
+build-$(1):
+	@$(MAKE) -C $(1) build
+endef
+define install-target
 install-$(1):
-	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
-	echo "📦 Installing $$VERSION dependencies..."; \
-	cd demo-$(1) && docker-compose exec php composer install || \
-		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
-		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
-		if [ -n "$$CONTAINER" ]; then \
-			docker stop $$CONTAINER 2>/dev/null || true; \
-			docker rm $$CONTAINER 2>/dev/null || true; \
-		fi; \
-		docker-compose up -d && sleep 2 && docker-compose exec php composer install); \
-	echo "✅ $$VERSION dependencies installed!"
+	@$(MAKE) -C $(1) install
 endef
-
-# Generate shell targets for each demo
-define shell-target-template
+define update-bundle-target
+update-bundle-$(1):
+	@$(MAKE) -C $(1) update-bundle
+endef
+define shell-target
 shell-$(1):
-	@cd demo-$(1) && docker-compose exec php sh
+	@$(MAKE) -C $(1) shell
 endef
-
-# Generate logs targets for each demo
-define logs-target-template
+define logs-target
 logs-$(1):
-	@cd demo-$(1) && docker-compose logs -f
+	@$(MAKE) -C $(1) logs
 endef
-
-# Generate test targets for each demo
-define test-target-template
+define test-target
 test-$(1):
-	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
-	echo "🧪 Running $$VERSION tests..."; \
-	cd demo-$(1) && docker-compose exec php composer test || \
-		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
-		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
-		if [ -n "$$CONTAINER" ]; then \
-			docker stop $$CONTAINER 2>/dev/null || true; \
-			docker rm $$CONTAINER 2>/dev/null || true; \
-		fi; \
-		docker-compose up -d && sleep 2 && docker-compose exec php composer test)
+	@$(MAKE) -C $(1) test
 endef
-
-# Generate test-coverage targets for each demo
-define test-coverage-target-template
+define test-coverage-target
 test-coverage-$(1):
-	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/7/7.0/' | sed 's/8/8.0/' | sed 's/-php85/ + PHP 8.5/'); \
-	echo "🧪 Running $$VERSION tests with coverage..."; \
-	cd demo-$(1) && docker-compose exec php composer test-coverage || \
-		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
-		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
-		if [ -n "$$CONTAINER" ]; then \
-			docker stop $$CONTAINER 2>/dev/null || true; \
-			docker rm $$CONTAINER 2>/dev/null || true; \
-		fi; \
-		docker-compose up -d && sleep 2 && docker-compose exec php composer test-coverage)
+	@$(MAKE) -C $(1) test-coverage
+endef
+define verify-target
+verify-$(1):
+	@$(MAKE) -C $(1) verify
 endef
 
-# Generate all targets for each demo
-$(foreach demo,$(DEMOS),$(eval $(call up-target-template,$(demo))))
-$(foreach demo,$(DEMOS),$(eval $(call down-target-template,$(demo))))
-$(foreach demo,$(DEMOS),$(eval $(call install-target-template,$(demo))))
-$(foreach demo,$(DEMOS),$(eval $(call shell-target-template,$(demo))))
-$(foreach demo,$(DEMOS),$(eval $(call logs-target-template,$(demo))))
-$(foreach demo,$(DEMOS),$(eval $(call test-target-template,$(demo))))
-$(foreach demo,$(DEMOS),$(eval $(call test-coverage-target-template,$(demo))))
+$(foreach d,$(DEMOS),$(eval $(call up-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call down-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call restart-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call build-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call install-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call update-bundle-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call shell-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call logs-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call test-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call test-coverage-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call verify-target,$(d))))
 
-# Run all tests
-test-all:
-	@echo "Running tests for all demos..."
-	@$(foreach demo,$(DEMOS),$(MAKE) test-$(demo);)
-	@echo "✅ All tests completed!"
+# Start all demos (build + up + composer install in each)
+up-all:
+	@echo "Starting all demos (build, up, composer install)..."
+	@for demo in $(DEMOS); do \
+		echo ""; echo "=== $$demo ==="; \
+		$(MAKE) -C $$demo up || exit 1; \
+	done
+	@echo ""; echo "✅ All demos are up with dependencies installed."
 
-# Run all tests with coverage
-test-coverage-all:
-	@echo "Running tests with coverage for all demos..."
-	@$(foreach demo,$(DEMOS),$(MAKE) test-coverage-$(demo);)
-	@echo "✅ All coverage tests completed!"
+# Stop all demos
+down-all:
+	@echo "Stopping all demos..."
+	@for demo in $(DEMOS); do \
+		echo "=== $$demo ==="; \
+		$(MAKE) -C $$demo down; \
+	done
+	@echo "✅ All demos stopped."
 
-# Generic up command
+# Generic targets (require DEMO=)
 up:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make up DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make up DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) up-$(DEMO)
 
-# Generic down command
 down:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make down DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make down DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) down-$(DEMO)
 
-# Generic install command
+restart:
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make restart DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@$(MAKE) restart-$(DEMO)
+
+build:
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make build DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@$(MAKE) build-$(DEMO)
+
 install:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make install DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make install DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) install-$(DEMO)
 
-# Generic test command
 test:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make test DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) test-$(DEMO)
 
-# Generic test-coverage command
 test-coverage:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make test-coverage DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test-coverage DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) test-coverage-$(DEMO)
 
-# Generic shell command
 shell:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make shell DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make shell DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) shell-$(DEMO)
 
-# Generic logs command
 logs:
-	@if [ -z "$(DEMO)" ]; then \
-		echo "❌ Error: Please specify a demo. Usage: make logs DEMO=<demo-name>"; \
-		echo "Available demos: $(DEMOS)"; \
-		exit 1; \
-	fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make logs DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) logs-$(DEMO)
 
-# Verify all demos are running correctly
+test-all:
+	@echo "Running tests for all demos..."
+	@for demo in $(DEMOS); do $(MAKE) -C $$demo test || exit 1; done
+	@echo "✅ All tests completed!"
+
+test-coverage-all:
+	@echo "Running tests with coverage for all demos..."
+	@for demo in $(DEMOS); do $(MAKE) -C $$demo test-coverage || exit 1; done
+	@echo "✅ All coverage tests completed!"
+
 verify-all:
-	@echo "🔍 Verifying all demos..."
+	@echo "Verifying all demos..."
 	@FAILED=0; \
 	for demo in $(DEMOS); do \
-		echo ""; \
 		echo "Checking $$demo..."; \
-		$(MAKE) up-$$demo > /dev/null 2>&1 && \
-		sleep 2 && \
-		PORT=$$(grep "^PORT=" demo-$$demo/.env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
-		if curl -s -o /dev/null -w "%{http_code}" http://localhost:$$PORT | grep -q "200"; then \
-			echo "✅ $$demo is running correctly at http://localhost:$$PORT"; \
-			$(MAKE) down-$$demo > /dev/null 2>&1; \
-		else \
-			echo "❌ $$demo failed verification (no HTTP 200 response)"; \
-			FAILED=$$((FAILED + 1)); \
-			$(MAKE) down-$$demo > /dev/null 2>&1; \
-		fi; \
+		$(MAKE) -C $$demo verify && echo "✅ $$demo OK" || { echo "❌ $$demo failed"; FAILED=$$((FAILED+1)); }; \
 	done; \
-	echo ""; \
-	if [ $$FAILED -gt 0 ]; then \
-		echo "❌ $$FAILED demo(s) failed verification"; \
-		exit 1; \
-	else \
-		echo "✅ All demos verified successfully"; \
-	fi
+	[ $$FAILED -eq 0 ] || exit 1
+	@echo "✅ All demos verified!"
 
-# Clean vendor and cache from all demos
+# Stop all demos
+demo-down:
+	@for demo in $(DEMOS); do $(MAKE) down-$$demo; done
+
+# For release-check: for each demo, up → sleep → verify HTTP 200 → down
+release-verify:
+	@echo "Release verify: up → verify → down per demo..."
+	@for demo in $(DEMOS); do \
+		echo ""; echo "=== $$demo ==="; \
+		$(MAKE) -C $$demo up && sleep 10 && $(MAKE) -C $$demo verify && $(MAKE) -C $$demo down || { $(MAKE) -C $$demo down 2>/dev/null; exit 1; }; \
+	done
+	@echo ""; echo "✅ release-verify passed for all demos"
+
 clean:
-	@echo "🧹 Cleaning vendor and cache from all demos..."
-	@$(foreach demo,$(DEMOS),rm -rf demo-$(demo)/vendor demo-$(demo)/var demo-$(demo)/.phpunit.cache;)
+	@echo "Cleaning vendor/var/.phpunit.cache from all demos..."
+	@$(foreach demo,$(DEMOS),rm -rf $(demo)/vendor $(demo)/var $(demo)/.phpunit.cache;)
 	@echo "✅ Cleaned!"

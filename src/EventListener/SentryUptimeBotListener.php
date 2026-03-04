@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
- * Listener that handles requests from uptime monitoring bots
+ * Listener that handles requests from uptime monitoring bots.
  *
  * This listener intercepts health check requests from various monitoring services
  * (Sentry Uptime Bot, Uptime-Kuma, and kube-probe) and returns a simple OK response
@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 final readonly class SentryUptimeBotListener
 {
     /**
-     * Constructs the Sentry uptime bot listener
+     * Constructs the Sentry uptime bot listener.
      *
      * @param array<string, mixed> $config The listener configuration
      */
@@ -32,7 +32,7 @@ final readonly class SentryUptimeBotListener
     }
 
     /**
-     * Handles requests from uptime monitoring bots
+     * Handles requests from uptime monitoring bots.
      *
      * This method performs the following checks:
      * 1. Identifies if the request is from a known monitoring bot (configurable)
@@ -51,12 +51,12 @@ final readonly class SentryUptimeBotListener
             return;
         }
 
-        $request = $event->getRequest();
+        $request   = $event->getRequest();
         $userAgent = $request->headers->get('User-Agent');
-        $pathInfo = $request->getPathInfo();
+        $pathInfo  = $request->getPathInfo();
 
         $userAgents = $this->config['user_agents'] ?? ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'];
-        $paths = $this->config['paths'] ?? ['/dashboard', '/', '/login'];
+        $paths      = $this->config['paths'] ?? ['/dashboard', '/', '/login'];
 
         $isBot = false;
         if ($userAgent) {

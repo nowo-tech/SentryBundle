@@ -1,0 +1,3 @@
+# Exclude demo from dist package (composer install / Packagist zip).
+# The demo apps are for development only and must not be installed with the bundle.
+demo/ export-ignore

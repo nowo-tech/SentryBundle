@@ -11,10 +11,10 @@
         "monitoring",
         "logging"
     ],
-    "homepage": "https://github.com/nowo-tech/sentry-bundle",
+    "homepage": "https://github.com/nowo-tech/SentryBundle",
     "support": {
-        "issues": "https://github.com/nowo-tech/sentry-bundle/issues",
-        "source": "https://github.com/nowo-tech/sentry-bundle"
+        "issues": "https://github.com/nowo-tech/SentryBundle/issues",
+        "source": "https://github.com/nowo-tech/SentryBundle"
     },
     "authors": [
         {
@@ -40,7 +40,12 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0",
-        "friendsofphp/php-cs-fixer": "^3.0"
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "rector/rector": "^2.0",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan-symfony": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -50,21 +55,33 @@
     "autoload-dev": {
         "psr-4": {
             "Nowo\\SentryBundle\\Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "tests/RedisExceptionStub.php"
+        ]
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "phpstan/extension-installer": true
         }
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
+    "archive": {
+        "exclude": ["demo"]
+    },
     "scripts": {
         "test": "phpunit",
-        "test-coverage": "phpunit --coverage-html coverage --coverage-clover coverage.xml",
+        "test-coverage": "phpunit --coverage-html coverage --coverage-clover coverage.xml --coverage-text",
         "cs-check": "php-cs-fixer fix --dry-run --diff",
         "cs-fix": "php-cs-fixer fix",
+        "rector": "rector process",
+        "rector-dry": "rector process --dry-run --no-progress-bar",
+        "phpstan": "phpstan analyse --memory-limit=512M",
+        "update": "composer update",
+        "validate": "composer validate --strict",
         "qa": [
             "@cs-check",
             "@test"
@@ -75,6 +92,11 @@
         "test-coverage": "Run PHPUnit tests with code coverage",
         "cs-check": "Check code style with PHP-CS-Fixer",
         "cs-fix": "Fix code style with PHP-CS-Fixer",
+        "rector": "Apply Rector refactoring",
+        "rector-dry": "Run Rector in dry-run mode",
+        "phpstan": "Run PHPStan static analysis",
+        "update": "Update dependencies",
+        "validate": "Validate composer.json",
         "qa": "Run all quality assurance checks"
     }
 }

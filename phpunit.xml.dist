@@ -23,8 +23,9 @@
 
     <coverage>
         <report>
-            <html outputDirectory="coverage"/>
+            <html outputDirectory="coverage" highLowerBound="95" lowUpperBound="70"/>
             <clover outputFile="coverage.xml"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false"/>
         </report>
     </coverage>
 </phpunit>

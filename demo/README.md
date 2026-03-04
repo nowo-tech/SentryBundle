@@ -34,7 +34,7 @@ Each demo has its own `docker-compose.yml` and can be run independently. You can
 
 ```bash
 # Navigate to the demo directory
-cd demo/demo-symfony7
+cd demo/symfony7
 
 # Start containers
 docker-compose up -d
@@ -92,7 +92,7 @@ make test-all
 Or run tests directly in a demo:
 
 ```bash
-cd demo/demo-symfony7
+cd demo/symfony7
 docker-compose exec php vendor/bin/phpunit
 ```
 

@@ -9,6 +9,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Yaml\Yaml;
 
+use function dirname;
+
 /**
  * Configuration class for the bundle.
  *
@@ -33,7 +35,7 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder(self::ALIAS);
-        $rootNode = $treeBuilder->getRootNode();
+        $rootNode    = $treeBuilder->getRootNode();
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -124,19 +126,19 @@ final class Configuration implements ConfigurationInterface
         $config = [
             self::ALIAS => [
                 'request_listener' => [
-                    'enabled' => true,
-                    'set_domain_tag' => true,
+                    'enabled'             => true,
+                    'set_domain_tag'      => true,
                     'set_environment_tag' => true,
-                    'set_user_info' => true,
-                    'set_session_id' => true,
-                    'priority' => 0,
+                    'set_user_info'       => true,
+                    'set_session_id'      => true,
+                    'priority'            => 0,
                 ],
                 'ignore_access_denied_listener' => [
-                    'enabled' => true,
+                    'enabled'  => true,
                     'priority' => 255,
                 ],
                 'uptime_bot_listener' => [
-                    'enabled' => true,
+                    'enabled'     => true,
                     'user_agents' => [
                         'SentryUptimeBot/1.0',
                         'Uptime-Kuma',
@@ -157,7 +159,7 @@ final class Configuration implements ConfigurationInterface
 
         $yaml = Yaml::dump($config, 4, 2);
 
-        $dir = \dirname($configPath);
+        $dir = dirname($configPath);
 
         if (!is_dir($dir)) {
             mkdir($dir, 0o775, true);

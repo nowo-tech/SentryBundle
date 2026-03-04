@@ -1,0 +1,17 @@
+# PHPStan configuration for Sentry Bundle.
+#
+# Static analysis on src/ and tests/ (level 8). Run: make phpstan
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - demo/*
+        - vendor/*
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            message: '#Call to function method_exists\(\) with.*will always evaluate to true#'
+            path: src/EventListener/*.php

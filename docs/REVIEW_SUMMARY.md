@@ -10,7 +10,7 @@
 - ✅ Menciona los ejemplos en las demos
 - ✅ Formato correcto según Keep a Changelog
 
-### 2. UPGRADE.md
+### 2. UPGRADING.md
 **Estado**: ✅ Completo y actualizado
 - ✅ Instrucciones claras de actualización
 - ✅ Explicación de cambios
@@ -51,9 +51,9 @@ Las demos **NO tienen** controladores con ejemplos de uso del servicio `SentryEr
 Se ha creado un controlador de ejemplo completo (`SentryDemoController.php`) que debe añadirse a cada demo:
 
 **Ubicaciones requeridas**:
-- `demo/demo-symfony7/src/Controller/SentryDemoController.php`
-- `demo/demo-symfony8/src/Controller/SentryDemoController.php`
-- `demo/demo-symfony8-php85/src/Controller/SentryDemoController.php`
+- `demo/symfony7/src/Controller/SentryDemoController.php`
+- `demo/symfony8/src/Controller/SentryDemoController.php`
+- `demo/symfony8-php85/src/Controller/SentryDemoController.php`
 
 ### Casos de Uso Implementados en el Controlador
 
@@ -74,7 +74,7 @@ El controlador incluye **8 rutas de ejemplo** que cubren todos los casos de uso:
 **Opción 1: Crear manualmente**
 ```bash
 # Para cada demo
-cd demo/demo-symfony7
+cd demo/symfony7
 mkdir -p src/Controller
 # Copiar el contenido del controlador desde docs/DEMO_CONTROLLER_TEMPLATE.md
 ```
@@ -94,16 +94,16 @@ Una vez añadido el controlador, verificar que:
 
 ### ✅ Completado
 - [x] CHANGELOG.md - Completo y actualizado
-- [x] UPGRADE.md - Completo y actualizado
+- [x] UPGRADING.md - Completo y actualizado
 - [x] README.md - Completo y actualizado
 - [x] CONFIGURATION.md - Completo y actualizado
 - [x] BRANCHING.md - Creado y completo
 - [x] Controlador de ejemplo preparado con todos los casos de uso
 
 ### ⚠️ Pendiente
-- [ ] Añadir `SentryDemoController.php` a `demo/demo-symfony7/src/Controller/`
-- [ ] Añadir `SentryDemoController.php` a `demo/demo-symfony8/src/Controller/`
-- [ ] Añadir `SentryDemoController.php` a `demo/demo-symfony8-php85/src/Controller/`
+- [ ] Añadir `SentryDemoController.php` a `demo/symfony7/src/Controller/`
+- [ ] Añadir `SentryDemoController.php` a `demo/symfony8/src/Controller/`
+- [ ] Añadir `SentryDemoController.php` a `demo/symfony8-php85/src/Controller/`
 - [ ] Verificar que las rutas funcionan en cada demo
 
 ## Nota

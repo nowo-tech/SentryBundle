@@ -31,6 +31,5 @@ services:
     arguments:
       $sentryHub: '@?Sentry\State\HubInterface'
       $logger: '@?logger'
-      $config: '%nowo_sentry.error_reporter%'
     public: true
 

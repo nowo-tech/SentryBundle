@@ -26,7 +26,7 @@ class NowoSentryExtensionTest extends TestCase
     public function testGetAlias(): void
     {
         $extension = new NowoSentryExtension();
-        $alias = $extension->getAlias();
+        $alias     = $extension->getAlias();
 
         $this->assertEquals(Configuration::ALIAS, $alias);
     }
@@ -56,9 +56,9 @@ class NowoSentryExtensionTest extends TestCase
         $container = new ContainerBuilder();
 
         $config = [
-            'request_listener' => ['enabled' => true, 'priority' => 0],
+            'request_listener'              => ['enabled' => true, 'priority' => 0],
             'ignore_access_denied_listener' => ['enabled' => true, 'priority' => 255],
-            'uptime_bot_listener' => ['enabled' => true, 'priority' => 255, 'user_agents' => [], 'paths' => []],
+            'uptime_bot_listener'           => ['enabled' => true, 'priority' => 255, 'user_agents' => [], 'paths' => []],
         ];
 
         $extension->load([$config], $container);
@@ -78,9 +78,9 @@ class NowoSentryExtensionTest extends TestCase
         $container = new ContainerBuilder();
 
         $config = [
-            'request_listener' => ['enabled' => false, 'priority' => 0],
+            'request_listener'              => ['enabled' => false, 'priority' => 0],
             'ignore_access_denied_listener' => ['enabled' => false, 'priority' => 255],
-            'uptime_bot_listener' => ['enabled' => false, 'priority' => 255, 'user_agents' => [], 'paths' => []],
+            'uptime_bot_listener'           => ['enabled' => false, 'priority' => 255, 'user_agents' => [], 'paths' => []],
         ];
 
         $extension->load([$config], $container);

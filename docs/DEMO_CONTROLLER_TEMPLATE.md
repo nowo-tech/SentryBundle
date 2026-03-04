@@ -5,9 +5,9 @@ Este archivo contiene el código del controlador de ejemplo que debe añadirse a
 ## Ubicación
 
 El controlador debe crearse en:
-- `demo/demo-symfony7/src/Controller/SentryDemoController.php`
-- `demo/demo-symfony8/src/Controller/SentryDemoController.php`
-- `demo/demo-symfony8-php85/src/Controller/SentryDemoController.php`
+- `demo/symfony7/src/Controller/SentryDemoController.php`
+- `demo/symfony8/src/Controller/SentryDemoController.php`
+- `demo/symfony8-php85/src/Controller/SentryDemoController.php`
 
 ## Casos de Uso Implementados
 
@@ -45,7 +45,7 @@ Si hay problemas de permisos, puedes crear el archivo manualmente o usar:
 
 ```bash
 # Para cada demo
-cd demo/demo-symfony7
+cd demo/symfony7
 mkdir -p src/Controller
 # Copiar el contenido del controlador
 ```

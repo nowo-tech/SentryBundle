@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle\Tests\EventListener;
 
 use Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Sentry\ClientInterface;
 use Sentry\Options;
 use Sentry\State\HubInterface;
@@ -27,20 +28,20 @@ class IgnoreAccessDeniedSentryListenerTest extends TestCase
      */
     public function testInvokeWithAccessDeniedException(): void
     {
-        $client = $this->createMock(ClientInterface::class);
+        $client  = $this->createMock(ClientInterface::class);
         $options = new Options(['dsn' => 'https://test@test.ingest.sentry.io/test']);
-        $hub = $this->createMock(HubInterface::class);
+        $hub     = $this->createMock(HubInterface::class);
 
         $client->method('getOptions')->willReturn($options);
         $hub->method('getClient')->willReturn($client);
 
-        $config = ['enabled' => true];
+        $config   = ['enabled' => true];
         $listener = new IgnoreAccessDeniedSentryListener($hub, $config);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = new Request();
+        $kernel    = $this->createMock(HttpKernelInterface::class);
+        $request   = new Request();
         $exception = new AccessDeniedException('Access denied');
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+        $event     = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
 
         $listener->__invoke($event);
 
@@ -53,14 +54,14 @@ class IgnoreAccessDeniedSentryListenerTest extends TestCase
      */
     public function testInvokeWithOtherException(): void
     {
-        $hub = $this->createMock(HubInterface::class);
-        $config = ['enabled' => true];
+        $hub      = $this->createMock(HubInterface::class);
+        $config   = ['enabled' => true];
         $listener = new IgnoreAccessDeniedSentryListener($hub, $config);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = new Request();
-        $exception = new \RuntimeException('Other exception');
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+        $kernel    = $this->createMock(HttpKernelInterface::class);
+        $request   = new Request();
+        $exception = new RuntimeException('Other exception');
+        $event     = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
 
         $listener->__invoke($event);
 
@@ -73,18 +74,57 @@ class IgnoreAccessDeniedSentryListenerTest extends TestCase
      */
     public function testInvokeWhenDisabled(): void
     {
-        $hub = $this->createMock(HubInterface::class);
-        $config = ['enabled' => false];
+        $hub      = $this->createMock(HubInterface::class);
+        $config   = ['enabled' => false];
         $listener = new IgnoreAccessDeniedSentryListener($hub, $config);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = new Request();
+        $kernel    = $this->createMock(HttpKernelInterface::class);
+        $request   = new Request();
         $exception = new AccessDeniedException('Access denied');
-        $event = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+        $event     = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
 
         $listener->__invoke($event);
 
         // Should not process the exception when disabled
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Test that when hub is null, listener still allows custom response code.
+     */
+    public function testInvokeWithNullHub(): void
+    {
+        $config   = ['enabled' => true];
+        $listener = new IgnoreAccessDeniedSentryListener(null, $config);
+
+        $kernel    = $this->createMock(HttpKernelInterface::class);
+        $request   = new Request();
+        $exception = new AccessDeniedException('Access denied');
+        $event     = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+
+        $listener->__invoke($event);
+
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Test that when Sentry getClient throws, listener allows custom response and does not break.
+     */
+    public function testInvokeWhenGetClientThrows(): void
+    {
+        $hub = $this->createMock(HubInterface::class);
+        $hub->method('getClient')->willThrowException(new \RuntimeException('Sentry error'));
+
+        $config   = ['enabled' => true];
+        $listener = new IgnoreAccessDeniedSentryListener($hub, $config);
+
+        $kernel    = $this->createMock(HttpKernelInterface::class);
+        $request   = new Request();
+        $exception = new AccessDeniedException('Access denied');
+        $event     = new ExceptionEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $exception);
+
+        $listener->__invoke($event);
+
         $this->assertTrue(true);
     }
 }

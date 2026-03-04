@@ -15,8 +15,11 @@ RUN apk add --no-cache \
 # Install PHP extensions
 RUN docker-php-ext-install -j$(nproc) zip
 
-# Install pcov for code coverage
-RUN pecl install pcov && docker-php-ext-enable pcov
+# PCOV for code coverage (per BUNDLES_STANDARDS_PROMPT §2.1: same image for dev and tests)
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov \
+    && apk del $PHPIZE_DEPS
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

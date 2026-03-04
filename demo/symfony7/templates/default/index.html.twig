@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title h3">{{ message }}</h1>
+                    <p class="card-text">Si ves esta página, el demo está funcionando correctamente.</p>
+                    <p class="card-text">La barra del Web Profiler aparece abajo cuando <code>APP_DEBUG=1</code>.</p>
+                    <a href="{{ path('sentry_demo_index') }}" class="btn btn-primary">Ver rutas de demo del Sentry Bundle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

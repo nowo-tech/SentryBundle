@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sentry – Casos de uso{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Rutas de demo del Sentry Bundle</h1>
+        <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">← Inicio</a>
+    </div>
+    <p class="lead text-muted">Cada ruta prueba un caso de uso distinto. Usa el menú o los enlaces de abajo.</p>
+    <div class="alert alert-light border small">
+        <strong>Dónde ver el resultado de cada caso de uso:</strong> en cada página de resultado se indica; en general, revisa los <strong>logs</strong> (<code>var/log/</code> o <code>make logs</code> / <code>docker-compose logs -f php</code>) y el proyecto en <strong>Sentry</strong> si tienes <code>SENTRY_DSN</code> configurado.
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <h2 class="h5 text-uppercase text-muted mt-4 mb-2">SentryErrorReporter (servicio)</h2>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">captureException</h3>
+                    <p class="card-text small">Excepción + contexto + mensaje personalizado. No rompe el flujo de la app.</p>
+                    <a href="{{ routes.capture_exception }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">captureMessage</h3>
+                    <p class="card-text small">Mensaje con nivel (debug, info, warning, error). Opción: <code>?level=warning</code>.</p>
+                    <a href="{{ routes.capture_message }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">captureError</h3>
+                    <p class="card-text small">Atajo para mensaje de error con contexto.</p>
+                    <a href="{{ routes.capture_error }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">addBreadcrumb</h3>
+                    <p class="card-text small">Añade breadcrumbs que se verán en el siguiente evento en Sentry.</p>
+                    <a href="{{ routes.add_breadcrumb }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">setUser</h3>
+                    <p class="card-text small">Establece el contexto de usuario (id, email, username) para los siguientes eventos.</p>
+                    <a href="{{ routes.set_user }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">setContext</h3>
+                    <p class="card-text small">Añade datos extra al scope para el siguiente evento.</p>
+                    <a href="{{ routes.set_context }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">completeExample</h3>
+                    <p class="card-text small">Combina setUser, addBreadcrumb y captureMessage en un flujo completo.</p>
+                    <a href="{{ routes.complete_example }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">safeOperation</h3>
+                    <p class="card-text small">Demuestra que el servicio nunca lanza; la aplicación sigue aunque falle Sentry.</p>
+                    <a href="{{ routes.safe_operation }}" class="btn btn-sm btn-outline-primary">Probar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12">
+            <h2 class="h5 text-uppercase text-muted mt-2 mb-2">Event listeners</h2>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-warning">
+                <div class="card-body">
+                    <span class="badge bg-warning text-dark mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">access-denied (IgnoreAccessDeniedSentryListener)</h3>
+                    <p class="card-text small">Lanza <code>AccessDeniedException</code>. No debe enviarse a Sentry por diseño.</p>
+                    <a href="{{ routes.access_denied }}" class="btn btn-sm btn-outline-warning">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-warning">
+                <div class="card-body">
+                    <span class="badge bg-warning text-dark mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">trigger-error (SDK automático)</h3>
+                    <p class="card-text small">Excepción no capturada; el SDK de Sentry la registra automáticamente.</p>
+                    <a href="{{ routes.trigger_error }}" class="btn btn-sm btn-outline-warning">Probar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -30,8 +30,33 @@ class ConfigurationTest extends TestCase
     public function testGetConfigTreeBuilder(): void
     {
         $configuration = new Configuration();
-        $treeBuilder = $configuration->getConfigTreeBuilder();
+        $treeBuilder   = $configuration->getConfigTreeBuilder();
 
         $this->assertInstanceOf(TreeBuilder::class, $treeBuilder);
+    }
+
+    /**
+     * Test that generateConfigFile creates a YAML file with the expected structure.
+     */
+    public function testGenerateConfigFile(): void
+    {
+        $configDir = sys_get_temp_dir() . '/sentry-bundle-test-' . uniqid('', true);
+        $configPath = $configDir . '/nowo_sentry.yaml';
+
+        $this->assertDirectoryDoesNotExist($configDir);
+
+        $configuration = new Configuration();
+        $configuration->generateConfigFile($configPath);
+
+        $this->assertFileExists($configPath);
+        $content = file_get_contents($configPath);
+        $this->assertStringContainsString('nowo_sentry:', $content);
+        $this->assertStringContainsString('request_listener:', $content);
+        $this->assertStringContainsString('ignore_access_denied_listener:', $content);
+        $this->assertStringContainsString('uptime_bot_listener:', $content);
+        $this->assertStringContainsString('error_reporter:', $content);
+
+        unlink($configPath);
+        rmdir($configDir);
     }
 }

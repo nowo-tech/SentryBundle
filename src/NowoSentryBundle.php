@@ -9,6 +9,8 @@ use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+use function sprintf;
+
 /**
  * Symfony bundle for enhanced Sentry integration.
  *
@@ -51,7 +53,7 @@ class NowoSentryBundle extends Bundle
      */
     public function getContainerExtension(): ?ExtensionInterface
     {
-        if (null === $this->extension) {
+        if ($this->extension === null) {
             $this->extension = new NowoSentryExtension();
         }
 
@@ -69,10 +71,10 @@ class NowoSentryBundle extends Bundle
             return;
         }
 
-        $projectDir = $this->container->getParameter('kernel.project_dir');
+        $projectDir  = $this->container->getParameter('kernel.project_dir');
         $aliasBundle = Configuration::ALIAS;
-        $configPath = $projectDir . sprintf('/config/packages/%s.yaml', $aliasBundle);
-        $configDir = $projectDir . '/config/packages';
+        $configPath  = $projectDir . sprintf('/config/packages/%s.yaml', $aliasBundle);
+        $configDir   = $projectDir . '/config/packages';
 
         // Check if the configuration already exists in any file
         if ($this->isConfigurationDefined($configDir)) {
@@ -97,7 +99,7 @@ class NowoSentryBundle extends Bundle
 
         $files = array_merge(
             glob($configDir . '/*.yaml'),
-            glob($configDir . '/*.yml')
+            glob($configDir . '/*.yml'),
         );
 
         foreach ($files as $file) {

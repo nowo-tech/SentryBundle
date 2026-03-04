@@ -1,6 +1,6 @@
 # Sentry Bundle
 
-[![CI](https://github.com/nowo-tech/sentry-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/sentry-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/sentry-bundle/v)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://poser.pugx.org/nowo-tech/sentry-bundle/license)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/sentry-bundle/require/php)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/sentry-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/sentry-bundle)
+[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/sentry-bundle/v)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://poser.pugx.org/nowo-tech/sentry-bundle/license)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/sentry-bundle/require/php)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/sentry-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/SentryBundle)
 
 > ⭐ **Found this project useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
@@ -370,11 +370,18 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 
 ## Documentation
 
-- **[Configuration Reference](docs/CONFIGURATION.md)** - Complete reference for all configuration options with detailed explanations
+- [Installation](docs/INSTALLATION.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [Usage](docs/USAGE.md)
+- [Contributing](docs/CONTRIBUTING.md)
+- [Changelog](docs/CHANGELOG.md)
+- [Upgrading](docs/UPGRADING.md)
+- [Release](docs/RELEASE.md)
+- [Security](docs/SECURITY.md)
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
+Please see [Contributing](docs/CONTRIBUTING.md) for details on how to contribute to this project.
 
 ## Author
 

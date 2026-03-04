@@ -41,7 +41,7 @@
 - ✅ Demos documentados
 - ✅ Versión 1.0.0 documentada
 
-### 4. docs/UPGRADE.md
+### 4. docs/UPGRADING.md
 **Estado**: ✅ Completo
 - ✅ Proceso general de actualización
 - ✅ Instrucciones por versión (1.1.0)
@@ -143,14 +143,14 @@
 - ⚠️ Controlador `SentryDemoController.php` preparado pero no añadido por permisos
 - ⚠️ El código está listo en `docs/DEMO_CONTROLLER_TEMPLATE.md`
 - ⚠️ Necesita copiarse a:
-  - `demo/demo-symfony7/src/Controller/SentryDemoController.php`
-  - `demo/demo-symfony8/src/Controller/SentryDemoController.php`
-  - `demo/demo-symfony8-php85/src/Controller/SentryDemoController.php`
+  - `demo/symfony7/src/Controller/SentryDemoController.php`
+  - `demo/symfony8/src/Controller/SentryDemoController.php`
+  - `demo/symfony8-php85/src/Controller/SentryDemoController.php`
 
 ## Resumen Final
 
 ### ✅ Completado (95%)
-- [x] Documentación completa (README, CONFIGURATION, CHANGELOG, UPGRADE, BRANCHING)
+- [x] Documentación completa (README, CONFIGURATION, CHANGELOG, UPGRADING, BRANCHING)
 - [x] Tests completos con 100% cobertura
 - [x] Receta de Symfony Flex creada
 - [x] Análisis de cobertura documentado

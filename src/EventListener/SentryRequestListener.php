@@ -7,14 +7,16 @@ namespace Nowo\SentryBundle\EventListener;
 use Exception;
 use Redis\Exception\RedisException;
 use RuntimeException;
-use Sentry\State\{HubInterface, Scope};
+use Sentry\State\HubInterface;
+use Sentry\State\Scope;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Throwable;
 
 /**
- * Listener that configures Sentry scope with user and request information
+ * Listener that configures Sentry scope with user and request information.
  *
  * This listener is triggered on kernel.request events and sets up Sentry context
  * with user information, session data, and environment details. It enriches error
@@ -26,12 +28,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 final readonly class SentryRequestListener
 {
     /**
-     * Constructs the Sentry request listener
+     * Constructs the Sentry request listener.
      *
-     * @param HubInterface         $sentryHub   The Sentry hub instance for configuring error reporting scope
-     * @param array<string, mixed> $config      The listener configuration
-     * @param string               $environment The current application environment (prod, dev, staging, etc.)
-     * @param Security|null        $security    The security service for accessing authenticated user information
+     * @param HubInterface $sentryHub The Sentry hub instance for configuring error reporting scope
+     * @param array<string, mixed> $config The listener configuration
+     * @param string $environment The current application environment (prod, dev, staging, etc.)
+     * @param Security|null $security The security service for accessing authenticated user information
      */
     public function __construct(
         private ?HubInterface $sentryHub,
@@ -42,7 +44,7 @@ final readonly class SentryRequestListener
     }
 
     /**
-     * Configures Sentry scope with request and user information
+     * Configures Sentry scope with request and user information.
      *
      * This method:
      * 1. Sets domain and environment tags
@@ -63,7 +65,7 @@ final readonly class SentryRequestListener
         }
 
         $request = $event->getRequest();
-        $host = $request->getHost();
+        $host    = $request->getHost();
 
         try {
             $session = $request->hasSession() ? $request->getSession() : null;
@@ -71,7 +73,7 @@ final readonly class SentryRequestListener
             $session = null;
         }
 
-        $user = null;
+        $user           = null;
         $userIdentifier = null;
 
         if ($this->security instanceof Security && ($this->config['set_user_info'] ?? true)) {
@@ -86,7 +88,7 @@ final readonly class SentryRequestListener
 
         try {
             // Verify Sentry is properly configured and hub is available
-            if ($this->sentryHub === null || !interface_exists(HubInterface::class)) {
+            if (!$this->sentryHub instanceof \Sentry\State\HubInterface || !interface_exists(HubInterface::class)) {
                 return;
             }
 
@@ -103,7 +105,7 @@ final readonly class SentryRequestListener
 
                         if ($userIdentifier && ($this->config['set_user_info'] ?? true)) {
                             $scope->setUser(user: [
-                                'id' => $userIdentifier ?? 'anonymous',
+                                'id'       => $userIdentifier ?? 'anonymous',
                                 'username' => method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null,
                             ]);
                         }
@@ -111,13 +113,13 @@ final readonly class SentryRequestListener
                         if ($session instanceof SessionInterface && $session->isStarted() && ($this->config['set_session_id'] ?? true)) {
                             $scope->setExtra(key: 'session_id', value: $session->getId());
                         }
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         // Silently ignore Sentry configuration errors to prevent breaking the application
                         // This handles cases where Sentry credentials are invalid or package is not properly installed
                     }
-                }
+                },
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Silently ignore Sentry errors to prevent breaking the application
             // This handles cases where Sentry is not configured, credentials are invalid,
             // or the sentry/sentry-symfony package is not installed
