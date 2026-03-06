@@ -29,7 +29,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1 <8.6",
+        "php": ">=8.2 <8.6",
         "symfony/config": "^6.0 || ^7.0 || ^8.0",
         "symfony/dependency-injection": "^6.0 || ^7.0 || ^8.0",
         "symfony/framework-bundle": "^6.0 || ^7.0 || ^8.0",
@@ -50,15 +50,15 @@
     "autoload": {
         "psr-4": {
             "Nowo\\SentryBundle\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Nowo\\SentryBundle\\Tests\\": "tests/"
         },
         "files": [
             "tests/RedisExceptionStub.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nowo\\SentryBundle\\Tests\\": "tests/"
+        }
     },
     "config": {
         "sort-packages": true,

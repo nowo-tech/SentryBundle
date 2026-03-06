@@ -136,7 +136,7 @@ See the [demo routes](#demo-projects) for more examples.
 
 ## Requirements
 
-- PHP >= 8.1, < 8.6
+- PHP >= 8.2, < 8.6
 - Symfony >= 6.0 || >= 7.0 || >= 8.0
 - Sentry Symfony Bundle >= 5.0 || >= 6.0
 
@@ -352,8 +352,7 @@ composer cs-fix
 
 The bundle uses GitHub Actions for continuous integration:
 
-- **Tests**: Runs on PHP 8.1, 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, and 8.0
-  - PHP 8.1: Symfony 6.4 only (Symfony 7.0+ requires PHP 8.2+, Symfony 8.0 requires PHP 8.4+)
+- **Tests**: Runs on PHP 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, and 8.0
   - PHP 8.2 and 8.3: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
   - PHP 8.4 and 8.5: All Symfony versions (6.4, 7.0, 8.0)
 - **Demo Tests**: All demo projects are tested (Symfony 7.0, 8.0, and 8.0 with PHP 8.5)

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Rector configuration for Sentry Bundle.
  *
- * Ensures PHP 8.1+ and Symfony 6|7|8 compatibility; applies dead code, code quality,
+ * Ensures PHP 8.2+ and Symfony 6|7|8 compatibility; applies dead code, code quality,
  * and type declaration rules. Only the src/ directory is processed (tests are skipped).
  *
  * @see https://getrector.com/documentation
@@ -17,7 +17,7 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/src',
     ])
-    ->withPhpVersion(PhpVersion::PHP_81)
+    ->withPhpVersion(PhpVersion::PHP_82)
     ->withComposerBased(symfony: true)
     ->withPreparedSets(
         deadCode: true,

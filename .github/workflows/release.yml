@@ -4,6 +4,11 @@ on:
   push:
     tags:
       - 'v*'  # Se dispara cuando se sube un tag que empieza con 'v'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag to create/update release for (e.g. v1.0.0)'
+        required: true
 
 jobs:
   release:
@@ -20,29 +25,29 @@ jobs:
 
       - name: Get tag name
         id: tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "TAG_NAME=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get tag message
         id: tag_message
+        env:
+          TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          # Obtener el mensaje del tag anotado, o usar el nombre del tag si no hay mensaje
           TAG_MESSAGE=$(git tag -l --format='%(contents)' "$TAG_NAME" 2>/dev/null || echo "")
           if [ -z "$TAG_MESSAGE" ]; then
             TAG_MESSAGE="Release $TAG_NAME"
           fi
-          # Preservar saltos de línea usando heredoc (no se necesita escape)
-          {
-            echo "MESSAGE<<EOF"
-            echo "$TAG_MESSAGE"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+          DELIM="EOF_MSG_$(openssl rand -hex 8)"
+          { echo "MESSAGE<<${DELIM}"; printf '%s' "$TAG_MESSAGE"; echo ""; echo "${DELIM}"; } >> $GITHUB_OUTPUT
 
       - name: Extract version from tag
         id: version
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          # Remover el prefijo 'v' si existe
+          TAG_NAME="${{ steps.tag.outputs.TAG_NAME }}"
           VERSION=${TAG_NAME#v}
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
@@ -50,21 +55,17 @@ jobs:
         id: changelog
         run: |
           VERSION="${{ steps.version.outputs.VERSION }}"
+          # Escapar puntos para regex (ej. 1.0.10 -> 1\.0\.10)
+          VERSION_RE=$(echo "$VERSION" | sed 's/\./\\./g')
           CHANGELOG_FILE="docs/CHANGELOG.md"
           
           if [ -f "$CHANGELOG_FILE" ]; then
-            # Buscar la sección del changelog para esta versión
-            # Busca líneas que empiecen con ## seguido de la versión (con o sin v)
-            CHANGELOG_ENTRY=$(awk "/^## \[?$VERSION\]?/ {flag=1; next} /^## \[?[0-9]/ {flag=0} flag" "$CHANGELOG_FILE" 2>/dev/null || echo "")
+            CHANGELOG_ENTRY=$(awk "/^## \\[?${VERSION_RE}\\]?/ {flag=1; next} /^## \\[?[0-9]/ {flag=0} flag" "$CHANGELOG_FILE" 2>/dev/null || echo "")
             
             if [ -n "$CHANGELOG_ENTRY" ]; then
-              # Preservar saltos de línea usando heredoc (no se necesita escape)
               echo "HAS_CHANGELOG=true" >> $GITHUB_OUTPUT
-              {
-                echo "ENTRY<<EOF"
-                echo "$CHANGELOG_ENTRY"
-                echo "EOF"
-              } >> $GITHUB_OUTPUT
+              DELIM="EOF_CL_$(openssl rand -hex 8)"
+              { echo "ENTRY<<${DELIM}"; printf '%s' "$CHANGELOG_ENTRY"; echo ""; echo "${DELIM}"; } >> $GITHUB_OUTPUT
             else
               echo "HAS_CHANGELOG=false" >> $GITHUB_OUTPUT
             fi
@@ -72,21 +73,29 @@ jobs:
             echo "HAS_CHANGELOG=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Prepare release body
+        id: body
+        env:
+          TAG_MSG: ${{ steps.tag_message.outputs.MESSAGE }}
+          HAS_CHANGELOG: ${{ steps.changelog.outputs.HAS_CHANGELOG }}
+          CHANGELOG_ENTRY: ${{ steps.changelog.outputs.ENTRY }}
+        run: |
+          BODY="$TAG_MSG"
+          if [ "$HAS_CHANGELOG" = "true" ] && [ -n "$CHANGELOG_ENTRY" ]; then
+            BODY=$(printf '%s\n\n## Changelog\n\n%s' "$TAG_MSG" "$CHANGELOG_ENTRY")
+          fi
+          DELIM=$(openssl rand -hex 16)
+          { echo "content<<${DELIM}"; printf '%s' "$BODY"; echo ""; echo "${DELIM}"; } >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.TAG_NAME }}
           name: Release ${{ steps.tag.outputs.TAG_NAME }}
-          body: |
-            ${{ steps.tag_message.outputs.MESSAGE }}
-            ${{ steps.changelog.outputs.HAS_CHANGELOG == 'true' && format('
-
-## Changelog
-
-{0}', steps.changelog.outputs.ENTRY) || '' }}
+          body: ${{ steps.body.outputs.content }}
           draft: false
           prerelease: ${{ contains(steps.tag.outputs.TAG_NAME, '-alpha') || contains(steps.tag.outputs.TAG_NAME, '-beta') || contains(steps.tag.outputs.TAG_NAME, '-rc') }}
-          generate_release_notes: true  # GitHub generará notas automáticas basadas en los commits
+          generate_release_notes: true
 
 # Maintainer: Héctor Franco Aceituno (@HecFranco)
 # Organization: nowo-tech (https://github.com/nowo-tech)

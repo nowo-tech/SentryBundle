@@ -13,6 +13,29 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
+### Upgrading to 1.2.0
+
+**Release Date**: 2025-03-06
+
+#### Breaking change: PHP 8.2 minimum
+
+- **Minimum PHP version is now 8.2.** If your project runs on PHP 8.1, upgrade PHP to 8.2 or higher before upgrading this bundle.
+- No configuration or code changes are required if you are already on PHP 8.2+.
+
+#### Upgrade steps
+
+1. **Ensure PHP >= 8.2** (e.g. `php -v`).
+2. Update the bundle and clear cache:
+
+   ```bash
+   composer update nowo-tech/sentry-bundle
+   php bin/console cache:clear
+   ```
+
+#### Rollback
+
+If you must stay on PHP 8.1, keep using `nowo-tech/sentry-bundle:^1.1.1`.
+
 ### Upgrading to 1.1.1
 
 **Release Date**: 2025-03-06

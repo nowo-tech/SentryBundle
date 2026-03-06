@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No changes yet._
 
+## [1.2.0] - 2025-03-06
+
+### Changed
+- **Minimum PHP version is now 8.2** (was 8.1). PHP 8.1 is no longer supported so the bundle can use `readonly` classes (listeners and `SentryErrorReporter`).
+- **CI**: Test matrix now runs on PHP 8.2, 8.3, 8.4, and 8.5 only (PHP 8.1 job removed).
+- **RedisException stub**: Loaded via main Composer `autoload.files` with conditional definition (`class_exists`), so the stub is available in all environments (including CI with `--no-dev`) and does not conflict when phpredis is installed.
+- **Documentation**: INSTALLATION, README, CONTRIBUTING, STANDARDS_COMPLIANCE, and RELEASE updated for PHP 8.2+.
+- **Rector**: Target set to PHP 8.2 (`PhpVersion::PHP_82`).
+- **Demo symfony7**: `composer.json` requires PHP >= 8.2.
+
+### Fixed
+- Test failures in CI (all PHP/Symfony matrix jobs) when RedisException stub was not loaded (bootstrap/cwd or `--no-dev`); stub is now always loaded via Composer autoload.
+
 ## [1.1.1] - 2025-03-06
 
 ### Added

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\EventListener;
 
+// Ensure RedisException stub is available (CI may run without bootstrap or with --no-dev)
+if (!class_exists(RedisException::class, false)) {
+    require_once dirname(__DIR__) . '/RedisExceptionStub.php';
+}
+
 use Exception;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +23,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+
+use function dirname;
 
 /**
  * Test case for SentryRequestListener.
