@@ -23,7 +23,7 @@ use Throwable;
  * reports with contextual data to aid in debugging and monitoring.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
 final readonly class SentryRequestListener
 {

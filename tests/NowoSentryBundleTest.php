@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
  * Test case for NowoSentryBundle.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
 class NowoSentryBundleTest extends TestCase
 {
@@ -64,6 +64,51 @@ class NowoSentryBundleTest extends TestCase
         $bundle->boot();
 
         $this->assertFalse($container->hasParameter('kernel.project_dir'));
+    }
+
+    /**
+     * Test that boot() does nothing when kernel.project_dir is not a string (e.g. wrong type).
+     */
+    public function testBootWhenProjectDirIsNotString(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', ['invalid' => 'array']);
+
+        $bundle = new NowoSentryBundle();
+        $bundle->setContainer($container);
+        $bundle->boot();
+
+        $this->assertSame(['invalid' => 'array'], $container->getParameter('kernel.project_dir'));
+    }
+
+    /**
+     * Test that boot() creates config file and config dir when config/packages does not exist yet.
+     */
+    public function testBootCreatesConfigWhenConfigDirDoesNotExist(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/sentry-bundle-boot-nodir-' . uniqid('', true);
+        mkdir($projectDir, 0o775, true);
+        $configDir = $projectDir . '/config/packages';
+        $this->assertDirectoryDoesNotExist($configDir);
+
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', $projectDir);
+
+        $bundle = new NowoSentryBundle();
+        $bundle->setContainer($container);
+        $bundle->boot();
+
+        $configPath = $configDir . '/nowo_sentry.yaml';
+        $this->assertDirectoryExists($configDir);
+        $this->assertFileExists($configPath);
+        $content = file_get_contents($configPath);
+        $this->assertNotFalse($content);
+        $this->assertStringContainsString('nowo_sentry:', $content);
+
+        unlink($configPath);
+        rmdir($configDir);
+        rmdir($projectDir . '/config');
+        rmdir($projectDir);
     }
 
     /**

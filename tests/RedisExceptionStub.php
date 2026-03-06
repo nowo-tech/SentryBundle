@@ -9,7 +9,7 @@ use Exception;
 /**
  * Stub for RedisException when phpredis extension is not installed.
  * Used by SentryRequestListener (catch) and SentryRequestListenerTest (throw).
- * Loaded via composer autoload-dev "files" and phpstan.neon bootstrapFiles.
+ * Loaded via tests/bootstrap.php and composer autoload-dev "files".
  */
 class RedisExceptionStub extends Exception
 {

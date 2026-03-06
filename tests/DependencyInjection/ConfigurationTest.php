@@ -6,13 +6,14 @@ namespace Nowo\SentryBundle\Tests\DependencyInjection;
 
 use Nowo\SentryBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 /**
  * Test case for Configuration.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
 class ConfigurationTest extends TestCase
 {
@@ -59,5 +60,24 @@ class ConfigurationTest extends TestCase
 
         unlink($configPath);
         rmdir($configDir);
+    }
+
+    /**
+     * Test that generateConfigFile throws when YAML component is not available.
+     */
+    public function testGenerateConfigFileThrowsWhenYamlMissing(): void
+    {
+        $configPath = sys_get_temp_dir() . '/sentry-bundle-no-yaml-' . uniqid('', true) . '.yaml';
+        $config     = new class extends Configuration {
+            protected function hasYamlComponent(): bool
+            {
+                return false;
+            }
+        };
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing symfony/yaml component');
+
+        $config->generateConfigFile($configPath);
     }
 }

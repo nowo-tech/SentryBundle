@@ -18,9 +18,9 @@ use function dirname;
  * Allows configuring all event listeners and their behavior.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
-final class Configuration implements ConfigurationInterface
+class Configuration implements ConfigurationInterface
 {
     /**
      * The extension alias.
@@ -119,7 +119,7 @@ final class Configuration implements ConfigurationInterface
      */
     public function generateConfigFile(string $configPath): void
     {
-        if (!class_exists(Yaml::class)) {
+        if (!$this->hasYamlComponent()) {
             throw new RuntimeException('Missing symfony/yaml component. Install it with: composer require symfony/yaml');
         }
 
@@ -166,5 +166,13 @@ final class Configuration implements ConfigurationInterface
         }
 
         file_put_contents($configPath, $yaml);
+    }
+
+    /**
+     * Whether the Symfony YAML component is available (used for testing the exception path).
+     */
+    protected function hasYamlComponent(): bool
+    {
+        return class_exists(Yaml::class);
     }
 }

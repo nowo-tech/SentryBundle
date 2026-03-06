@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * The listener runs with priority 255 to ensure it executes early in the request lifecycle.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
 final readonly class SentryUptimeBotListener
 {

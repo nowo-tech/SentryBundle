@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Test case for SentryRequestListener.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
 class SentryRequestListenerTest extends TestCase
 {

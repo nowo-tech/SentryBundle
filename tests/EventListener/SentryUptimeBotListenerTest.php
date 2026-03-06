@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  * Test case for SentryUptimeBotListener.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2025 Nowo.tech
+ * @copyright 2026 Nowo.tech
  */
 class SentryUptimeBotListenerTest extends TestCase
 {
