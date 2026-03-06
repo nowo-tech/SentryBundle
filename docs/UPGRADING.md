@@ -13,6 +13,17 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
+### Upgrading to 1.1.1
+
+**Release Date**: 2025-03-06
+
+No configuration or code changes required. This is a patch release with test and tooling improvements (PHPUnit bootstrap, PHPStan stub, 100% coverage). Upgrade as usual:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
 ### Upgrading to 1.1.0
 
 **Release Date**: 2025-03-04

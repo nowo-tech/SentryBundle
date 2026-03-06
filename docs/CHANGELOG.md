@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No changes yet._
 
+## [1.1.1] - 2025-03-06
+
+### Added
+- **PHPUnit bootstrap** (`tests/bootstrap.php`) so the RedisException stub is loaded before tests (fixes CI/Docker when autoload-dev files are not loaded in time)
+- **PHPStan stub** (`phpstan-stubs/RedisException.php`) for static analysis when phpredis is not installed
+- **Tests for 100% line coverage**: `Configuration::generateConfigFile` when YAML component is missing, `NowoSentryBundle::boot` when `kernel.project_dir` is not a string or when `config/packages` does not exist yet
+
+### Changed
+- **Configuration**: extracted `hasYamlComponent()` for testability; class is no longer `final` so the exception path can be covered via a test subclass
+- **RedisException stub**: `tests/RedisExceptionStub.php` now defines the class `RedisException` (same as phpredis) so listener and tests resolve the class correctly
+
+### Fixed
+- Test failure in CI/Docker: "Class Redis\Exception\RedisException not found" by ensuring the stub is loaded in the PHPUnit bootstrap
+- PHPStan: redundant null coalesce on `$userIdentifier` in `SentryRequestListener` when setting Sentry user
+
 ## [1.1.0] - 2025-03-04
 
 ### Added
