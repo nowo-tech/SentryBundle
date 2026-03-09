@@ -1,5 +1,14 @@
 # Installation
 
+
+## Table of contents
+
+- [Requirements](#requirements)
+- [Install via Composer](#install-via-composer)
+- [Symfony Flex (automatic registration)](#symfony-flex-automatic-registration)
+- [Manual registration](#manual-registration)
+- [Next steps](#next-steps)
+
 ## Requirements
 
 - PHP >= 8.2, < 8.6
@@ -40,3 +49,4 @@ return [
 
 - [Configuration](CONFIGURATION.md) – Configure listeners and options
 - [Usage](USAGE.md) – Event listeners and SentryErrorReporter service
+- [Engram](ENGRAM.md) – AI persistent memory for Cursor and other MCP clients (optional)

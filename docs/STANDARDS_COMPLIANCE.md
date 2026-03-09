@@ -2,6 +2,20 @@
 
 Verification date: 2025. This document summarizes alignment with the Nowo bundles standards.
 
+
+## Table of contents
+
+- [§2 Docker](#2-docker)
+- [§3 License](#3-license)
+- [§4 PHP-CS-Fixer & tools](#4-php-cs-fixer-tools)
+- [§5 Makefile (root)](#5-makefile-root)
+- [§5.5 Makefile demo/](#55-makefile-demo)
+- [§6 Documentation](#6-documentation)
+- [§7 Tests](#7-tests)
+- [§8 CI (GitHub Actions)](#8-ci-github-actions)
+- [§9 Recipe (Symfony Flex)](#9-recipe-symfony-flex)
+- [§10 Symfony versions & demos](#10-symfony-versions-demos)
+- [Summary](#summary)
 ---
 
 ## §2 Docker
@@ -67,8 +81,8 @@ Verification date: 2025. This document summarizes alignment with the Nowo bundle
 | Criterion | Status |
 |-----------|--------|
 | **6.0** Only README.md in repo root (no other .md in root) | ✅ |
-| **6.0.1** README “Documentation” section: Installation, Configuration, Usage, Contributing, Changelog, Upgrading, Release, Security (in that order) | ✅ |
-| **6.2** docs/INSTALLATION.md, CONFIGURATION.md, USAGE.md, CONTRIBUTING.md, CHANGELOG.md, UPGRADING.md, RELEASE.md, SECURITY.md | ✅ |
+| **6.0.1** README “Documentation” section: Installation, Configuration, Usage, Contributing, Changelog, Upgrading, Release, Security, Engram | ✅ |
+| **6.2** docs/INSTALLATION.md, CONFIGURATION.md, USAGE.md, CONTRIBUTING.md, CHANGELOG.md, UPGRADING.md, RELEASE.md, SECURITY.md, ENGRAM.md | ✅ |
 | **6.1** Docs in English | ✅ |
 
 ---

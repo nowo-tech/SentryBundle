@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Redis\Exception;
 
-use Exception;
-
 /**
  * Stub for PHPStan: RedisException from phpredis extension (or tests/RedisExceptionStub.php at runtime).
- * This file is only loaded by PHPStan so that catch (RedisException|...) and tests are valid.
+ * Only defines the class if not already loaded (e.g. by Composer autoload files).
  */
-class RedisException extends Exception
-{
+if (!class_exists(\Redis\Exception\RedisException::class, false)) {
+    class RedisException extends \Exception
+    {
+    }
 }

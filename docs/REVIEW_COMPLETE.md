@@ -1,5 +1,30 @@
 # Revisión Completa - SentryBundle
 
+
+## Table of contents
+
+- [✅ Documentación](#documentación)
+  - [1. README.md](#1-readmemd)
+  - [2. docs/CONFIGURATION.md](#2-docsconfigurationmd)
+  - [3. docs/CHANGELOG.md](#3-docschangelogmd)
+  - [4. docs/UPGRADING.md](#4-docsupgradingmd)
+  - [5. docs/BRANCHING.md](#5-docsbranchingmd)
+  - [6. docs/CONTRIBUTING.md](#6-docscontributingmd)
+  - [7. docs/COVERAGE_ANALYSIS.md](#7-docscoverage-analysismd)
+- [✅ Tests](#tests)
+  - [Estructura de Tests](#estructura-de-tests)
+  - [Cobertura de Tests](#cobertura-de-tests)
+- [✅ Symfony Flex Recipe](#symfony-flex-recipe)
+- [✅ Código](#código)
+  - [Archivos Principales](#archivos-principales)
+  - [Calidad de Código](#calidad-de-código)
+- [⚠️ Pendiente](#pendiente)
+  - [Demos](#demos)
+- [Resumen Final](#resumen-final)
+  - [✅ Completado (95%)](#completado-95)
+  - [⚠️ Pendiente (5%)](#pendiente-5)
+- [Conclusión](#conclusión)
+
 ## ✅ Documentación
 
 ### 1. README.md

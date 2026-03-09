@@ -377,6 +377,7 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 - [Upgrading](docs/UPGRADING.md)
 - [Release](docs/RELEASE.md)
 - [Security](docs/SECURITY.md)
+- [Engram](docs/ENGRAM.md) – AI persistent memory (Cursor/MCP)
 
 ## Contributing
 

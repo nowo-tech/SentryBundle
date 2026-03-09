@@ -2,6 +2,29 @@
 
 This document provides a complete reference for all configuration options available in the Sentry Bundle.
 
+
+## Table of contents
+
+- [Viewing Configuration](#viewing-configuration)
+- [Configuration File](#configuration-file)
+- [Complete Configuration Reference](#complete-configuration-reference)
+  - [Root Configuration](#root-configuration)
+  - [Request Listener Configuration](#request-listener-configuration)
+  - [Ignore Access Denied Listener Configuration](#ignore-access-denied-listener-configuration)
+  - [Uptime Bot Listener Configuration](#uptime-bot-listener-configuration)
+- [Complete Configuration Example](#complete-configuration-example)
+- [Default Configuration](#default-configuration)
+- [Environment-Specific Configuration](#environment-specific-configuration)
+- [Useful Commands](#useful-commands)
+  - [Dump Configuration](#dump-configuration)
+  - [Validate Configuration](#validate-configuration)
+  - [Debug Container](#debug-container)
+  - [Error Reporter Service Configuration](#error-reporter-service-configuration)
+- [Notes](#notes)
+- [Troubleshooting](#troubleshooting)
+  - [Listener Not Working](#listener-not-working)
+  - [Configuration Not Applied](#configuration-not-applied)
+
 ## Viewing Configuration
 
 To view the current bundle configuration, you can use the following command:

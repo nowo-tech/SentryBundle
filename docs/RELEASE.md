@@ -2,6 +2,15 @@
 
 This document describes how to prepare and publish a new release of Sentry Bundle.
 
+
+## Table of contents
+
+- [Pre-release checks](#pre-release-checks)
+- [Versioning](#versioning)
+- [Releasing](#releasing)
+- [After release](#after-release)
+- [Example: releasing 1.2.0](#example-releasing-120)
+
 ## Pre-release checks
 
 Run the full release check (style, static analysis, tests, demos):
