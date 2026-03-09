@@ -18,8 +18,6 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-use function dirname;
-
 /**
  * Test case for SentryRequestListener.
  *
