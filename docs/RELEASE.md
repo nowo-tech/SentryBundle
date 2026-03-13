@@ -55,7 +55,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - Verify the release on Packagist and that the Flex recipe (if used) applies correctly.
 - Optionally announce in your usual channels.
 
-## Example: releasing 1.2.0
+## Example: releasing 1.2.1
 
 After CHANGELOG and UPGRADING are updated and committed:
 
@@ -64,10 +64,10 @@ After CHANGELOG and UPGRADING are updated and committed:
 make release-check
 
 # 2. Commit release docs (if not already committed)
-git add docs/CHANGELOG.md docs/UPGRADING.md docs/RELEASE.md
-git commit -m "Prepare release 1.2.0"
+git add docs/CHANGELOG.md docs/UPGRADING.md README.md
+git commit -m "Prepare release 1.2.1"
 
 # 3. Create and push tag (triggers GitHub Release via Actions)
-git tag -a v1.2.0 -m "Release v1.2.0"
-git push origin v1.2.0
+git tag -a v1.2.1 -m "Release v1.2.1"
+git push origin v1.2.1
 ```

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.1] - 2026-03-13](#121-2026-03-13)
 - [[1.2.0] - 2025-03-06](#120-2025-03-06)
   - [Changed](#changed)
   - [Fixed](#fixed)
@@ -25,6 +26,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 _No changes yet._
+
+## [1.2.1] - 2026-03-13
+
+### Added
+- **Integration tests**: New `tests/Integration/BundleIntegrationTest.php` (kernel boots, bundle services registered, SentryErrorReporter public), following the pattern of TwigInspectorBundle (§7.1.2).
+- **Test kernel and fixtures**: `tests/Kernel/TestKernel.php` and `tests/Fixtures/app/` with minimal config (bundles.php, framework.yaml) for integration tests.
+
+### Changed
+- **Test structure**: Tests split into `tests/Unit/` and `tests/Integration/` per BUNDLES_STANDARDS (§7.1.1). Unit tests moved from `tests/` root and subdirs into `tests/Unit/` with namespace `Nowo\SentryBundle\Tests\Unit\*`.
+- **PHPUnit**: Two testsuites in `phpunit.xml.dist` — `unit` (tests/Unit) and `integration` (tests/Integration).
+- **PHPStan**: Added `tests/Fixtures/*` to `excludePaths` so generated container cache is not analysed.
+- **README**: PHP badge updated to 8.2+ (was 8.1+).
+- **PHP-CS-Fixer**: Excluded `tests/Fixtures` from formatting (generated/cache files).
 
 ## [1.2.0] - 2025-03-06
 

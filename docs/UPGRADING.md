@@ -13,6 +13,17 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
+### Upgrading to 1.2.1
+
+**Release Date**: 2026-03-13
+
+No configuration or code changes required. This is a patch release with test reorganisation (Unit/Integration structure) and new integration tests. Upgrade as usual:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
 ### Upgrading to 1.2.0
 
 **Release Date**: 2025-03-06

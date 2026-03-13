@@ -114,6 +114,6 @@ return (new Config())
     ->setFinder(
         (new Finder())
             ->in(__DIR__)
-            ->exclude(['vendor', 'var', 'coverage', '.phpunit.cache'])
-            // tests/ is included (do not exclude)
+            ->exclude(['vendor', 'var', 'coverage', '.phpunit.cache', 'tests/Fixtures'])
+            // tests/Unit and tests/Integration are included; tests/Fixtures is generated/cache
     );
