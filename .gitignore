@@ -28,3 +28,11 @@ var/
 .env.local
 .env.*.local
 
+# Archives / compressed
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+

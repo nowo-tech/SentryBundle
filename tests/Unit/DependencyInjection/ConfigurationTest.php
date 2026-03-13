@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nowo\SentryBundle\Tests\DependencyInjection;
+namespace Nowo\SentryBundle\Tests\Unit\DependencyInjection;
 
 use Nowo\SentryBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;

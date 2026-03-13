@@ -70,7 +70,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "archive": {
-        "exclude": ["demo"]
+        "exclude": ["/demo", "/.cursor"]
     },
     "scripts": {
         "test": "phpunit",

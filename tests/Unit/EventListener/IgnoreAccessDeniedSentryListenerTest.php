@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nowo\SentryBundle\Tests\EventListener;
+namespace Nowo\SentryBundle\Tests\Unit\EventListener;
 
 use Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener;
 use PHPUnit\Framework\TestCase;

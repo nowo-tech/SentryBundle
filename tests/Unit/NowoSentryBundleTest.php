@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nowo\SentryBundle\Tests;
+namespace Nowo\SentryBundle\Tests\Unit;
 
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Nowo\SentryBundle\NowoSentryBundle;

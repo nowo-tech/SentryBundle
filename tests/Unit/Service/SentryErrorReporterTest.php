@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nowo\SentryBundle\Tests\Service;
+namespace Nowo\SentryBundle\Tests\Unit\Service;
 
 use Exception;
 use InvalidArgumentException;

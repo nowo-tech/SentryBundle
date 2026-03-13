@@ -1,0 +1,24 @@
+nowo_sentry:
+  request_listener:
+    enabled: true
+    set_domain_tag: true
+    set_environment_tag: true
+    set_user_info: true
+    set_session_id: true
+    priority: 0
+  ignore_access_denied_listener:
+    enabled: true
+    priority: 255
+  uptime_bot_listener:
+    enabled: true
+    user_agents:
+      - SentryUptimeBot/1.0
+      - Uptime-Kuma
+      - kube-probe
+    paths:
+      - /dashboard
+      - /
+      - /login
+    priority: 255
+  error_reporter:
+    enabled: true

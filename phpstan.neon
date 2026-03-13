@@ -9,6 +9,7 @@ parameters:
     excludePaths:
         - demo/*
         - vendor/*
+        - tests/Fixtures/*
     bootstrapFiles:
         - phpstan-stubs/RedisException.php
     reportUnmatchedIgnoredErrors: false

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nowo\SentryBundle\Tests\EventListener;
+namespace Nowo\SentryBundle\Tests\Unit\EventListener;
 
 use Exception;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
-use function dirname;
 
 /**
  * Test case for SentryRequestListener.
