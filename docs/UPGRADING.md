@@ -13,6 +13,17 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
+### Upgrading to 1.2.2
+
+**Release Date**: 2025-03-04
+
+No configuration or code changes required. This is a patch release with demo and documentation updates (FrankenPHP-based demos, Twig Inspector in demos, doc renames and new guides). Upgrade as usual:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
 ### Upgrading to 1.2.1
 
 **Release Date**: 2026-03-13

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.2] - 2025-03-04](#122-2025-03-04)
 - [[1.2.1] - 2026-03-13](#121-2026-03-13)
 - [[1.2.0] - 2025-03-06](#120-2025-03-06)
   - [Changed](#changed)
@@ -26,6 +27,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 _No changes yet._
+
+## [1.2.2] - 2025-03-04
+
+### Added
+- **Demo apps (FrankenPHP)**: Demos now run with FrankenPHP (Caddy + PHP) instead of Nginx + PHP-FPM. Each demo (symfony7, symfony8, symfony8-php85) has a FrankenPHP-based Dockerfile, Caddyfile, and Caddyfile.dev for development vs production. New documentation: `docs/DEMO-FRANKENPHP.md`.
+- **Demos**: `nowo-tech/twig-inspector-bundle` v1.0.3 added to all demos (composer.json and `config/bundles.php`) for Twig inspection in development.
+- **Documentation**: New or updated docs: INSTALLATION, RELEASE, SECURITY, STANDARDS_COMPLIANCE, USAGE; upgrade guide renamed to `UPGRADING.md` (from UPGRADE.md).
+
+### Changed
+- **Demos**: `.env.example` in each demo documents `SENTRY_DSN`: empty = Sentry disabled, or a DSN from sentry.io. Removed `.env.dev` from the repository (demos use `.env` copied from `.env.example`; `.env` and `.env.dev` remain in `.gitignore`).
+- **Demos**: Removed `nginx.conf` from all demos in favour of Caddy/FrankenPHP configuration.
+- **CI / tooling**: Makefile and workflow adjustments for the new demo layout and release checks.
 
 ## [1.2.1] - 2026-03-13
 
