@@ -369,6 +369,7 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 
 ## Documentation
 
+- [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
 - [Installation](docs/INSTALLATION.md)
 - [Configuration](docs/CONFIGURATION.md)
 - [Usage](docs/USAGE.md)

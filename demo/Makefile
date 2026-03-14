@@ -4,8 +4,8 @@
 DEMOS := symfony7 symfony8 symfony8-php85
 
 .PHONY: help clean demo-down test-all test-coverage-all verify-all release-verify up-all down-all
-.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
-.PHONY: up down restart build install test test-coverage shell logs
+.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) cache-clear-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
+.PHONY: up down restart build install test test-coverage cache-clear shell logs
 
 help:
 	@echo "Sentry Bundle - Demo Commands"
@@ -21,6 +21,7 @@ help:
 		echo "  build-$$demo     Rebuild $$version demo image"; \
 		echo "  install-$$demo   Install dependencies"; \
 		echo "  update-bundle-$$demo  Update sentry-bundle in demo"; \
+		echo "  cache-clear-$$demo    Clear Symfony cache in container"; \
 		echo "  shell-$$demo     Open shell in container"; \
 		echo "  logs-$$demo      Show logs"; \
 		echo "  test-$$demo      Run tests"; \
@@ -39,7 +40,7 @@ help:
 	@echo "  down-all         Stop all demos"
 	@echo ""
 	@echo "Generic (use DEMO=<name>):"
-	@echo "  up, down, restart, build, install, test, test-coverage, shell, logs"
+	@echo "  up, down, restart, build, install, test, test-coverage, cache-clear, shell, logs"
 	@echo "  e.g. make up DEMO=symfony7"
 	@echo ""
 	@echo "Other:"
@@ -79,6 +80,10 @@ define update-bundle-target
 update-bundle-$(1):
 	@$(MAKE) -C $(1) update-bundle
 endef
+define cache-clear-target
+cache-clear-$(1):
+	@$(MAKE) -C $(1) cache-clear
+endef
 define shell-target
 shell-$(1):
 	@$(MAKE) -C $(1) shell
@@ -106,6 +111,7 @@ $(foreach d,$(DEMOS),$(eval $(call restart-target,$(d))))
 $(foreach d,$(DEMOS),$(eval $(call build-target,$(d))))
 $(foreach d,$(DEMOS),$(eval $(call install-target,$(d))))
 $(foreach d,$(DEMOS),$(eval $(call update-bundle-target,$(d))))
+$(foreach d,$(DEMOS),$(eval $(call cache-clear-target,$(d))))
 $(foreach d,$(DEMOS),$(eval $(call shell-target,$(d))))
 $(foreach d,$(DEMOS),$(eval $(call logs-target,$(d))))
 $(foreach d,$(DEMOS),$(eval $(call test-target,$(d))))
@@ -158,6 +164,10 @@ test:
 test-coverage:
 	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test-coverage DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
 	@$(MAKE) test-coverage-$(DEMO)
+
+cache-clear:
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make cache-clear DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@$(MAKE) cache-clear-$(DEMO)
 
 shell:
 	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make shell DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi

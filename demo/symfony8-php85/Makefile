@@ -1,7 +1,7 @@
 # Makefile for Sentry Bundle - Symfony 8.0 + PHP 8.5 demo
 # Run from demo/symfony8-php85 or via: make -C demo up DEMO=symfony8-php85 (from repo root)
 
-.PHONY: help up down restart build install test test-coverage update-bundle ensure-up shell logs verify debug-env
+.PHONY: help up down restart build install test test-coverage update-bundle cache-clear ensure-up shell logs verify debug-env
 
 SERVICE_PHP := php
 
@@ -20,6 +20,7 @@ help:
 	@echo "  test           Run tests"
 	@echo "  test-coverage  Run tests with coverage"
 	@echo "  update-bundle  Update nowo-tech/sentry-bundle in container"
+	@echo "  cache-clear    Clear Symfony cache in container"
 	@echo "  shell          Open shell in PHP container"
 	@echo "  logs           Follow container logs"
 	@echo "  verify         Ensure up and check HTTP 200"
@@ -63,6 +64,9 @@ test-coverage: ensure-up
 
 update-bundle: ensure-up
 	docker-compose exec -T $(SERVICE_PHP) composer update nowo-tech/sentry-bundle --with-all-dependencies
+	docker-compose exec -T $(SERVICE_PHP) php bin/console cache:clear
+
+cache-clear: ensure-up
 	docker-compose exec -T $(SERVICE_PHP) php bin/console cache:clear
 
 shell:
