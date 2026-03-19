@@ -38,6 +38,7 @@ _No changes yet._
 ### Changed
 - **Demos**: `.env.example` in each demo documents `SENTRY_DSN`: empty = Sentry disabled, or a DSN from sentry.io. Removed `.env.dev` from the repository (demos use `.env` copied from `.env.example`; `.env` and `.env.dev` remain in `.gitignore`).
 - **Demos**: Removed `nginx.conf` from all demos in favour of Caddy/FrankenPHP configuration.
+- **Documentation**: README and `demo/README.md` now describe demos as FrankenPHP (Caddy + PHP) instead of PHP-FPM and Nginx; added link to `docs/DEMO-FRANKENPHP.md`.
 - **CI / tooling**: Makefile and workflow adjustments for the new demo layout and release checks.
 
 ## [1.2.1] - 2026-03-13

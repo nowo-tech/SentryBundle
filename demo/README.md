@@ -20,7 +20,7 @@ The bundle includes demo projects:
 3. **Symfony 8.0 Demo with PHP 8.5** - PHP 8.5 (Port 8001 by default, configurable via `.env`)
 
 Each demo is independent and includes:
-- Complete Docker setup with PHP-FPM and Nginx
+- FrankenPHP (Caddy + PHP) Docker setup — see [../docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md)
 - Comprehensive test suite
 - Port configuration via `.env` file
 - Symfony Web Profiler for debugging (dev and test environments)
