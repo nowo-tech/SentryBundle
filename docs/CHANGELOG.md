@@ -26,7 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No changes yet._
+### Documentation
+
+- **README**: Clarified **three event listeners** vs **SentryErrorReporter** service; updated test directory layout (`tests/Unit/`, `tests/Integration/`).
+- **docs/STANDARDS_COMPLIANCE.md**: Demos use **FrankenPHP** (§2.4); `archive.exclude` documents `/.cursor`; verification date 2026; summary updated.
+- **docs/DEMO-FRANKENPHP.md**: `bundles.php` example matches demos (`Sentry\SentryBundle`, `NowoSentryBundle`, Twig Inspector); removed **DebugBundle** (not registered in demos); production note for Profiler/Web Inspector.
+- **docs/CHANGELOG.md** (historical entry under 1.2.2): Demo Docker line updated from PHP-FPM/Nginx to FrankenPHP.
 
 ## [1.2.2] - 2025-03-04
 
@@ -174,7 +179,7 @@ _No changes yet._
   - **Symfony 8.0 Demo** (PHP 8.4)
   - **Symfony 8.0 Demo with PHP 8.5**
 - Each demo includes:
-  - Complete Docker setup with PHP-FPM and Nginx
+  - Docker setup with **FrankenPHP** (Caddy + PHP); see `docs/DEMO-FRANKENPHP.md`
   - Comprehensive test suite
   - Port configuration via `.env` file
   - Symfony Web Profiler for debugging (dev and test environments)

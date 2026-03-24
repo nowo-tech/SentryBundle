@@ -1,6 +1,6 @@
 # Sentry Bundle – Standards compliance (BUNDLES_STANDARDS_PROMPT.md)
 
-Verification date: 2025. This document summarizes alignment with the Nowo bundles standards.
+Verification date: 2026-03. This document summarizes alignment with the Nowo bundles standards.
 
 
 ## Table of contents
@@ -35,7 +35,7 @@ Verification date: 2025. This document summarizes alignment with the Nowo bundle
 |-----------|--------|
 | LICENSE in root, MIT | ✅ |
 | composer.json `"license": "MIT"` | ✅ |
-| **3.1** `"archive": {"exclude": ["/demo"]}` in composer.json | ✅ |
+| **3.1** `"archive": {"exclude": ["/demo", "/.cursor"]}` in composer.json | ✅ |
 
 ---
 
@@ -125,6 +125,6 @@ Verification date: 2025. This document summarizes alignment with the Nowo bundle
 
 ## Summary
 
-- **Fully aligned** with BUNDLES_STANDARDS_PROMPT.md for Docker, License, archive, PHP-CS-Fixer, Rector, PHPStan, Makefile (root and demo), docs, tests, CI, recipe, and Symfony versions.
-- **Applied in this check:** added `name:` to each demo `docker-compose.yml` (§2.3) and target **demo-down** in demo/Makefile (§5.5).
+- **Fully aligned** with BUNDLES_STANDARDS_PROMPT.md for Docker, License, archive, PHP-CS-Fixer, Rector, PHPStan, Makefile (root and demo), docs, tests, CI, recipe, Symfony versions, and **FrankenPHP-based demos** (§2.4).
+- **Earlier check:** added `name:` to each demo `docker-compose.yml` (§2.3) and target **demo-down** in demo/Makefile (§5.5).
 - **Optional:** add a short README.md in each of demo/symfony7, demo/symfony8, demo/symfony8-php85 if you want to match the “demo/symfonyX con README.md” note in the standards tables.

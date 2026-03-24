@@ -46,11 +46,12 @@ The main difference between development and production is:
 
 The demo applications are configured for **local development and debugging**:
 
-- **Symfony Web Profiler** (`Symfony\Bundle\WebProfilerBundle\WebProfilerBundle`) — enabled in `dev` and `test` environments. Provides the debug toolbar and profiler at the bottom of each page.
-- **Symfony Debug bundle** (`Symfony\Bundle\DebugBundle\DebugBundle`) — enabled in `dev` and `test`. Required for the profiler and improved error pages.
-- **Sentry Bundle** (`Nowo\SentryBundle\NowoSentryBundle`) — the bundle under test; enabled in the demos. The demos are the bundle’s own test applications. The official Sentry Symfony bundle is registered automatically as the parent of NowoSentryBundle.
+- **Symfony Web Profiler** (`Symfony\Bundle\WebProfilerBundle\WebProfilerBundle`) — enabled in `dev` and `test` environments.
+- **Official Sentry Symfony bundle** (`Sentry\SentryBundle\SentryBundle`) — required alongside this bundle; registered for `all` environments in the demos.
+- **Sentry Bundle** (`Nowo\SentryBundle\NowoSentryBundle`) — the bundle under test; enabled in the demos. The demos are the bundle’s own test applications.
+- **Twig Inspector** (`nowo-tech/twig-inspector-bundle`) — optional dev tooling for Twig debugging; registered for `dev` in the demos (`test` can be added for parity with other bundles).
 
-Example `config/bundles.php` (Symfony 8 demo):
+Example `config/bundles.php` (aligned with `demo/symfony8`):
 
 ```php
 <?php
@@ -60,13 +61,15 @@ declare(strict_types=1);
 return [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class     => ['all' => true],
     Symfony\Bundle\SecurityBundle\SecurityBundle::class       => ['all' => true],
+    Sentry\SentryBundle\SentryBundle::class                   => ['all' => true],
     Nowo\SentryBundle\NowoSentryBundle::class                 => ['all' => true],
     Symfony\Bundle\TwigBundle\TwigBundle::class               => ['all' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
+    Nowo\TwigInspectorBundle\NowoTwigInspectorBundle::class   => ['dev' => true],
 ];
 ```
 
-In **production** (`APP_ENV=prod`), only bundles registered for `all` or `prod` are loaded, so Web Profiler is not active.
+In **production** (`APP_ENV=prod`), only bundles registered for `all` or `prod` are loaded, so Web Profiler and Twig Inspector are not active.
 
 **Sentry:** Set `SENTRY_DSN` in the demo’s `.env` or in docker-compose `environment` if you want to send events to Sentry. The demos set `SENTRY_DSN=` by default so the app runs without a DSN.
 

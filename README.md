@@ -67,9 +67,9 @@ when@prod:
             # ... your existing configuration
 ```
 
-### Event Listeners
+### Event listeners
 
-The bundle automatically registers three event listeners:
+The bundle registers **three event listeners**:
 
 #### 1. SentryRequestListener
 
@@ -86,7 +86,7 @@ Prevents `AccessDeniedException` from being reported to Sentry, reducing noise i
 
 Handles requests from uptime monitoring bots (Sentry Uptime Bot, Uptime-Kuma, kube-probe) by returning a simple OK response for specific paths (`/dashboard`, `/`, `/login`).
 
-#### 4. SentryErrorReporter Service
+### SentryErrorReporter service
 
 A safe service for reporting errors to Sentry without breaking your application. All operations are wrapped in try-catch blocks to ensure that failures in Sentry reporting never break the application flow.
 
@@ -330,11 +330,11 @@ open coverage/index.html
 
 ### Test Structure
 
-- `tests/NowoSentryBundleTest.php` - Bundle class tests
-- `tests/DependencyInjection/` - Extension tests
-- `tests/EventListener/` - Event listener tests
+- `tests/Unit/` — bundle class, `DependencyInjection/`, `EventListener/`, `Service/`
+- `tests/Integration/` — bundle wiring (e.g. `BundleIntegrationTest.php`)
+- `tests/Fixtures/` / `tests/Kernel/` — test kernel and config
 
-All classes and methods are fully tested with 100% code coverage.
+All bundle code is covered (100% line coverage enforced in CI for the main coverage job).
 
 ## Code Quality
 
