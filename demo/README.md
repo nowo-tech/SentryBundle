@@ -15,9 +15,9 @@ This directory contains demo projects demonstrating the usage of the Sentry Bund
 
 The bundle includes demo projects:
 
-1. **Symfony 7.0 Demo** - PHP 8.2 (Port 8001 by default, configurable via `.env`)
-2. **Symfony 8.0 Demo** - PHP 8.4 (Port 8001 by default, configurable via `.env`)
-3. **Symfony 8.0 Demo with PHP 8.5** - PHP 8.5 (Port 8001 by default, configurable via `.env`)
+1. **Symfony 7.0 Demo** - PHP 8.2 (Port 8007 by default, configurable via `.env`)
+2. **Symfony 8.0 Demo** - PHP 8.4 (Port 8008 by default, configurable via `.env`)
+3. **Symfony 8.0 Demo with PHP 8.5** - PHP 8.5 (Port 8009 by default, configurable via `.env`)
 
 Each demo is independent and includes:
 - FrankenPHP (Caddy + PHP) Docker setup — see [../docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md)
@@ -42,7 +42,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
+# Access at: http://localhost:8007 (default for Symfony 7.0, configurable via PORT)
 ```
 
 Or using the Makefile from the `demo/` directory:

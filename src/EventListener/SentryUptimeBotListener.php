@@ -20,14 +20,14 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final readonly class SentryUptimeBotListener
+final class SentryUptimeBotListener
 {
     /**
      * Constructs the Sentry uptime bot listener.
      *
      * @param array<string, mixed> $config The listener configuration
      */
-    public function __construct(private array $config)
+    public function __construct(private readonly array $config)
     {
     }
 

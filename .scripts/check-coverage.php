@@ -7,7 +7,7 @@ declare(strict_types=1);
  * Validates that Clover coverage meets the minimum threshold (95%).
  * Run after: composer test-coverage (generates coverage.xml).
  *
- * Usage: php scripts/check-coverage.php [min-percent]
+ * Usage: php .scripts/check-coverage.php [min-percent]
  * Default min: 95
  */
 $minPercent = isset($argv[1]) ? (float) $argv[1] : 95.0;

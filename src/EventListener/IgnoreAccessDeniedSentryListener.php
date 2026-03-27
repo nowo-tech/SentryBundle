@@ -23,7 +23,7 @@ use Throwable;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final readonly class IgnoreAccessDeniedSentryListener
+final class IgnoreAccessDeniedSentryListener
 {
     /**
      * Constructs the ignore access denied Sentry listener.
@@ -32,8 +32,8 @@ final readonly class IgnoreAccessDeniedSentryListener
      * @param array<string, mixed> $config The listener configuration
      */
     public function __construct(
-        private ?HubInterface $sentryHub,
-        private array $config
+        private readonly ?HubInterface $sentryHub,
+        private readonly array $config
     ) {
     }
 

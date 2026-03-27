@@ -25,7 +25,7 @@ use Throwable;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final readonly class SentryRequestListener
+final class SentryRequestListener
 {
     /**
      * Constructs the Sentry request listener.
@@ -36,10 +36,10 @@ final readonly class SentryRequestListener
      * @param Security|null $security The security service for accessing authenticated user information
      */
     public function __construct(
-        private ?HubInterface $sentryHub,
-        private array $config,
-        private string $environment,
-        private ?Security $security = null
+        private readonly ?HubInterface $sentryHub,
+        private readonly array $config,
+        private readonly string $environment,
+        private readonly ?Security $security = null
     ) {
     }
 

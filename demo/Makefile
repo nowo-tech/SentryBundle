@@ -3,7 +3,7 @@
 
 DEMOS := symfony7 symfony8 symfony8-php85
 
-.PHONY: help clean demo-down test-all test-coverage-all verify-all release-check release-verify up-all down-all
+.PHONY: help clean demo-down test-all test-coverage-all verify-all update-bundle-all release-check release-verify up-all down-all
 .PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) cache-clear-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
 .PHONY: up down restart build install test test-coverage cache-clear shell logs
 
@@ -33,7 +33,8 @@ help:
 	@echo "  test-all           Run tests for all demos"
 	@echo "  test-coverage-all  Run tests with coverage for all demos"
 	@echo "  verify-all         Verify all demos (HTTP 200)"
-	@echo "  release-check      Pre-release: test-coverage-all, release-verify"
+	@echo "  update-bundle-all  Run update-bundle in every demo (before tests)"
+	@echo "  release-check      Pre-release: update-bundle-all → test-coverage-all → release-verify"
 	@echo "  release-verify     For release-check: up → verify → down per demo"
 	@echo ""
 	@echo "All demos:"
@@ -202,8 +203,13 @@ verify-all:
 demo-down:
 	@for demo in $(DEMOS); do $(MAKE) down-$$demo; done
 
-# For release-check: for each demo, up → sleep → verify HTTP 200 → down
-release-check: test-coverage-all release-verify
+update-bundle-all:
+	@echo "Running update-bundle for all demos..."
+	@for demo in $(DEMOS); do echo ""; echo "=== update-bundle $$demo ==="; $(MAKE) -C $$demo update-bundle || exit 1; done
+	@echo "✅ update-bundle completed for all demos."
+
+# REQ-DEMO-007: update-bundle before tests; then coverage; then HTTP verify
+release-check: update-bundle-all test-coverage-all release-verify
 	@echo "✅ All demos passed release-check."
 
 release-verify:

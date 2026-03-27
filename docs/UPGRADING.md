@@ -2,6 +2,18 @@
 
 This guide provides step-by-step instructions for upgrading the Sentry Bundle between versions.
 
+## Table of contents
+
+- [General Upgrade Process](#general-upgrade-process)
+- [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.2.2](#upgrading-to-122)
+  - [Upgrading to 1.2.1](#upgrading-to-121)
+  - [Upgrading to 1.2.0](#upgrading-to-120)
+  - [Upgrading to 1.1.1](#upgrading-to-111)
+  - [Upgrading to 1.1.0](#upgrading-to-110)
+- [Upgrade from Pre-1.0.0 Versions](#upgrade-from-pre-100-versions)
+- [Need Help?](#need-help)
+
 ## General Upgrade Process
 
 1. **Backup your configuration**: Always backup your `config/packages/nowo_sentry.yaml` file before upgrading

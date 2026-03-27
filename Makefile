@@ -5,7 +5,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE      := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP  := php
 
-.PHONY: help up down build shell install assets test test-coverage coverage-check
+.PHONY: help up down build shell install assets test test-coverage coverage-php-percent coverage-check
 .PHONY: cs-check cs-fix rector rector-dry phpstan qa
 .PHONY: release-check composer-sync clean update validate setup-hooks ensure-up
 .PHONY: release-check-demos up-symfony7 up-symfony8 up-symfony8-php85 demo-down
@@ -82,12 +82,13 @@ test: ensure-up
 
 # Run tests with coverage (no -T so coverage is shown in console with colors)
 test-coverage: ensure-up
-	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage
+	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
+	./.scripts/php-coverage-percent.sh coverage-php.txt
 
-# Run test-coverage and validate minimum 95% line coverage
+# Run test-coverage (with global Lines % script) then validate minimum 95% Clover elements
 coverage-check: ensure-up
-	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage
-	$(COMPOSE) exec -T $(SERVICE_PHP) php scripts/check-coverage.php 95
+	@$(MAKE) test-coverage
+	$(COMPOSE) exec -T $(SERVICE_PHP) php .scripts/check-coverage.php 95
 
 cs-check: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer cs-check
@@ -122,6 +123,7 @@ clean:
 	rm -rf .phpunit.cache
 	rm -rf coverage
 	rm -f coverage.xml
+	rm -f coverage-php.txt
 	rm -f .php-cs-fixer.cache
 
 update: ensure-up

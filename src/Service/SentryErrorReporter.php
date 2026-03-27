@@ -26,7 +26,7 @@ use Throwable;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final readonly class SentryErrorReporter
+final class SentryErrorReporter
 {
     /**
      * Constructs the Sentry error reporter service.
@@ -35,8 +35,8 @@ final readonly class SentryErrorReporter
      * @param LoggerInterface|null $logger Optional logger for fallback error reporting
      */
     public function __construct(
-        private ?HubInterface $sentryHub,
-        private ?LoggerInterface $logger = null
+        private readonly ?HubInterface $sentryHub,
+        private readonly ?LoggerInterface $logger = null
     ) {
     }
 
