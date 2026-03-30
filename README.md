@@ -358,7 +358,8 @@ composer cs-fix
 The bundle uses GitHub Actions for continuous integration:
 
 - **Tests**: Runs on PHP 8.1, 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, and 8.0
- - PHP 8.1–8.3: Symfony 6.4 and 7.0 only (Symfony 8.0 requires PHP 8.4+)
+ - PHP 8.1: Symfony 6.4 only (Symfony 7.x requires PHP 8.2+; Symfony 8.0 requires PHP 8.4+)
+ - PHP 8.2–8.3: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
  - PHP 8.4 and 8.5: All Symfony versions (6.4, 7.0, 8.0)
 - **Demo Tests**: All demo projects are tested (Symfony 7.0, 8.0, and 8.0 with PHP 8.5)
 - **Code Style**: Automatically fixes code style on push to main/master

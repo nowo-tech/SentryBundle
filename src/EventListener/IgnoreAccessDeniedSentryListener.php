@@ -69,7 +69,7 @@ final class IgnoreAccessDeniedSentryListener
                 $client = $this->sentryHub->getClient();
                 if ($client instanceof \Sentry\ClientInterface) {
                     $options = $client->getOptions();
-                    $options->setBeforeSendCallback(static fn (): null => null);
+                    $options->setBeforeSendCallback(static fn () => null);
                 }
             } catch (Throwable $e) {
                 // Silently ignore Sentry errors to prevent breaking the application

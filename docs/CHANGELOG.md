@@ -27,11 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **CI**: Matrix excludes PHP 8.1 + Symfony 7.0 (Symfony 7.x requires PHP >= 8.2; Composer cannot resolve that pair).
+
 ## [1.3.0] - 2026-03-30
 
 ### Added
 
-- **CI**: PHP 8.1 in the test matrix (with Symfony 6.4 and 7.0; Symfony 8.0 remains excluded below PHP 8.4).
+- **CI**: PHP 8.1 in the test matrix with Symfony **6.4** (Symfony 7.x requires PHP 8.2+; Symfony 8.0 remains excluded below PHP 8.4).
 - **README**: `## Version information` section (supported ranges match `composer.json` and CI).
 - **Demos**: `demo/Makefile` target `update-bundle-all`; `release-check` runs `update-bundle-all` before `test-coverage-all` and `release-verify` (Nowo bundle standard: sync bundle code before demo tests).
 
