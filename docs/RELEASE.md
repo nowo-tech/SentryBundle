@@ -21,12 +21,13 @@ make release-check
 
 This runs:
 
-- `composer-sync` – validate composer.json and align composer.lock
+- `ensure-up` – Docker PHP service up and dependencies installed
+- `composer-sync` – validate `composer.json` and align `composer.lock` (`--no-install`)
 - `cs-fix` and `cs-check` – code style
 - `rector-dry` – Rector in dry-run
-- `phpstan` – static analysis
-- `test-coverage` – tests with coverage
-- `release-check-demos` – start each demo, verify HTTP 200, stop
+- `phpstan` – static analysis (`phpstan.neon.dist`)
+- `coverage-check` – full `test-coverage` flow (console coverage + `coverage-php.txt` + global Lines % script) and Clover threshold check (95%)
+- `release-check-demos` – runs `make -C demo release-check` (demo `update-bundle-all` → `test-coverage-all` → `release-verify` per demo)
 
 Fix any failure before tagging.
 
@@ -55,7 +56,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - Verify the release on Packagist and that the Flex recipe (if used) applies correctly.
 - Optionally announce in your usual channels.
 
-## Example: releasing 1.2.2
+## Example: releasing 1.3.0
 
 After CHANGELOG and UPGRADING are updated and committed:
 
@@ -64,10 +65,13 @@ After CHANGELOG and UPGRADING are updated and committed:
 make release-check
 
 # 2. Commit release docs (if not already committed)
-git add docs/CHANGELOG.md docs/UPGRADING.md README.md
-git commit -m "Prepare release 1.2.2"
+git add docs/CHANGELOG.md docs/UPGRADING.md README.md docs/INSTALLATION.md docs/RELEASE.md
+git commit -m "Prepare release 1.3.0"
 
 # 3. Create and push tag (triggers GitHub Release via Actions)
-git tag -a v1.2.2 -m "Release v1.2.2"
-git push origin v1.2.2
+git tag -a v1.3.0 -m "Release v1.3.0"
+git push origin main
+git push origin v1.3.0
 ```
+
+(Adjust `main` if your default branch is `master`.)

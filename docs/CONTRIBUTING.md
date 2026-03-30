@@ -68,7 +68,7 @@ Enhancement suggestions are welcome:
 The project follows these standards:
 
 - **PSR-12**: PHP code style
-- **PHP 8.2+**: Modern PHP features (readonly classes, etc.)
+- **PHP 8.1+**: Modern PHP features (`declare(strict_types=1)`, readonly properties where used, etc.)
 - **Strict type hints**: `declare(strict_types=1);` in all files
 - **PHP-CS-Fixer**: Used to maintain code consistency
 

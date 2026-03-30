@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.0] - 2026-03-30](#130---2026-03-30)
 - [[1.2.2] - 2025-03-04](#122-2025-03-04)
 - [[1.2.1] - 2026-03-13](#121-2026-03-13)
 - [[1.2.0] - 2025-03-06](#120-2025-03-06)
@@ -26,12 +27,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-30
+
+### Added
+
+- **CI**: PHP 8.1 in the test matrix (with Symfony 6.4 and 7.0; Symfony 8.0 remains excluded below PHP 8.4).
+- **README**: `## Version information` section (supported ranges match `composer.json` and CI).
+- **Demos**: `demo/Makefile` target `update-bundle-all`; `release-check` runs `update-bundle-all` before `test-coverage-all` and `release-verify` (Nowo bundle standard: sync bundle code before demo tests).
+
+### Changed
+
+- **Minimum PHP is 8.1 again** (was 8.2 since 1.2.0). Public API is unchanged; listeners and `SentryErrorReporter` use `final class` with `private readonly` properties instead of `readonly class` for PHP 8.1 compatibility.
+- **Composer**: `cs-check` / `cs-fix` pass `--config=.php-cs-fixer.dist.php`; `phpstan` uses `-c phpstan.neon.dist`.
+- **Tooling**: PHPStan configuration file renamed to `phpstan.neon.dist` (replaces `phpstan.neon`).
+- **Rector**: target PHP version set to `PhpVersion::PHP_81`.
+- **Makefile (root)**: `coverage-check` runs the full `test-coverage` flow (tee + Lines % script) then `.scripts/check-coverage.php`; `clean` removes `coverage-php.txt`; `.gitignore` ignores `/coverage-php.txt`.
+- **GitHub**: Issue templates aligned with the Nowo bundle standard (`---bug-report.md`, `---feature-request.md`).
+- **Documentation**: `INSTALLATION.md`, `CONTRIBUTING.md`, `README` (CI matrix), `RELEASE.md` (release-check steps), `STANDARDS_COMPLIANCE.md` (FrankenPHP, PHPStan, CI, `release-check` chain).
+
 ### Documentation
 
-- **README**: Clarified **three event listeners** vs **SentryErrorReporter** service; updated test directory layout (`tests/Unit/`, `tests/Integration/`).
-- **docs/STANDARDS_COMPLIANCE.md**: Demos use **FrankenPHP** (§2.4); `archive.exclude` documents `/.cursor`; verification date 2026; summary updated.
-- **docs/DEMO-FRANKENPHP.md**: `bundles.php` example matches demos (`Sentry\SentryBundle`, `NowoSentryBundle`, Twig Inspector); removed **DebugBundle** (not registered in demos); production note for Profiler/Web Inspector.
-- **docs/CHANGELOG.md** (historical entry under 1.2.2): Demo Docker line updated from PHP-FPM/Nginx to FrankenPHP.
+- **README**: CI section documents PHP 8.1–8.5 matrix; requirements remain PHP >= 8.1.
+- **STANDARDS_COMPLIANCE.md**: §2.4 FrankenPHP marked as satisfied; PHPStan/Rector/CI rows updated.
+
+### Fixed
+
+- **Bug report issue template**: Replaced placeholder content with the correct package and repository names (`SentryBundle`, `sentry-bundle`).
 
 ## [1.2.2] - 2025-03-04
 

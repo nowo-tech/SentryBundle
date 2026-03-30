@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.3.0](#upgrading-to-130)
   - [Upgrading to 1.2.2](#upgrading-to-122)
   - [Upgrading to 1.2.1](#upgrading-to-121)
   - [Upgrading to 1.2.0](#upgrading-to-120)
@@ -24,6 +25,24 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.3.0
+
+**Release Date**: 2026-03-30
+
+#### PHP 8.1 supported again
+
+Versions **1.2.0**–**1.2.2** required **PHP 8.2+**. Release **1.3.0** restores **PHP 8.1** as the minimum (see `composer.json` and [CHANGELOG.md](CHANGELOG.md)). There are no breaking changes to the bundle’s public API or configuration shape.
+
+- **If you already run PHP 8.2+** (including on 1.2.x): upgrade as usual; no application code changes required.
+- **If you remained on 1.1.x because you need PHP 8.1**: you can upgrade directly to **1.3.0** (the 1.2.x line required PHP 8.2).
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+Implementation detail (no action needed in apps): event listeners and `SentryErrorReporter` use `final class` with `private readonly` promoted properties instead of PHP 8.2 `readonly class` keywords; runtime behavior is unchanged.
 
 ### Upgrading to 1.2.2
 

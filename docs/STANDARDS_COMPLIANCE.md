@@ -25,7 +25,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 | **2.1** Base image `php:8.2-cli-alpine`, single Dockerfile, PCOV, Composer 2, `git safe.directory` | ✅ |
 | **2.2** Single `docker-compose.yml` (no docker-compose.test.yml), `name: sentry-bundle`, service `php`, coverage volume | ✅ |
 | **2.3** Demos in `demo/symfony7`, `demo/symfony8`, `demo/symfony8-php85`; each has `docker-compose.yml` with `name: <bundle-slug>-demo-symfony-<n>` | ✅ (added `name` to each demo compose) |
-| **2.4** FrankenPHP | N/A (demos use PHP-FPM + Nginx) |
+| **2.4** FrankenPHP | ✅ (demos use FrankenPHP; see `docs/DEMO-FRANKENPHP.md`) |
 
 ---
 
@@ -45,8 +45,8 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 |-----------|--------|
 | **4.1–4.2** `.php-cs-fixer.dist.php` in root, canonical config (@PSR12 + @Symfony + @Symfony:risky), tests not excluded | ✅ |
 | **4.4** Scripts `cs-check`, `cs-fix`, `qa` in composer.json | ✅ |
-| **4.6** Rector: `rector.php`, scripts `rector`, `rector-dry`, PHP 8.2+, skip demo/vendor/tests | ✅ |
-| **4.6** PHPStan: `phpstan.neon`, level 8, paths src+tests, excludePaths demo/*, memoryLimit 512M, script `phpstan` | ✅ |
+| **4.6** Rector: `rector.php`, scripts `rector`, `rector-dry`, PHP 8.1+ target, skip demo/vendor/tests | ✅ |
+| **4.6** PHPStan: `phpstan.neon.dist`, level 8, paths src+tests, excludePaths demo/*, memoryLimit 512M, script `phpstan` | ✅ |
 
 ---
 
@@ -58,7 +58,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 | **5.1.1** Help order: container → deps → assets → tests → quality → release → clean → composer (update, validate); demos at end | ✅ |
 | **5.2** ensure-up with sleep 5 and COMPOSER_MEMORY_LIMIT=-1; targets that run in container depend on ensure-up | ✅ |
 | **5.3** COMPOSE_FILE, COMPOSE, SERVICE_PHP | ✅ |
-| **5.4.1** release-check: composer-sync → cs-fix → cs-check → rector-dry → phpstan → test-coverage → release-check-demos | ✅ |
+| **5.4.1** release-check: composer-sync → cs-fix → cs-check → rector-dry → phpstan → coverage-check → release-check-demos | ✅ |
 | **5.4.2** composer-sync: validate --strict + update --no-install | ✅ |
 | **7.2.1** test / test-coverage without `-T` for colored console output | ✅ |
 
@@ -101,7 +101,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 
 | Criterion | Status |
 |-----------|--------|
-| **8.1** .github/workflows/ci.yml (push/PR main|master, matrix PHP 8.2–8.5 / Symfony, code-style, coverage) | ✅ |
+| **8.1** .github/workflows/ci.yml (push/PR main|master, matrix PHP 8.1–8.5 / Symfony, code-style, coverage) | ✅ |
 | **8.2** .github/workflows/release.yml (tags v*, create/update Release with changelog) | ✅ |
 
 ---
