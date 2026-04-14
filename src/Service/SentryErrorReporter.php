@@ -285,12 +285,12 @@ final class SentryErrorReporter
     private function mapLogLevelToSentryLevel(string $level): Severity
     {
         return match (strtolower($level)) {
-            'debug' => Severity::debug(),
-            'info'  => Severity::info(),
-            'warning', 'warn' => Severity::warning(),
-            'error' => Severity::error(),
+            'debug'             => Severity::debug(),
+            'info'              => Severity::info(),
+            'warning', 'warn'   => Severity::warning(),
+            'error'             => Severity::error(),
             'fatal', 'critical' => Severity::fatal(),
-            default => Severity::error(),
+            default             => Severity::error(),
         };
     }
 
@@ -304,12 +304,12 @@ final class SentryErrorReporter
     private function mapLogLevelToBreadcrumbLevel(string $level): string
     {
         return match (strtolower($level)) {
-            'debug' => Breadcrumb::LEVEL_DEBUG,
-            'info'  => Breadcrumb::LEVEL_INFO,
-            'warning', 'warn' => Breadcrumb::LEVEL_WARNING,
-            'error' => Breadcrumb::LEVEL_ERROR,
+            'debug'             => Breadcrumb::LEVEL_DEBUG,
+            'info'              => Breadcrumb::LEVEL_INFO,
+            'warning', 'warn'   => Breadcrumb::LEVEL_WARNING,
+            'error'             => Breadcrumb::LEVEL_ERROR,
             'fatal', 'critical' => Breadcrumb::LEVEL_FATAL,
-            default => Breadcrumb::LEVEL_ERROR,
+            default             => Breadcrumb::LEVEL_ERROR,
         };
     }
 
