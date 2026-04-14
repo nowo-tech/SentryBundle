@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.3.1](#upgrading-to-131)
   - [Upgrading to 1.3.0](#upgrading-to-130)
   - [Upgrading to 1.2.2](#upgrading-to-122)
   - [Upgrading to 1.2.1](#upgrading-to-121)
@@ -25,6 +26,19 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.3.1
+
+**Release Date**: 2026-04-14
+
+Patch release: CI matrix correction, PHP 8.1 compatibility fix in `IgnoreAccessDeniedSentryListener`, dependency lockfile updates, and optional demo Docker DNS tweaks. **No changes** to bundle configuration shape or public API.
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.3.0
 

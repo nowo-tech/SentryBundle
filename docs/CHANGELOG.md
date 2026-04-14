@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.1] - 2026-04-14](#131---2026-04-14)
 - [[1.3.0] - 2026-03-30](#130---2026-03-30)
 - [[1.2.2] - 2025-03-04](#122-2025-03-04)
 - [[1.2.1] - 2026-03-13](#121-2026-03-13)
@@ -27,9 +28,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-04-14
+
 ### Fixed
 
-- **CI**: Matrix excludes PHP 8.1 + Symfony 7.0 (Symfony 7.x requires PHP >= 8.2; Composer cannot resolve that pair).
+- **CI**: Exclude PHP 8.1 + Symfony 7.0 from the test matrix (Symfony 7.x requires PHP >= 8.2; Composer cannot resolve that pair).
+- **PHP 8.1**: `IgnoreAccessDeniedSentryListener` — use `static fn () => null` for `beforeSend` instead of `static fn (): null => null` (standalone `null` as a return type requires PHP 8.2+).
+
+### Added
+
+- **Repository tooling**: Cursor rules (`.cursor/rules/*.mdc`), `.cursorignore`; Dependabot; GitHub workflows `stale.yml`, `pr-lint.yml`; `.github/FUNDING.yml`, `copilot-instructions.md`.
+- **Demos**: Optional DNS-related settings in `docker-compose.yml` files to improve resolution in some Docker/WSL setups.
+
+### Changed
+
+- **Dependencies**: `composer.lock` updated (root and demo apps).
+- **Documentation**: `README.md` and `docs/STANDARDS_COMPLIANCE.md` — CI matrix wording (PHP 8.1 with Symfony 6.4 only; Symfony 7 from PHP 8.2+).
 
 ## [1.3.0] - 2026-03-30
 
