@@ -9,7 +9,7 @@ This document describes how to prepare and publish a new release of Sentry Bundl
 - [Versioning](#versioning)
 - [Releasing](#releasing)
 - [After release](#after-release)
-- [Example: releasing 1.3.1](#example-releasing-131)
+- [Example: releasing 1.3.2](#example-releasing-132)
 
 ## Pre-release checks
 
@@ -56,7 +56,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - Verify the release on Packagist and that the Flex recipe (if used) applies correctly.
 - Optionally announce in your usual channels.
 
-## Example: releasing 1.3.1
+## Example: releasing 1.3.2
 
 After CHANGELOG and UPGRADING are updated and committed:
 
@@ -66,12 +66,12 @@ make release-check
 
 # 2. Commit release docs (if not already committed)
 git add docs/CHANGELOG.md docs/UPGRADING.md README.md docs/INSTALLATION.md docs/RELEASE.md
-git commit -m "docs: prepare release 1.3.1"
+git commit -m "docs: prepare release 1.3.2"
 
 # 3. Create and push tag (triggers GitHub Release via Actions)
-git tag -a v1.3.1 -m "Release v1.3.1"
+git tag -a v1.3.2 -m "Release v1.3.2"
 git push origin main
-git push origin v1.3.1
+git push origin v1.3.2
 ```
 
 (Adjust `main` if your default branch is `master`.)
