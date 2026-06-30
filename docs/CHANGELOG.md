@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.3] - 2026-06-30](#133---2026-06-30)
 - [[1.3.2] - 2026-04-15](#132---2026-04-15)
 - [[1.3.1] - 2026-04-14](#131---2026-04-14)
 - [[1.3.0] - 2026-03-30](#130---2026-03-30)
@@ -28,6 +29,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.3.3] - 2026-06-30
+
+### Added
+
+- **Repository tooling**: CodeRabbit configuration (`.coderabbit.yaml`) and GitHub workflow `.github/workflows/coderabbit.yml`.
+- **Documentation**: `docs/SPEC-DRIVEN-DEVELOPMENT.md` (product spec, user stories, `REQ-*` traceability); cross-link from `docs/ENGRAM.md`.
+- **Makefiles**: `update-deps` / `update-deps-all` targets (`REQ-MAKE-008`) via `.scripts/Makefile.*-update-deps.mk` and `update-deps-demos.sh`.
+
+### Changed
+
+- **CI**: Test matrix extended with Symfony **7.4** and **8.1** (existing PHP exclusions unchanged: Symfony 7.x from PHP 8.2+, Symfony 8.x from PHP 8.4+).
+- **Demos**: `demo/symfony7` targets Symfony **7.4**; `demo/symfony8` and `demo/symfony8-php85` target Symfony **8.1** (was 7.0 / 8.0). Refreshed demo `composer.lock` files; added `test` / `test-coverage` Composer scripts for `release-check`.
+- **Dependencies**: Root `composer.lock` refreshed.
+- **Documentation**: README Symfony badge and CI matrix; demo version references aligned with current demo constraints.
 
 ## [1.3.2] - 2026-04-15
 

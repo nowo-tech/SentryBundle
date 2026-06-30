@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.3.3](#upgrading-to-133)
   - [Upgrading to 1.3.2](#upgrading-to-132)
   - [Upgrading to 1.3.1](#upgrading-to-131)
   - [Upgrading to 1.3.0](#upgrading-to-130)
@@ -27,6 +28,19 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.3.3
+
+**Release Date**: 2026-06-30
+
+Patch release: CI matrix and demo apps aligned with Symfony 7.4 and 8.1, dependency lockfile refresh, CodeRabbit tooling, spec-driven development docs, and Makefile `update-deps` targets for maintainers. **No** configuration or public API changes for consumers of the bundle.
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.3.2
 

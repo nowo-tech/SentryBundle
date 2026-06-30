@@ -224,3 +224,8 @@ clean:
 	@echo "Cleaning vendor/var/.phpunit.cache from all demos..."
 	@$(foreach demo,$(DEMOS),rm -rf $(demo)/vendor $(demo)/var $(demo)/.phpunit.cache;)
 	@echo "✅ Cleaned!"
+
+
+# REQ-MAKE-008: update-deps-all (REQ-MAKE-008)
+BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
+include $(BUNDLE_ROOT)/.scripts/Makefile.demo-aggregate-update-deps.mk

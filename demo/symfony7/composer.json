@@ -1,6 +1,6 @@
 {
     "name": "nowo-tech/sentry-demo-symfony7",
-    "description": "Demo project for Sentry Bundle - Symfony 7.0",
+    "description": "Demo project for Sentry Bundle - Symfony 7.4",
     "type": "project",
     "license": "MIT",
     "require": {
@@ -36,7 +36,6 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "App\\": "src/"
@@ -67,7 +66,9 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-text"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -75,7 +76,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.0.*"
+            "require": "7.4.*"
         }
     },
     "repositories": [
