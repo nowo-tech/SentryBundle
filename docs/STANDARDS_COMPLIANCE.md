@@ -101,7 +101,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 
 | Criterion | Status |
 |-----------|--------|
-| **8.1** .github/workflows/ci.yml (push/PR main|master; matrix PHP 8.1–8.5 × Symfony; Symfony 7 only on PHP 8.2+, Symfony 8 only on PHP 8.4+; code-style; coverage job) | ✅ |
+| **8.1** .github/workflows/ci.yml (push/PR main|master; matrix PHP 8.1–8.5 × Symfony 6.4/7.0/7.4/8.0/8.1; Symfony 7.x only on PHP 8.2+, Symfony 8.x only on PHP 8.4+; code-style; coverage job) | ✅ |
 | **8.2** .github/workflows/release.yml (tags v*, create/update Release with changelog) | ✅ |
 
 ---

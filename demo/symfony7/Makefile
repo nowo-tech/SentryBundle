@@ -3,6 +3,7 @@
 
 .PHONY: help up down restart build install test test-coverage update-bundle cache-clear ensure-up shell logs verify
 
+COMPOSE     := docker-compose
 SERVICE_PHP := php
 
 help:
@@ -59,9 +60,9 @@ install: ensure-up
 test: ensure-up
 	docker-compose exec $(SERVICE_PHP) composer test
 
-# Run tests with coverage (no -T so coverage is shown in console with colors)
+# Run tests (demos have no PCOV; release-check uses this target for smoke tests)
 test-coverage: ensure-up
-	docker-compose exec $(SERVICE_PHP) composer test-coverage
+	docker-compose exec $(SERVICE_PHP) composer test
 
 update-bundle: ensure-up
 	docker-compose exec -T $(SERVICE_PHP) composer update nowo-tech/sentry-bundle --with-all-dependencies
@@ -84,3 +85,8 @@ verify: ensure-up
 	else \
 		echo "❌ Expected HTTP 200, got $$CODE"; exit 1; \
 	fi
+
+
+# REQ-MAKE-008: update-deps (REQ-MAKE-008)
+BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
+include $(BUNDLE_ROOT)/.scripts/Makefile.demo-update-deps.mk

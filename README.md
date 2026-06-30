@@ -1,6 +1,6 @@
 # Sentry Bundle
 
-[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/sentry-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/sentry-bundle.svg)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6%20%7C%207%20%7C%208-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/sentry-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/SentryBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
+[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/sentry-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/sentry-bundle.svg)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.0%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com)
 
 > ⭐ **Found this useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
@@ -16,7 +16,7 @@ Symfony bundle extending Sentry integration with enhanced event listeners and co
 - ✅ Fully configurable event listeners (enable/disable per listener)
 - ✅ Type-safe error handling
 - ✅ 100% code coverage with comprehensive tests
-- ✅ Demo projects for Symfony 7.0, 8.0, and 8.0 with PHP 8.5
+- ✅ Demo projects for Symfony 7.4, 8.1, and 8.1 with PHP 8.5
 
 ## Installation
 
@@ -234,9 +234,9 @@ php bin/console config:dump nowo_sentry
 
 The bundle includes demo projects demonstrating usage with different Symfony and PHP versions:
 
-- **Symfony 7.0 Demo** (PHP 8.2) - Port 8007 (default, configurable via `.env`)
-- **Symfony 8.0 Demo** (PHP 8.4) - Port 8008 (default, configurable via `.env`)
-- **Symfony 8.0 Demo with PHP 8.5** - Port 8009 (default, configurable via `.env`)
+- **Symfony 7.4 Demo** (PHP 8.2) - Port 8007 (default, configurable via `.env`)
+- **Symfony 8.1 Demo** (PHP 8.4) - Port 8008 (default, configurable via `.env`)
+- **Symfony 8.1 Demo with PHP 8.5** - Port 8009 (default, configurable via `.env`)
 
 Each demo is independent and includes:
 - FrankenPHP (Caddy + PHP) Docker setup — see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)
@@ -260,7 +260,7 @@ Each demo is independent and includes:
 
 ```bash
 cd demo
-make up-symfony7    # Start Symfony 7.0 demo
+make up-symfony7    # Start Symfony 7.4 demo
 make install-symfony7  # Install dependencies
 # Access at: http://localhost:8007 (default for symfony7, configurable via .env)
 ```
@@ -268,8 +268,8 @@ make install-symfony7  # Install dependencies
 Or start any other demo:
 
 ```bash
-make up-symfony8    # Symfony 8.0
-make up-symfony8-php85 # Symfony 8.0 with PHP 8.5
+make up-symfony8    # Symfony 8.1
+make up-symfony8-php85 # Symfony 8.1 with PHP 8.5
 ```
 
 ### Running Demo Tests
@@ -278,9 +278,9 @@ Each demo includes a comprehensive test suite:
 
 ```bash
 cd demo
-make test-symfony7    # Run tests for Symfony 7.0 demo
-make test-symfony8    # Run tests for Symfony 8.0 demo
-make test-symfony8-php85 # Run tests for Symfony 8.0 + PHP 8.5 demo
+make test-symfony7    # Run tests for Symfony 7.4 demo
+make test-symfony8    # Run tests for Symfony 8.1 demo
+make test-symfony8-php85 # Run tests for Symfony 8.1 + PHP 8.5 demo
 make test-all       # Run tests for all demos
 ```
 
@@ -357,11 +357,11 @@ composer cs-fix
 
 The bundle uses GitHub Actions for continuous integration:
 
-- **Tests**: Runs on PHP 8.1, 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, and 8.0
- - PHP 8.1: Symfony 6.4 only (Symfony 7.x requires PHP 8.2+; Symfony 8.0 requires PHP 8.4+)
- - PHP 8.2–8.3: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
- - PHP 8.4 and 8.5: All Symfony versions (6.4, 7.0, 8.0)
-- **Demo Tests**: All demo projects are tested (Symfony 7.0, 8.0, and 8.0 with PHP 8.5)
+- **Tests**: Runs on PHP 8.1, 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, 7.4, 8.0, and 8.1
+ - PHP 8.1: Symfony 6.4 only (Symfony 7.x requires PHP 8.2+; Symfony 8.x requires PHP 8.4+)
+ - PHP 8.2–8.3: Symfony 6.4, 7.0, and 7.4 (Symfony 8.x requires PHP 8.4+)
+ - PHP 8.4 and 8.5: All Symfony versions (6.4, 7.0, 7.4, 8.0, 8.1)
+- **Demo Tests**: All demo projects are tested (Symfony 7.4, 8.1, and 8.1 with PHP 8.5)
 - **Code Style**: Automatically fixes code style on push to main/master
 - **Code Style Check**: Validates code style on pull requests
 - **Coverage**: Validates 100% code coverage requirement for bundle code
@@ -388,6 +388,7 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 - [Release](docs/RELEASE.md)
 - [Security](docs/SECURITY.md)
 - [Engram](docs/ENGRAM.md)
+- [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
 
 ### Additional documentation
 

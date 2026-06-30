@@ -15,9 +15,9 @@ This directory contains demo projects demonstrating the usage of the Sentry Bund
 
 The bundle includes demo projects:
 
-1. **Symfony 7.0 Demo** - PHP 8.2 (Port 8007 by default, configurable via `.env`)
-2. **Symfony 8.0 Demo** - PHP 8.4 (Port 8008 by default, configurable via `.env`)
-3. **Symfony 8.0 Demo with PHP 8.5** - PHP 8.5 (Port 8009 by default, configurable via `.env`)
+1. **Symfony 7.4 Demo** - PHP 8.2 (Port 8007 by default, configurable via `.env`)
+2. **Symfony 8.1 Demo** - PHP 8.4 (Port 8008 by default, configurable via `.env`)
+3. **Symfony 8.1 Demo with PHP 8.5** - PHP 8.5 (Port 8009 by default, configurable via `.env`)
 
 Each demo is independent and includes:
 - FrankenPHP (Caddy + PHP) Docker setup — see [../docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md)
@@ -30,7 +30,7 @@ Each demo is independent and includes:
 
 Each demo has its own `docker-compose.yml` and can be run independently. You can start any demo you want:
 
-### Symfony 7.0 Demo (PHP 8.2)
+### Symfony 7.4 Demo (PHP 8.2)
 
 ```bash
 # Navigate to the demo directory
@@ -42,7 +42,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8007 (default for Symfony 7.0, configurable via PORT)
+# Access at: http://localhost:8007 (default for Symfony 7.4, configurable via PORT)
 ```
 
 Or using the Makefile from the `demo/` directory:
@@ -53,7 +53,7 @@ make up-symfony7
 make install-symfony7
 ```
 
-### Symfony 8.0 Demo (PHP 8.4)
+### Symfony 8.1 Demo (PHP 8.4)
 
 ```bash
 cd demo
@@ -61,7 +61,7 @@ make up-symfony8
 make install-symfony8
 ```
 
-### Symfony 8.0 Demo with PHP 8.5
+### Symfony 8.1 Demo with PHP 8.5
 
 ```bash
 cd demo
@@ -77,9 +77,9 @@ Each demo includes a comprehensive test suite. You can run tests for individual 
 
 ```bash
 cd demo
-make test-symfony7        # Run tests for Symfony 7.0 demo
-make test-symfony8        # Run tests for Symfony 8.0 demo
-make test-symfony8-php85  # Run tests for Symfony 8.0 + PHP 8.5 demo
+make test-symfony7        # Run tests for Symfony 7.4 demo
+make test-symfony8        # Run tests for Symfony 8.1 demo
+make test-symfony8-php85  # Run tests for Symfony 8.1 + PHP 8.5 demo
 ```
 
 ### Run all tests
