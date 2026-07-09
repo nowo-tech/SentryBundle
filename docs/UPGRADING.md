@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.4.0](#upgrading-to-140)
   - [Upgrading to 1.3.3](#upgrading-to-133)
   - [Upgrading to 1.3.2](#upgrading-to-132)
   - [Upgrading to 1.3.1](#upgrading-to-131)
@@ -28,6 +29,33 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.4.0
+
+**Release Date**: 2026-07-09
+
+#### Default change: session ID no longer sent to Sentry
+
+Release **1.4.0** sets `request_listener.set_session_id` to **`false`** by default (was `true`). This reduces PII in error reports for new installs and for apps that rely on bundle defaults without an explicit `nowo_sentry.yaml` entry.
+
+- **If you need session correlation in Sentry**, add or keep:
+
+  ```yaml
+  nowo_sentry:
+      request_listener:
+          set_session_id: true
+  ```
+
+- **If you already set `set_session_id` explicitly** in config: no change required.
+
+No other configuration or public API changes. See [`docs/SECURITY.md`](SECURITY.md) for scrubbing guidance.
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.3.3
 

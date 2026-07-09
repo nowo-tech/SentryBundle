@@ -57,7 +57,7 @@ class Configuration implements ConfigurationInterface
                             ->info('Whether to set user information in Sentry scope')
                         ->end()
                         ->booleanNode('set_session_id')
-                            ->defaultTrue()
+                            ->defaultFalse()
                             ->info('Whether to set session ID in Sentry scope extra data')
                         ->end()
                         ->integerNode('priority')
@@ -130,7 +130,7 @@ class Configuration implements ConfigurationInterface
                     'set_domain_tag'      => true,
                     'set_environment_tag' => true,
                     'set_user_info'       => true,
-                    'set_session_id'      => true,
+                    'set_session_id'      => false,
                     'priority'            => 0,
                 ],
                 'ignore_access_denied_listener' => [

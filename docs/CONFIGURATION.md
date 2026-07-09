@@ -92,10 +92,11 @@ nowo_sentry:
   - Sets user ID and username if a user is authenticated.
   - Default: `true`
 
-- **`set_session_id`** (boolean, default: `true`)
+- **`set_session_id`** (boolean, default: `false`)
   - Whether to set session ID in Sentry scope extra data.
   - Only sets the session ID if a session exists and is started.
-  - Default: `true`
+  - Disabled by default to reduce PII in error reports; enable only when session correlation is required and your privacy policy allows it.
+  - Default: `false`
 
 - **`priority`** (integer, default: `0`)
   - Event listener priority for the `kernel.request` event.
@@ -241,7 +242,7 @@ nowo_sentry:
         set_domain_tag: true
         set_environment_tag: true
         set_user_info: true
-        set_session_id: true
+        set_session_id: false
         priority: 0
     
     ignore_access_denied_listener:
@@ -272,7 +273,7 @@ nowo_sentry:
         set_domain_tag: true
         set_environment_tag: true
         set_user_info: true
-        set_session_id: true
+        set_session_id: false
         priority: 0
     
     ignore_access_denied_listener:
