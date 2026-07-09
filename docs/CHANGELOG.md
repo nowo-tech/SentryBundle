@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.4.0] - 2026-07-09](#140---2026-07-09)
 - [[1.3.3] - 2026-06-30](#133---2026-06-30)
 - [[1.3.2] - 2026-04-15](#132---2026-04-15)
 - [[1.3.1] - 2026-04-14](#131---2026-04-14)
@@ -29,6 +30,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.0] - 2026-07-09
+
+### Added
+
+- **GitHub Spec Kit**: `.specify/` scaffolding, Cursor Agent skills (`.cursor/skills/speckit-*`), baseline spec [`specs/001-baseline/`](specs/001-baseline/) with 100% `src/` inventory.
+- **Documentation**: [`docs/SPEC-KIT.md`](SPEC-KIT.md) (install, structure, usage); expanded [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](SPEC-DRIVEN-DEVELOPMENT.md) with product scope and Spec Kit cross-links; [`docs/SECURITY.md`](SECURITY.md) — data sent to Sentry and `before_send` scrubbing guidance.
+
+### Changed
+
+- **Privacy default**: `request_listener.set_session_id` now defaults to **`false`** (was `true`) in `Configuration`, `SentryRequestListener`, Flex recipe, and generated config templates — session IDs are no longer sent to Sentry unless explicitly enabled.
+- **Demos**: FrankenPHP Dockerfiles install `intl` extension; refreshed demo lockfiles and `reference.php` sync.
+- **Dependencies**: Root `composer.lock` updated.
 
 ## [1.3.3] - 2026-06-30
 

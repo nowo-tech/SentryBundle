@@ -165,7 +165,7 @@ nowo_sentry:
     set_domain_tag: true      # Set domain tag in Sentry scope
     set_environment_tag: true    # Set environment tag in Sentry scope
     set_user_info: true       # Set user information in Sentry scope
-    set_session_id: true      # Set session ID in Sentry scope extra data
+    set_session_id: false     # Disabled by default; enable only when needed for correlation
     priority: 0           # Event listener priority
   
   ignore_access_denied_listener:
@@ -389,6 +389,7 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 - [Security](docs/SECURITY.md)
 - [Engram](docs/ENGRAM.md)
 - [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
+- [GitHub Spec Kit](docs/SPEC-KIT.md)
 
 ### Additional documentation
 

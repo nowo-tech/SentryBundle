@@ -1088,7 +1088,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         set_domain_tag?: bool|Param, // Whether to set the domain tag in Sentry scope // Default: true
  *         set_environment_tag?: bool|Param, // Whether to set the environment tag in Sentry scope // Default: true
  *         set_user_info?: bool|Param, // Whether to set user information in Sentry scope // Default: true
- *         set_session_id?: bool|Param, // Whether to set session ID in Sentry scope extra data // Default: true
+ *         set_session_id?: bool|Param, // Whether to set session ID in Sentry scope extra data // Default: false
  *         priority?: int|Param, // Event listener priority // Default: 0
  *     },
  *     ignore_access_denied_listener?: bool|array{

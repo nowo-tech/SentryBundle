@@ -19,6 +19,51 @@ We will acknowledge receipt and work with you to understand and address the issu
 
 Thank you for helping keep Sentry Bundle and its users safe.
 
+## Data sent to Sentry
+
+This bundle enriches Sentry scope with request context. Review these defaults in production:
+
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `set_user_info` | `true` | Sends authenticated user id/username when available |
+| `set_session_id` | `false` | Disabled by default to reduce PII in error reports |
+
+Enable `set_session_id` only when session correlation is required and your privacy policy allows it.
+
+## Scrubbing sensitive data (`before_send`)
+
+Configure scrubbing in the host application's `config/packages/sentry.yaml` (official Sentry Symfony bundle):
+
+```yaml
+sentry:
+    options:
+        before_send: 'sentry.callback.before_send'
+        send_default_pii: false
+```
+
+Example callback service to strip cookies and headers from events:
+
+```php
+use Sentry\Event;
+use Sentry\EventHint;
+
+final class SentryBeforeSendCallback
+{
+    public function __invoke(Event $event, ?EventHint $hint): ?Event
+    {
+        $request = $event->getRequest();
+        if ($request !== null) {
+            $request->setHeaders([]);
+            $request->setCookies([]);
+        }
+
+        return $event;
+    }
+}
+```
+
+Also configure server-side scrubbing rules in the Sentry project settings.
+
 ## Release security checklist (12.4.1)
 
 Before tagging a release, confirm:

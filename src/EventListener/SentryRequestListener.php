@@ -108,7 +108,7 @@ final class SentryRequestListener
                             ]);
                         }
 
-                        if ($session instanceof SessionInterface && $session->isStarted() && ($this->config['set_session_id'] ?? true)) {
+                        if ($session instanceof SessionInterface && $session->isStarted() && ($this->config['set_session_id'] ?? false)) {
                             $scope->setExtra(key: 'session_id', value: $session->getId());
                         }
                     } catch (Throwable $e) {
