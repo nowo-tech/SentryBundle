@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.4.1] - 2026-07-13](#141---2026-07-13)
 - [[1.4.0] - 2026-07-09](#140---2026-07-09)
 - [[1.3.3] - 2026-06-30](#133---2026-06-30)
 - [[1.3.2] - 2026-04-15](#132---2026-04-15)
@@ -30,6 +31,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.1] - 2026-07-13
+
+### Changed
+
+- **Dependencies**: Root `composer.lock` refreshed (transitive updates, including `guzzlehttp/psr7`, `friendsofphp/php-cs-fixer`, `rector/rector`).
+- **Demos**: Refreshed demo `composer.lock` files; synced generated `config/reference.php` from Symfony recipes.
+- **Repository**: `.gitignore` excludes `.cursor/sandbox.json` (local Cursor sandbox).
 
 ## [1.4.0] - 2026-07-09
 
