@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.6.0](#upgrading-to-160)
   - [Upgrading to 1.5.0](#upgrading-to-150)
   - [Upgrading to 1.4.1](#upgrading-to-141)
   - [Upgrading to 1.4.0](#upgrading-to-140)
@@ -31,6 +32,48 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.6.0
+
+**Release Date**: 2026-07-14
+
+Adds optional Doctrine DBAL SQL exception reporting so schema/query errors reach Sentry even when caught in application code.
+
+1. Update the bundle and clear cache:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+2. Ensure Doctrine is installed if you want SQL reporting (optional):
+
+```bash
+composer require doctrine/doctrine-bundle doctrine/dbal
+```
+
+3. Merge configuration (enabled by default; no Doctrine = middleware not registered):
+
+```yaml
+nowo_sentry:
+    dbal_exception_reporter:
+        enabled: true
+        connections: []       # empty = all DBAL connections
+        sql_states: []        # empty = all SQL exceptions; e.g. ['42S22'] for column not found only
+        priority: 20
+        max_sql_length: 2000
+        deduplicate: true     # drop duplicate SDK events already reported by the middleware
+```
+
+4. **Behaviour:** failed `query` / `exec` / prepared `execute` report to Sentry with SQL, connection name, and SQLSTATE, then rethrow. Uncaught SQL errors are deduplicated via `before_send_handler`.
+
+5. **FrankenPHP / worker mode:** no extra setup; registry resets via `kernel.reset`.
+
+6. **Disable** if not needed: `dbal_exception_reporter: { enabled: false }`.
+
+See demo routes `/sentry/sql-caught` and `/sentry/sql-uncaught` in [`demo/README.md`](../demo/README.md).
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.5.0
 

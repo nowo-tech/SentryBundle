@@ -10,6 +10,7 @@ Symfony bundle extending Sentry integration with enhanced event listeners and co
 
 - ✅ Enhanced request context with user and session information
 - ✅ Pure access denied filtered via `before_send`; parent-page failures from sub-request 403 reported with context
+- ✅ Doctrine DBAL SQL exception reporting (`dbal_exception_reporter`) — captures schema/query errors even in `catch` blocks
 - ✅ Uptime bot detection and handling
 - ✅ Compatible with existing Sentry configuration
 - ✅ Full integration with Sentry Symfony bundle (extends SentryBundle)
@@ -69,7 +70,7 @@ when@prod:
 
 ### Event listeners and Sentry integration
 
-The bundle registers **three kernel event listeners**, a **`before_send` handler**, and the **`SentryErrorReporter`** service:
+The bundle registers **kernel event listeners**, a **`before_send` handler**, optional **Doctrine DBAL middleware**, and the **`SentryErrorReporter`** service:
 
 #### 1. SentryRequestListener
 
@@ -89,6 +90,10 @@ When a sub-request access denied breaks the parent page, adds `access_denied.*` 
 #### 4. SentryUptimeBotListener
 
 Handles requests from uptime monitoring bots (Sentry Uptime Bot, Uptime-Kuma, kube-probe) by returning a simple OK response for specific paths (`/dashboard`, `/`, `/login`).
+
+#### 5. DBAL exception reporter (`dbal_exception_reporter`)
+
+Optional Doctrine DBAL driver middleware. Reports SQL/driver exceptions to Sentry with query context **before** your code catches them. Requires `doctrine/dbal` + `doctrine/doctrine-bundle`. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#dbal-exception-reporter-configuration).
 
 ### SentryErrorReporter service
 
@@ -198,6 +203,12 @@ nowo_sentry:
   
   error_reporter:
     enabled: true          # Enable/disable the error reporter service
+
+  dbal_exception_reporter:
+    enabled: true          # Requires doctrine/dbal + doctrine-bundle; reports SQL errors at query time
+    connections: []
+    sql_states: []         # e.g. ['42S22'] for column-not-found only
+    deduplicate: true
 ```
 
 ### Configuration Examples

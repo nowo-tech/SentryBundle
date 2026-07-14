@@ -756,7 +756,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     tracing?: bool|array{
  *         enabled?: bool|Param, // Default: true
  *         dbal?: bool|array{
- *             enabled?: bool|Param, // Default: false
+ *             enabled?: bool|Param, // Default: true
  *             ignore_prepare_spans?: bool|Param, // Default: false
  *             connections?: list<scalar|Param|null>,
  *         },
@@ -804,6 +804,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     error_reporter?: array{
  *         enabled?: bool|Param, // Whether the error reporter service is enabled // Default: true
+ *     },
+ *     dbal_exception_reporter?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         connections?: list<scalar|Param|null>,
+ *         sql_states?: list<scalar|Param|null>,
+ *         priority?: int|Param, // doctrine.middleware priority // Default: 20
+ *         max_sql_length?: int|Param, // Maximum SQL query length stored in Sentry extra data // Default: 2000
+ *         deduplicate?: bool|Param, // Drop duplicate events already reported by the DBAL middleware // Default: true
  *     },
  * }
  * @psalm-type ConfigType = array{

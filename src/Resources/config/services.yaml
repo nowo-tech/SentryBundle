@@ -24,6 +24,7 @@ services:
     class: Nowo\SentryBundle\Sentry\BeforeSendHandler
     arguments:
       $config: '%nowo_sentry.before_send_handler%'
+      $reportedSqlExceptionRegistry: '@?Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry'
 
   Nowo\SentryBundle\Service\SentryErrorReporter:
     class: Nowo\SentryBundle\Service\SentryErrorReporter

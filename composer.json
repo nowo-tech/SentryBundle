@@ -38,7 +38,13 @@
         "symfony/yaml": "^6.0 || ^7.0 || ^8.0",
         "sentry/sentry-symfony": "^5.0 || ^6.0"
     },
+    "suggest": {
+        "doctrine/doctrine-bundle": "Required to report SQL exceptions via dbal_exception_reporter",
+        "doctrine/dbal": "Required to report SQL exceptions via dbal_exception_reporter"
+    },
     "require-dev": {
+        "doctrine/dbal": "^3.8 || ^4.0",
+        "doctrine/doctrine-bundle": "^2.11 || ^3.0",
         "phpunit/phpunit": "^10.0",
         "friendsofphp/php-cs-fixer": "^3.0",
         "rector/rector": "^2.0",

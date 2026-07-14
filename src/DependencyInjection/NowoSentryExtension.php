@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\DependencyInjection;
 
+use Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionMiddleware;
+use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
@@ -12,6 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+use function is_string;
 
 /**
  * Extension for loading the bundle configuration.
@@ -64,6 +68,8 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         if (!($config['ignore_access_denied_listener']['enabled'] ?? true)) {
             $beforeSendHandler['ignore_pure_access_denied'] = false;
         }
+        $beforeSendHandler['deduplicate_sql_exceptions'] = ($config['dbal_exception_reporter']['enabled'] ?? true)
+            && ($config['dbal_exception_reporter']['deduplicate'] ?? true);
 
         // Set configuration parameters
         $container->setParameter(Configuration::ALIAS . '.request_listener', $config['request_listener']);
@@ -72,6 +78,7 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $container->setParameter(Configuration::ALIAS . '.before_send_handler', $beforeSendHandler);
         $container->setParameter(Configuration::ALIAS . '.uptime_bot_listener', $config['uptime_bot_listener']);
         $container->setParameter(Configuration::ALIAS . '.error_reporter', $config['error_reporter']);
+        $container->setParameter(Configuration::ALIAS . '.dbal_exception_reporter', $config['dbal_exception_reporter']);
 
         // Set individual priority parameters for easier access in services.yaml
         $container->setParameter(Configuration::ALIAS . '.request_listener.priority', $config['request_listener']['priority']);
@@ -83,8 +90,14 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
+        if (interface_exists(\Doctrine\DBAL\Driver\Middleware::class)
+            && interface_exists(\Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface::class)) {
+            $loader->load('doctrine_dbal.yaml');
+        }
+
         // Conditionally register listeners based on configuration
         $this->registerListeners($container, $config);
+        $this->registerDbalExceptionReporter($container, $config);
     }
 
     /**
@@ -142,6 +155,61 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
             }
         } else {
             $container->removeDefinition(SentryUptimeBotListener::class);
+        }
+    }
+
+    /**
+     * Registers the DBAL SQL exception middleware when enabled and Doctrine is available.
+     *
+     * @param ContainerBuilder $container The container builder
+     * @param array<string, mixed> $config The processed configuration
+     */
+    private function registerDbalExceptionReporter(ContainerBuilder $container, array $config): void
+    {
+        if (!interface_exists(\Doctrine\DBAL\Driver\Middleware::class)
+            || !interface_exists(\Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface::class)) {
+            return;
+        }
+
+        if (!($config['error_reporter']['enabled'] ?? true)) {
+            $container->removeDefinition(SentryDbalExceptionMiddleware::class);
+            $container->removeDefinition(ReportedSqlExceptionRegistry::class);
+
+            return;
+        }
+
+        if (!($config['dbal_exception_reporter']['enabled'] ?? true)) {
+            $container->removeDefinition(SentryDbalExceptionMiddleware::class);
+            $container->removeDefinition(ReportedSqlExceptionRegistry::class);
+
+            return;
+        }
+
+        if (!$container->hasDefinition(SentryDbalExceptionMiddleware::class)) {
+            return;
+        }
+
+        $definition = $container->getDefinition(SentryDbalExceptionMiddleware::class);
+        $definition->clearTags();
+
+        $connections = $config['dbal_exception_reporter']['connections'] ?? [];
+        $priority    = $config['dbal_exception_reporter']['priority'] ?? 20;
+
+        if ($connections === []) {
+            $definition->addTag('doctrine.middleware', ['priority' => $priority]);
+
+            return;
+        }
+
+        foreach ($connections as $connection) {
+            if (!is_string($connection) || $connection === '') {
+                continue;
+            }
+
+            $definition->addTag('doctrine.middleware', [
+                'connection' => $connection,
+                'priority'   => $priority,
+            ]);
         }
     }
 
