@@ -707,7 +707,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/sentry-bundle",
-                "reference": "9733cb8d6e149480cf2517da4bbc84674d8329e2"
+                "reference": "6fab11d85cd6aa3733761f211c46f137874c3e14"
             },
             "require": {
                 "php": ">=8.1 <8.6",
