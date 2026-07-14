@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.6.1] - 2026-07-14](#161---2026-07-14)
 - [[1.6.0] - 2026-07-14](#160---2026-07-14)
 - [[1.5.0] - 2026-07-14](#150---2026-07-14)
 - [[1.4.1] - 2026-07-13](#141---2026-07-13)
@@ -33,6 +34,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.6.1] - 2026-07-14
+
+### Changed
+
+- **Demos**: synced generated `config/reference.php` from Symfony recipes (Doctrine-related keys).
+- **Demos**: refreshed `composer.lock` path references for `nowo-tech/sentry-bundle`.
 
 ## [1.6.0] - 2026-07-14
 
