@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Sentry;
 
+use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Sentry\Event;
 use Sentry\EventHint;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Throwable;
 
 /**
  * Filters Sentry events before they are sent.
@@ -25,7 +27,8 @@ final class BeforeSendHandler
      * @param array<string, mixed> $config
      */
     public function __construct(
-        private readonly array $config
+        private readonly array $config,
+        private readonly ?ReportedSqlExceptionRegistry $reportedSqlExceptionRegistry = null,
     ) {
     }
 
@@ -45,6 +48,25 @@ final class BeforeSendHandler
             return null;
         }
 
+        if ($this->shouldDropDuplicateSqlException($exception)) {
+            return null;
+        }
+
         return $event;
+    }
+
+    private function shouldDropDuplicateSqlException(?Throwable $exception): bool
+    {
+        if (!$exception instanceof Throwable) {
+            return false;
+        }
+
+        if (!($this->config['deduplicate_sql_exceptions'] ?? true)) {
+            return false;
+        }
+
+        $registry = $this->reportedSqlExceptionRegistry;
+
+        return $registry instanceof ReportedSqlExceptionRegistry && $registry->isReported($exception);
     }
 }

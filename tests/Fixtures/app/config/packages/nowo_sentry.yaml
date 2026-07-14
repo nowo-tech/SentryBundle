@@ -22,3 +22,10 @@ nowo_sentry:
     priority: 255
   error_reporter:
     enabled: true
+
+  dbal_exception_reporter:
+    enabled: true
+    connections: []
+    sql_states: []
+    priority: 20
+    deduplicate: true

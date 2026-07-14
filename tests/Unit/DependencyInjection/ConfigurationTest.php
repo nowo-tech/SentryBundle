@@ -59,6 +59,7 @@ class ConfigurationTest extends TestCase
         $this->assertStringContainsString('before_send_handler:', $content);
         $this->assertStringContainsString('uptime_bot_listener:', $content);
         $this->assertStringContainsString('error_reporter:', $content);
+        $this->assertStringContainsString('dbal_exception_reporter:', $content);
 
         unlink($configPath);
         rmdir($configDir);

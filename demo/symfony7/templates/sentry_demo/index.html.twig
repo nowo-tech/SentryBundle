@@ -98,6 +98,32 @@
         </div>
     </div>
 
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <h2 class="h5 text-uppercase text-muted mt-2 mb-2">Doctrine DBAL – excepciones SQL</h2>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-success">
+                <div class="card-body">
+                    <span class="badge bg-success mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">sql-caught (dbal_exception_reporter)</h3>
+                    <p class="card-text small">Ejecuta SQL inválido (columna inexistente) y lo captura en un <code>catch</code>. El middleware DBAL envía el error a Sentry aunque la app lo trague.</p>
+                    <a href="{{ routes.sql_caught }}" class="btn btn-sm btn-outline-success">Probar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-success">
+                <div class="card-body">
+                    <span class="badge bg-success mb-2">Caso de uso</span>
+                    <h3 class="card-title h6">sql-uncaught (dbal_exception_reporter + deduplicate)</h3>
+                    <p class="card-text small">SQL inválido sin capturar: el middleware reporta y el listener de Sentry deduplica el evento duplicado vía <code>before_send_handler</code>.</p>
+                    <a href="{{ routes.sql_uncaught }}" class="btn btn-sm btn-outline-success">Probar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-3">
         <div class="col-12">
             <h2 class="h5 text-uppercase text-muted mt-2 mb-2">Event listeners</h2>
@@ -106,8 +132,8 @@
             <div class="card h-100 border-warning">
                 <div class="card-body">
                     <span class="badge bg-warning text-dark mb-2">Caso de uso</span>
-                    <h3 class="card-title h6">access-denied (IgnoreAccessDeniedSentryListener)</h3>
-                    <p class="card-text small">Lanza <code>AccessDeniedException</code>. No debe enviarse a Sentry por diseño.</p>
+                    <h3 class="card-title h6">access-denied (before_send_handler)</h3>
+                    <p class="card-text small">Lanza <code>AccessDeniedException</code>. No debe enviarse a Sentry por diseño (403 puro filtrado).</p>
                     <a href="{{ routes.access_denied }}" class="btn btn-sm btn-outline-warning">Probar</a>
                 </div>
             </div>

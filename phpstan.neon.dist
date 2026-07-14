@@ -17,3 +17,9 @@ parameters:
     ignoreErrors:
         - identifier: method.alreadyNarrowedType
           path: tests/*
+        - identifier: method.unresolvableReturnType
+          path: tests/*
+        - identifier: instanceof.alwaysFalse
+          path: src/Doctrine/DBAL/SqlExceptionHelper.php
+        - identifier: booleanAnd.alwaysFalse
+          path: src/Doctrine/DBAL/SqlExceptionHelper.php

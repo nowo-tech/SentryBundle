@@ -12,6 +12,7 @@ This document provides a complete reference for all configuration options availa
   - [Request Listener Configuration](#request-listener-configuration)
   - [Ignore Access Denied Listener Configuration](#ignore-access-denied-listener-configuration)
   - [Uptime Bot Listener Configuration](#uptime-bot-listener-configuration)
+  - [DBAL Exception Reporter Configuration](#dbal-exception-reporter-configuration)
 - [Complete Configuration Example](#complete-configuration-example)
 - [Default Configuration](#default-configuration)
 - [Environment-Specific Configuration](#environment-specific-configuration)
@@ -191,6 +192,74 @@ nowo_sentry:
 
 If your app defines its own `before_send`, chain both handlers or set `register_automatically: false`.
 
+When `dbal_exception_reporter` is enabled, `before_send_handler` also drops duplicate events for SQL exceptions already reported by the DBAL middleware (`deduplicate_sql_exceptions`, driven by `dbal_exception_reporter.deduplicate`).
+
+### DBAL Exception Reporter Configuration
+
+Reports Doctrine DBAL **driver/SQL exceptions** to Sentry at query time, including errors later caught in application `catch` blocks.
+
+**Requires** `doctrine/dbal` and `doctrine/doctrine-bundle` (optional dependencies; middleware is not registered without them).
+
+```yaml
+nowo_sentry:
+    dbal_exception_reporter:
+        enabled: true
+        connections: []          # empty = all connections; or ['default', 'analytics']
+        sql_states: []             # empty = all; e.g. ['42S22'] for column-not-found only
+        priority: 20               # doctrine.middleware priority
+        max_sql_length: 2000       # truncate SQL in Sentry extra data
+        deduplicate: true          # suppress duplicate SDK events for the same SQL error
+```
+
+#### Options
+
+- **`enabled`** (boolean, default: `true`)
+  - Registers `SentryDbalExceptionMiddleware` when Doctrine DBAL middleware is available.
+  - Disabled automatically when `error_reporter.enabled` is `false`.
+
+- **`connections`** (array of strings, default: `[]`)
+  - Doctrine connection names to monitor. Empty registers the middleware for **all** connections.
+
+- **`sql_states`** (array of strings, default: `[]`)
+  - SQLSTATE codes to report. Empty reports all driver/DBAL SQL exceptions.
+  - Example: `['42S22']` limits reporting to unknown column errors.
+
+- **`priority`** (integer, default: `20`)
+  - Priority for the `doctrine.middleware` tag.
+
+- **`max_sql_length`** (integer, default: `2000`)
+  - Maximum characters of SQL stored in Sentry `extra` data.
+
+- **`deduplicate`** (boolean, default: `true`)
+  - When true, `BeforeSendHandler` drops SDK events if the exception chain was already reported by this middleware.
+
+#### Example: column-not-found only
+
+```yaml
+nowo_sentry:
+    dbal_exception_reporter:
+        enabled: true
+        sql_states:
+            - '42S22'
+```
+
+#### Example: disable SQL reporting
+
+```yaml
+nowo_sentry:
+    dbal_exception_reporter:
+        enabled: false
+```
+
+#### Sentry extra data
+
+Each reported SQL error includes:
+
+- `sql` — executed statement (truncated)
+- `connection` — Doctrine connection name
+- `sql_state` — SQLSTATE when available
+- `reporting_source` — `nowo_sentry.dbal_exception_reporter`
+
 ### Uptime Bot Listener Configuration
 
 The `uptime_bot_listener` section configures the `SentryUptimeBotListener`, which handles requests from uptime monitoring bots.
@@ -284,6 +353,14 @@ nowo_sentry:
         enabled: true
         priority: 256
     
+    dbal_exception_reporter:
+        enabled: true
+        connections: []
+        sql_states: []
+        priority: 20
+        max_sql_length: 2000
+        deduplicate: true
+    
     uptime_bot_listener:
         enabled: true
         user_agents:
@@ -322,6 +399,14 @@ nowo_sentry:
     sub_request_access_denied_listener:
         enabled: true
         priority: 256
+    
+    dbal_exception_reporter:
+        enabled: true
+        connections: []
+        sql_states: []
+        priority: 20
+        max_sql_length: 2000
+        deduplicate: true
     
     uptime_bot_listener:
         enabled: true
@@ -484,6 +569,8 @@ class MyController extends AbstractController
 - The `request_listener` requires Symfony Security Bundle for user information features.
 - The `uptime_bot_listener` returns a simple `200 OK` response for matching requests, preventing them from going through the full application stack.
 - The `error_reporter` service is **always safe to use** - it never throws exceptions, even if Sentry is completely broken.
+- **`dbal_exception_reporter`** is a no-op when Doctrine DBAL/Bundle is not installed; disable with `enabled: false` if you do not want SQL reporting.
+- SQL deduplication uses `ReportedSqlExceptionRegistry` with **`kernel.reset`** — safe for FrankenPHP worker mode.
 
 ## Troubleshooting
 
