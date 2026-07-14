@@ -124,30 +124,30 @@ nowo_sentry:
         priority: 10                    # Higher priority
 ```
 
-### Ignore Access Denied Listener Configuration
+### Ignore Access Denied Configuration
 
-The `ignore_access_denied_listener` section configures the `IgnoreAccessDeniedSentryListener`, which prevents `AccessDeniedException` from being reported to Sentry.
+Pure access denied responses are filtered by `before_send_handler.ignore_pure_access_denied` (default `true`).
+
+| Scenario | Sentry |
+|----------|--------|
+| Main request 403 (user hits URL without permission) | Ignored |
+| Sub-request 403 handled in isolation | Ignored |
+| Sub-request 403 breaks parent page (`RuntimeError` wrapping `AccessDeniedException`) | **Reported** |
+
+The legacy `ignore_access_denied_listener.enabled` toggle still works and maps to `ignore_pure_access_denied`.
 
 ```yaml
 nowo_sentry:
     ignore_access_denied_listener:
-        enabled: true                    # Enable/disable the access denied filter
-        priority: 255                   # Event listener priority
+        enabled: true
+
+    before_send_handler:
+        enabled: true
+        ignore_pure_access_denied: true
+        register_automatically: true
 ```
 
-#### Options
-
-- **`enabled`** (boolean, default: `true`)
-  - Enables or disables the ignore access denied listener.
-  - When disabled, `AccessDeniedException` will be reported to Sentry normally.
-  - Default: `true`
-
-- **`priority`** (integer, default: `255`)
-  - Event listener priority for the `kernel.exception` event.
-  - Higher values execute earlier.
-  - Default: `255` (executes before security check listener)
-
-#### Example: Disable Access Denied Filter
+#### Example: report all access denied (including pure 403)
 
 ```yaml
 nowo_sentry:
@@ -155,14 +155,41 @@ nowo_sentry:
         enabled: false
 ```
 
-#### Example: Change Priority
+Or:
 
 ```yaml
 nowo_sentry:
-    ignore_access_denied_listener:
-        enabled: true
-        priority: 200                   # Lower priority
+    before_send_handler:
+        ignore_pure_access_denied: false
 ```
+
+### Sub-request Access Denied Context Listener
+
+Enriches Sentry when a sub-request 403 **breaks the parent page** (outer exception is not access denied, but the chain contains one).
+
+```yaml
+nowo_sentry:
+    sub_request_access_denied_listener:
+        enabled: true
+        priority: 256
+```
+
+Adds tags such as `access_denied.origin=sub_request_broke_parent`, `access_denied.route`, `access_denied.parent_uri`.
+
+### Before Send Handler Configuration
+
+```yaml
+nowo_sentry:
+    before_send_handler:
+        enabled: true
+        ignore_pure_access_denied: true
+        register_automatically: true
+```
+
+- **`ignore_pure_access_denied`**: drop pure access denied events (main or sub).
+- **`register_automatically`**: prepend `sentry.options.before_send: nowo_sentry.before_send_handler` when the app did not set one.
+
+If your app defines its own `before_send`, chain both handlers or set `register_automatically: false`.
 
 ### Uptime Bot Listener Configuration
 
@@ -247,7 +274,15 @@ nowo_sentry:
     
     ignore_access_denied_listener:
         enabled: true
-        priority: 255
+
+    before_send_handler:
+        enabled: true
+        ignore_pure_access_denied: true
+        register_automatically: true
+
+    sub_request_access_denied_listener:
+        enabled: true
+        priority: 256
     
     uptime_bot_listener:
         enabled: true
@@ -278,7 +313,15 @@ nowo_sentry:
     
     ignore_access_denied_listener:
         enabled: true
-        priority: 255
+
+    before_send_handler:
+        enabled: true
+        ignore_pure_access_denied: true
+        register_automatically: true
+
+    sub_request_access_denied_listener:
+        enabled: true
+        priority: 256
     
     uptime_bot_listener:
         enabled: true

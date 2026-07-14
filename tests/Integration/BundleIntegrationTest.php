@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\Integration;
 
-use Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
+use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
 use Nowo\SentryBundle\Tests\Kernel\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -40,8 +40,12 @@ final class BundleIntegrationTest extends KernelTestCase
             'SentryRequestListener should be registered',
         );
         $this->assertTrue(
-            $container->has(IgnoreAccessDeniedSentryListener::class),
-            'IgnoreAccessDeniedSentryListener should be registered',
+            $container->has(SubRequestAccessDeniedContextListener::class),
+            'SubRequestAccessDeniedContextListener should be registered',
+        );
+        $this->assertTrue(
+            $container->has('nowo_sentry.before_send_handler'),
+            'before_send_handler should be registered',
         );
         $this->assertTrue(
             $container->has(SentryUptimeBotListener::class),

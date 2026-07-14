@@ -1102,7 +1102,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     ignore_access_denied_listener?: bool|array{
  *         enabled?: bool|Param, // Default: true
- *         priority?: int|Param, // Event listener priority (higher = earlier execution) // Default: 255
+ *         priority?: int|Param, // Deprecated: listener removed; kept for BC. Use before_send_handler.ignore_pure_access_denied. // Default: 254
+ *     },
+ *     sub_request_access_denied_listener?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         priority?: int|Param, // Event listener priority for enriching Sentry when a sub-request 403 breaks the parent page // Default: 256
+ *     },
+ *     before_send_handler?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         ignore_pure_access_denied?: bool|Param, // Drop pure AccessDeniedException/AccessDeniedHttpException; keep parent-page failures that wrap a sub-request 403 // Default: true
+ *         register_automatically?: bool|Param, // Prepend sentry.options.before_send with nowo_sentry.before_send_handler when not configured by the app // Default: true
  *     },
  *     uptime_bot_listener?: bool|array{
  *         enabled?: bool|Param, // Default: true

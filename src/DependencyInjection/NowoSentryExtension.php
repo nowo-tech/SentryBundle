@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\DependencyInjection;
 
-use Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
+use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
@@ -21,8 +22,33 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final class NowoSentryExtension extends Extension
+final class NowoSentryExtension extends Extension implements PrependExtensionInterface
 {
+    public function prepend(ContainerBuilder $container): void
+    {
+        if (!$container->hasExtension('sentry')) {
+            return;
+        }
+
+        $configs       = $container->getExtensionConfig($this->getAlias());
+        $configuration = $this->getConfiguration($configs, $container);
+        $config        = $this->processConfiguration($configuration, $configs);
+
+        if (!($config['before_send_handler']['enabled'] ?? true)) {
+            return;
+        }
+
+        if (!($config['before_send_handler']['register_automatically'] ?? true)) {
+            return;
+        }
+
+        $container->prependExtensionConfig('sentry', [
+            'options' => [
+                'before_send' => 'nowo_sentry.before_send_handler',
+            ],
+        ]);
+    }
+
     /**
      * Loads the bundle configuration and services.
      *
@@ -34,15 +60,23 @@ final class NowoSentryExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config        = $this->processConfiguration($configuration, $configs);
 
+        $beforeSendHandler = $config['before_send_handler'];
+        if (!($config['ignore_access_denied_listener']['enabled'] ?? true)) {
+            $beforeSendHandler['ignore_pure_access_denied'] = false;
+        }
+
         // Set configuration parameters
         $container->setParameter(Configuration::ALIAS . '.request_listener', $config['request_listener']);
         $container->setParameter(Configuration::ALIAS . '.ignore_access_denied_listener', $config['ignore_access_denied_listener']);
+        $container->setParameter(Configuration::ALIAS . '.sub_request_access_denied_listener', $config['sub_request_access_denied_listener']);
+        $container->setParameter(Configuration::ALIAS . '.before_send_handler', $beforeSendHandler);
         $container->setParameter(Configuration::ALIAS . '.uptime_bot_listener', $config['uptime_bot_listener']);
         $container->setParameter(Configuration::ALIAS . '.error_reporter', $config['error_reporter']);
 
         // Set individual priority parameters for easier access in services.yaml
         $container->setParameter(Configuration::ALIAS . '.request_listener.priority', $config['request_listener']['priority']);
         $container->setParameter(Configuration::ALIAS . '.ignore_access_denied_listener.priority', $config['ignore_access_denied_listener']['priority']);
+        $container->setParameter(Configuration::ALIAS . '.sub_request_access_denied_listener.priority', $config['sub_request_access_denied_listener']['priority']);
         $container->setParameter(Configuration::ALIAS . '.uptime_bot_listener.priority', $config['uptime_bot_listener']['priority']);
 
         // Load services configuration
@@ -76,19 +110,23 @@ final class NowoSentryExtension extends Extension
             $container->removeDefinition(SentryRequestListener::class);
         }
 
-        // Register ignore access denied listener if enabled
-        if ($config['ignore_access_denied_listener']['enabled'] ?? true) {
-            if ($container->hasDefinition(IgnoreAccessDeniedSentryListener::class)) {
-                $definition = $container->getDefinition(IgnoreAccessDeniedSentryListener::class);
+        // Register sub-request access denied context listener if enabled
+        if ($config['sub_request_access_denied_listener']['enabled'] ?? true) {
+            if ($container->hasDefinition(SubRequestAccessDeniedContextListener::class)) {
+                $definition = $container->getDefinition(SubRequestAccessDeniedContextListener::class);
                 $definition->clearTags();
                 $definition->addTag('kernel.event_listener', [
                     'event'    => 'kernel.exception',
                     'method'   => '__invoke',
-                    'priority' => $config['ignore_access_denied_listener']['priority'],
+                    'priority' => $config['sub_request_access_denied_listener']['priority'],
                 ]);
             }
         } else {
-            $container->removeDefinition(IgnoreAccessDeniedSentryListener::class);
+            $container->removeDefinition(SubRequestAccessDeniedContextListener::class);
+        }
+
+        if (!($config['before_send_handler']['enabled'] ?? true)) {
+            $container->removeDefinition('nowo_sentry.before_send_handler');
         }
 
         // Register uptime bot listener if enabled

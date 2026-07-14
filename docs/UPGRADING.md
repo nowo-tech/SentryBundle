@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.5.0](#upgrading-to-150)
   - [Upgrading to 1.4.1](#upgrading-to-141)
   - [Upgrading to 1.4.0](#upgrading-to-140)
   - [Upgrading to 1.3.3](#upgrading-to-133)
@@ -30,6 +31,44 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.5.0
+
+**Release Date**: 2026-07-14
+
+Fixes sub-request access denied being silently dropped from Sentry when it breaks the parent page (e.g. Twig `render(controller(...))` without a permission guard).
+
+1. Update the bundle and clear cache:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+2. Merge configuration:
+
+```yaml
+nowo_sentry:
+    ignore_access_denied_listener:
+        enabled: true
+
+    before_send_handler:
+        enabled: true
+        ignore_pure_access_denied: true
+        register_automatically: true
+
+    sub_request_access_denied_listener:
+        enabled: true
+        priority: 256
+```
+
+**Behaviour:** pure 403 (main or sub) is ignored; parent-page failures that wrap a sub-request 403 are reported to Sentry.
+
+3. If your app already defines `sentry.options.before_send`, chain `nowo_sentry.before_send_handler` with yours or set `before_send_handler.register_automatically: false`.
+
+4. Remove custom workarounds added only to fix the old global `before_send` null callback bug.
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.4.1
 
