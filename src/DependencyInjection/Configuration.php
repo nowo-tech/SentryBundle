@@ -129,6 +129,34 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('dbal_exception_reporter')
+                    ->addDefaultsIfNotSet()
+                    ->canBeDisabled()
+                    ->children()
+                        ->arrayNode('connections')
+                            ->defaultValue([])
+                            ->prototype('scalar')->end()
+                            ->info('Doctrine connection names to monitor; empty means all connections')
+                        ->end()
+                        ->arrayNode('sql_states')
+                            ->defaultValue([])
+                            ->prototype('scalar')->end()
+                            ->info('SQLSTATE codes to report (e.g. 42S22 for column not found); empty means all SQL exceptions')
+                        ->end()
+                        ->integerNode('priority')
+                            ->defaultValue(20)
+                            ->info('doctrine.middleware priority')
+                        ->end()
+                        ->integerNode('max_sql_length')
+                            ->defaultValue(2000)
+                            ->info('Maximum SQL query length stored in Sentry extra data')
+                        ->end()
+                        ->booleanNode('deduplicate')
+                            ->defaultTrue()
+                            ->info('Drop duplicate events already reported by the DBAL middleware')
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
@@ -186,6 +214,14 @@ class Configuration implements ConfigurationInterface
                 ],
                 'error_reporter' => [
                     'enabled' => true,
+                ],
+                'dbal_exception_reporter' => [
+                    'enabled'        => true,
+                    'connections'    => [],
+                    'sql_states'     => [],
+                    'priority'       => 20,
+                    'max_sql_length' => 2000,
+                    'deduplicate'    => true,
                 ],
             ],
         ];

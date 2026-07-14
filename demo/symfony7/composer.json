@@ -6,6 +6,8 @@
     "require": {
         "php": ">=8.2,<8.6",
         "nowo-tech/sentry-bundle": "dev-main",
+        "doctrine/dbal": "^3.8 || ^4.0",
+        "doctrine/doctrine-bundle": "^2.11",
         "sentry/sentry-symfony": "^5.0",
         "symfony/console": "^7.0",
         "symfony/dotenv": "^7.0",

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Doctrine\DBAL\Connection;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,15 +12,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Throwable;
 
 use function sprintf;
 
 /**
- * Demo controller to test all Sentry Bundle use cases (SentryErrorReporter, listeners).
+ * Demo controller to test all Sentry Bundle use cases (SentryErrorReporter, listeners, DBAL middleware).
  */
 #[Route(path: '/sentry', name: 'sentry_demo_')]
 class SentryDemoController extends AbstractController
 {
+    private const DEMO_INVALID_COLUMN_SQL = 'SELECT nonexistent_column_for_sentry_demo FROM (SELECT 1 AS id)';
+
     #[Route(path: '', name: 'index', methods: ['GET'])]
     public function index(): Response
     {
@@ -35,6 +39,8 @@ class SentryDemoController extends AbstractController
                 'safe_operation'    => $this->generateUrl('sentry_demo_safe_operation'),
                 'access_denied'     => $this->generateUrl('sentry_demo_access_denied'),
                 'trigger_error'     => $this->generateUrl('sentry_demo_trigger_error'),
+                'sql_caught'        => $this->generateUrl('sentry_demo_sql_caught'),
+                'sql_uncaught'      => $this->generateUrl('sentry_demo_sql_uncaught'),
             ],
         ]);
     }
@@ -149,7 +155,6 @@ class SentryDemoController extends AbstractController
     #[Route(path: '/safe-operation', name: 'safe_operation', methods: ['GET'])]
     public function safeOperation(SentryErrorReporter $errorReporter): Response
     {
-        // Even if Sentry is down or DSN is invalid, this never throws
         $errorReporter->captureException(new RuntimeException('This should never break the app'));
         $errorReporter->captureMessage('Safe message', 'info');
 
@@ -160,21 +165,51 @@ class SentryDemoController extends AbstractController
         ]);
     }
 
-    /**
-     * Throws AccessDeniedException. IgnoreAccessDeniedSentryListener should prevent it from being sent to Sentry.
-     */
     #[Route(path: '/access-denied', name: 'access_denied', methods: ['GET'])]
     public function accessDenied(): never
     {
         throw new AccessDeniedException('Demo: this AccessDeniedException should NOT be reported to Sentry (by design).');
     }
 
-    /**
-     * Throws a generic exception. The Sentry SDK will capture it automatically (not via SentryErrorReporter).
-     */
     #[Route(path: '/trigger-error', name: 'trigger_error', methods: ['GET'])]
     public function triggerError(): never
     {
         throw new RuntimeException('Demo uncaught exception: Sentry SDK will capture this automatically.');
+    }
+
+    #[Route(path: '/sql-caught', name: 'sql_caught', methods: ['GET'])]
+    public function sqlCaught(Connection $connection): Response
+    {
+        try {
+            $connection->executeQuery(self::DEMO_INVALID_COLUMN_SQL);
+        } catch (Throwable $exception) {
+            return $this->render('sentry_demo/result.html.twig', [
+                'use_case' => 'dbalExceptionReporter (caught)',
+                'title'    => 'SQL error caught in application code',
+                'message'  => sprintf(
+                    'The DBAL middleware reported this SQL error to Sentry before the catch block handled it. Exception: %s — %s',
+                    $exception::class,
+                    $exception->getMessage(),
+                ),
+            ]);
+        }
+
+        return $this->render('sentry_demo/result.html.twig', [
+            'use_case' => 'dbalExceptionReporter (caught)',
+            'title'    => 'Unexpected success',
+            'message'  => 'The invalid SQL query did not fail. Check the demo SQL statement.',
+        ]);
+    }
+
+    #[Route(path: '/sql-uncaught', name: 'sql_uncaught', methods: ['GET'])]
+    public function sqlUncaught(Connection $connection): Response
+    {
+        $connection->executeQuery(self::DEMO_INVALID_COLUMN_SQL);
+
+        return $this->render('sentry_demo/result.html.twig', [
+            'use_case' => 'dbalExceptionReporter (uncaught)',
+            'title'    => 'Unexpected success',
+            'message'  => 'The invalid SQL query did not fail. Check the demo SQL statement.',
+        ]);
     }
 }

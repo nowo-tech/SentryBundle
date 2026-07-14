@@ -21,6 +21,8 @@ The sections below state **behavior**; this subsection states **intent** in back
 | US-03 | **As an** operator, **I want** uptime-bot events handled **so that** synthetic probes do not skew error rates. |
 | US-04 | **As a** developer, **I want** `SentryErrorReporter` **so that** I capture handled exceptions programmatically with type safety. |
 | US-05 | **As a** maintainer, **I want** per-listener config toggles **so that** I enable only the listeners my app needs. |
+| US-06 | **As an** operator, **I want** SQL/DBAL exceptions reported even when application code catches them **so that** schema errors (e.g. column not found) reach Sentry. |
+| US-07 | **As a** maintainer, **I want** demo routes for SQL and access-denied scenarios **so that** integrators can verify behavior without reading the source. |
 
 **Out of scope for these stories:** guarantees outside the stated public API and outside dependency limits (PHP, Symfony, third-party libraries).
 
@@ -37,9 +39,11 @@ The sections below state **behavior**; this subsection states **intent** in back
 | Area | Responsibility |
 | --- | --- |
 | `SentryRequestListener` | Domain/environment tags, user info, optional session id on main request. |
-| `IgnoreAccessDeniedSentryListener` | Drop `AccessDeniedException` from Sentry reports. |
+| `BeforeSendHandler` | Drop pure 403 events; deduplicate SQL errors already reported by DBAL middleware. |
+| `SubRequestAccessDeniedContextListener` | Enrich Sentry when a sub-request 403 breaks the parent page. |
 | `SentryUptimeBotListener` | Short-circuit configured uptime probes (user-agents + paths). |
 | `SentryErrorReporter` | Safe programmatic `captureException` / `captureMessage` API. |
+| `dbal_exception_reporter` | Doctrine DBAL middleware: capture SQL/driver exceptions before app `catch` blocks. |
 | Config | Per-listener enable flags, priorities, and sub-options under `nowo_sentry`. |
 
 - Documented integration (see root `README.md` and `docs/`).

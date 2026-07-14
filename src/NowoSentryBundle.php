@@ -24,6 +24,7 @@ use function sprintf;
  * - Configurable filtering of main-request access denied exceptions
  * - Sub-request access denied reporting with Sentry context enrichment
  * - Uptime bot detection and handling
+ * - Doctrine DBAL SQL exception reporting (including caught errors)
  * - Compatible with existing Sentry configuration
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>

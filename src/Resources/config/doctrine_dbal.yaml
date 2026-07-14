@@ -1,0 +1,15 @@
+---
+services:
+  Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry:
+    tags:
+      - { name: kernel.reset, method: reset }
+
+  Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter:
+    arguments:
+      $errorReporter: '@Nowo\SentryBundle\Service\SentryErrorReporter'
+      $registry: '@Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry'
+      $config: '%nowo_sentry.dbal_exception_reporter%'
+
+  Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionMiddleware:
+    arguments:
+      $reporter: '@Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter'
