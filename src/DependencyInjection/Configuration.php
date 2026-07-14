@@ -71,8 +71,32 @@ class Configuration implements ConfigurationInterface
                     ->canBeDisabled()
                     ->children()
                         ->integerNode('priority')
-                            ->defaultValue(255)
-                            ->info('Event listener priority (higher = earlier execution)')
+                            ->defaultValue(254)
+                            ->info('Deprecated: listener removed; kept for BC. Use before_send_handler.ignore_pure_access_denied.')
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('sub_request_access_denied_listener')
+                    ->addDefaultsIfNotSet()
+                    ->canBeDisabled()
+                    ->children()
+                        ->integerNode('priority')
+                            ->defaultValue(256)
+                            ->info('Event listener priority for enriching Sentry when a sub-request 403 breaks the parent page')
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('before_send_handler')
+                    ->addDefaultsIfNotSet()
+                    ->canBeDisabled()
+                    ->children()
+                        ->booleanNode('ignore_pure_access_denied')
+                            ->defaultTrue()
+                            ->info('Drop pure AccessDeniedException/AccessDeniedHttpException; keep parent-page failures that wrap a sub-request 403')
+                        ->end()
+                        ->booleanNode('register_automatically')
+                            ->defaultTrue()
+                            ->info('Prepend sentry.options.before_send with nowo_sentry.before_send_handler when not configured by the app')
                         ->end()
                     ->end()
                 ->end()
@@ -135,7 +159,16 @@ class Configuration implements ConfigurationInterface
                 ],
                 'ignore_access_denied_listener' => [
                     'enabled'  => true,
-                    'priority' => 255,
+                    'priority' => 254,
+                ],
+                'sub_request_access_denied_listener' => [
+                    'enabled'  => true,
+                    'priority' => 256,
+                ],
+                'before_send_handler' => [
+                    'enabled'                   => true,
+                    'ignore_pure_access_denied' => true,
+                    'register_automatically'    => true,
                 ],
                 'uptime_bot_listener' => [
                     'enabled'     => true,

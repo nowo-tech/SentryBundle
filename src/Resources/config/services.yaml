@@ -13,18 +13,17 @@ services:
       $environment: '%kernel.environment%'
     # Tags are added conditionally in NowoSentryExtension based on configuration
 
-  Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener:
-    class: Nowo\SentryBundle\EventListener\IgnoreAccessDeniedSentryListener
+  Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener:
+    class: Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener
     arguments:
       $sentryHub: '@?Sentry\State\HubInterface'
-      $config: '%nowo_sentry.ignore_access_denied_listener%'
+      $config: '%nowo_sentry.sub_request_access_denied_listener%'
     # Tags are added conditionally in NowoSentryExtension based on configuration
 
-  Nowo\SentryBundle\EventListener\SentryUptimeBotListener:
-    class: Nowo\SentryBundle\EventListener\SentryUptimeBotListener
+  nowo_sentry.before_send_handler:
+    class: Nowo\SentryBundle\Sentry\BeforeSendHandler
     arguments:
-      $config: '%nowo_sentry.uptime_bot_listener%'
-    # Tags are added conditionally in NowoSentryExtension based on configuration
+      $config: '%nowo_sentry.before_send_handler%'
 
   Nowo\SentryBundle\Service\SentryErrorReporter:
     class: Nowo\SentryBundle\Service\SentryErrorReporter
@@ -33,3 +32,8 @@ services:
       $logger: '@?logger'
     public: true
 
+  Nowo\SentryBundle\EventListener\SentryUptimeBotListener:
+    class: Nowo\SentryBundle\EventListener\SentryUptimeBotListener
+    arguments:
+      $config: '%nowo_sentry.uptime_bot_listener%'
+    # Tags are added conditionally in NowoSentryExtension based on configuration

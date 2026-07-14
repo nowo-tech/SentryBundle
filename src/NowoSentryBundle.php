@@ -21,7 +21,8 @@ use function sprintf;
  *
  * Features:
  * - Enhanced request context with user and session information
- * - Automatic filtering of access denied exceptions
+ * - Configurable filtering of main-request access denied exceptions
+ * - Sub-request access denied reporting with Sentry context enrichment
  * - Uptime bot detection and handling
  * - Compatible with existing Sentry configuration
  *

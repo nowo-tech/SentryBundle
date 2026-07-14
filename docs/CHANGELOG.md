@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.5.0] - 2026-07-14](#150---2026-07-14)
 - [[1.4.1] - 2026-07-13](#141---2026-07-13)
 - [[1.4.0] - 2026-07-09](#140---2026-07-09)
 - [[1.3.3] - 2026-06-30](#133---2026-06-30)
@@ -31,6 +32,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.5.0] - 2026-07-14
+
+### Added
+
+- **`before_send_handler.ignore_pure_access_denied`** (default `true`): drops pure `AccessDeniedException` / `AccessDeniedHttpException` (main or sub-request). Keeps parent-page failures where the reported exception wraps a sub-request 403 (e.g. Twig template rendering error).
+- **`sub_request_access_denied_listener`**: enriches Sentry scope when a sub-request access denied breaks the parent page.
+- **`before_send_handler.register_automatically`**: prepends `sentry.options.before_send` when the app did not configure one.
+
+### Fixed
+
+- Removed the legacy `IgnoreAccessDeniedSentryListener` global `before_send` callback that discarded **all** Sentry events after any access denied in the same request.
+
+### Changed
+
+- **`ignore_access_denied_listener`**: no longer registers a kernel listener; kept as a BC toggle mapped to `before_send_handler.ignore_pure_access_denied`.
 
 ## [1.4.1] - 2026-07-13
 

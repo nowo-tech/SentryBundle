@@ -9,7 +9,7 @@ Symfony bundle extending Sentry integration with enhanced event listeners and co
 ## Features
 
 - ✅ Enhanced request context with user and session information
-- ✅ Automatic filtering of access denied exceptions
+- ✅ Pure access denied filtered via `before_send`; parent-page failures from sub-request 403 reported with context
 - ✅ Uptime bot detection and handling
 - ✅ Compatible with existing Sentry configuration
 - ✅ Full integration with Sentry Symfony bundle (extends SentryBundle)
@@ -67,22 +67,26 @@ when@prod:
       # ... your existing configuration
 ```
 
-### Event listeners
+### Event listeners and Sentry integration
 
-The bundle registers **three event listeners**:
+The bundle registers **three kernel event listeners**, a **`before_send` handler**, and the **`SentryErrorReporter`** service:
 
 #### 1. SentryRequestListener
 
 Enriches Sentry reports with request context:
 - Sets domain and environment tags
 - Configures user information if available
-- Adds session ID to extra data
+- Adds session ID to extra data when enabled
 
-#### 2. IgnoreAccessDeniedSentryListener
+#### 2. BeforeSendHandler (`nowo_sentry.before_send_handler`)
 
-Prevents `AccessDeniedException` from being reported to Sentry, reducing noise in your error tracking.
+Registered as `sentry.options.before_send` (automatically when not configured). Drops **pure** access denied responses (main or sub). Keeps parent-page failures where the reported exception wraps a sub-request 403 (e.g. Twig template rendering error).
 
-#### 3. SentryUptimeBotListener
+#### 3. SubRequestAccessDeniedContextListener
+
+When a sub-request access denied breaks the parent page, adds `access_denied.*` tags and route/controller context to Sentry.
+
+#### 4. SentryUptimeBotListener
 
 Handles requests from uptime monitoring bots (Sentry Uptime Bot, Uptime-Kuma, kube-probe) by returning a simple OK response for specific paths (`/dashboard`, `/`, `/login`).
 
@@ -169,8 +173,16 @@ nowo_sentry:
     priority: 0           # Event listener priority
   
   ignore_access_denied_listener:
-    enabled: true          # Enable/disable the access denied filter
-    priority: 255          # Event listener priority (higher = earlier execution)
+    enabled: true          # BC toggle; maps to before_send_handler.ignore_pure_access_denied
+
+  before_send_handler:
+    enabled: true
+    ignore_pure_access_denied: true  # Drop pure 403; keep parent-page failures wrapping sub-request 403
+    register_automatically: true     # Prepend sentry.options.before_send when not set
+
+  sub_request_access_denied_listener:
+    enabled: true          # Add context when sub-request 403 breaks the parent page
+    priority: 256
   
   uptime_bot_listener:
     enabled: true          # Enable/disable the uptime bot handler
