@@ -795,6 +795,15 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ignore_pure_access_denied?: bool|Param, // Drop pure AccessDeniedException/AccessDeniedHttpException; keep parent-page failures that wrap a sub-request 403 // Default: true
  *         register_automatically?: bool|Param, // Register as sentry.options.before_send; chains with an existing app before_send when present // Default: true
  *     },
+ *     before_send_transaction_handler?: bool|array{
+ *         enabled?: bool|Param, // Default: true
+ *         register_automatically?: bool|Param, // Register as sentry.options.before_send_transaction; chains with an existing app callback when present // Default: true
+ *         max_spans?: int|Param, // Maximum spans kept on a transaction (0 = do not truncate spans). Prevents envelope size rejections on heavy pages. // Default: 400
+ *         max_breadcrumbs?: int|Param, // Maximum breadcrumbs kept on a transaction (0 = do not truncate breadcrumbs) // Default: 50
+ *         max_string_length?: int|Param, // Maximum string length kept in request/extra/context payloads // Default: 2048
+ *         max_array_keys?: int|Param, // Maximum keys kept per truncated array level // Default: 50
+ *         max_array_depth?: int|Param, // Maximum nesting depth when truncating arrays // Default: 3
+ *     },
  *     uptime_bot_listener?: bool|array{
  *         enabled?: bool|Param, // Default: true
  *         user_agents?: list<scalar|Param|null>,

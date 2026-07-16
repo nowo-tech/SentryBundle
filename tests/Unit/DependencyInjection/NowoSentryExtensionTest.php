@@ -39,6 +39,7 @@ class NowoSentryExtensionTest extends TestCase
         $this->assertTrue($container->hasParameter('nowo_sentry.ignore_access_denied_listener'));
         $this->assertTrue($container->hasParameter('nowo_sentry.sub_request_access_denied_listener'));
         $this->assertTrue($container->hasParameter('nowo_sentry.before_send_handler'));
+        $this->assertTrue($container->hasParameter('nowo_sentry.before_send_transaction_handler'));
         $this->assertTrue($container->hasParameter('nowo_sentry.uptime_bot_listener'));
     }
 
@@ -52,6 +53,7 @@ class NowoSentryExtensionTest extends TestCase
             'ignore_access_denied_listener'      => ['enabled' => true],
             'sub_request_access_denied_listener' => ['enabled' => true, 'priority' => 256],
             'before_send_handler'                => ['enabled' => true, 'ignore_pure_access_denied' => true, 'register_automatically' => true],
+            'before_send_transaction_handler'    => ['enabled' => true, 'register_automatically' => true],
             'uptime_bot_listener'                => ['enabled' => true, 'priority' => 255, 'user_agents' => [], 'paths' => []],
         ];
 
@@ -60,6 +62,7 @@ class NowoSentryExtensionTest extends TestCase
         $this->assertTrue($container->hasDefinition(SentryRequestListener::class));
         $this->assertTrue($container->hasDefinition(SubRequestAccessDeniedContextListener::class));
         $this->assertTrue($container->hasDefinition('nowo_sentry.before_send_handler'));
+        $this->assertTrue($container->hasDefinition('nowo_sentry.before_send_transaction_handler'));
         $this->assertTrue($container->hasDefinition(SentryUptimeBotListener::class));
     }
 
@@ -73,6 +76,7 @@ class NowoSentryExtensionTest extends TestCase
             'ignore_access_denied_listener'      => ['enabled' => false],
             'sub_request_access_denied_listener' => ['enabled' => false, 'priority' => 256],
             'before_send_handler'                => ['enabled' => false, 'ignore_pure_access_denied' => true, 'register_automatically' => true],
+            'before_send_transaction_handler'    => ['enabled' => false, 'register_automatically' => true],
             'uptime_bot_listener'                => ['enabled' => false, 'priority' => 255, 'user_agents' => [], 'paths' => []],
         ];
 
@@ -81,6 +85,7 @@ class NowoSentryExtensionTest extends TestCase
         $this->assertFalse($container->hasDefinition(SentryRequestListener::class));
         $this->assertFalse($container->hasDefinition(SubRequestAccessDeniedContextListener::class));
         $this->assertFalse($container->hasDefinition('nowo_sentry.before_send_handler'));
+        $this->assertFalse($container->hasDefinition('nowo_sentry.before_send_transaction_handler'));
         $this->assertFalse($container->hasDefinition(SentryUptimeBotListener::class));
     }
 
@@ -172,14 +177,15 @@ class NowoSentryExtensionTest extends TestCase
         $this->assertSame([], $container->getExtensionConfig('sentry'));
     }
 
-    public function testPrependDoesNothingWhenBeforeSendHandlerDisabled(): void
+    public function testPrependDoesNothingWhenBeforeSendHandlersDisabled(): void
     {
         $extension = new NowoSentryExtension();
         $container = new ContainerBuilder();
         $container->registerExtension($extension);
         $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
         $container->loadFromExtension('nowo_sentry', [
-            'before_send_handler' => ['enabled' => false],
+            'before_send_handler'             => ['enabled' => false],
+            'before_send_transaction_handler' => ['enabled' => false],
         ]);
 
         $extension->prepend($container);
@@ -194,7 +200,8 @@ class NowoSentryExtensionTest extends TestCase
         $container->registerExtension($extension);
         $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
         $container->loadFromExtension('nowo_sentry', [
-            'before_send_handler' => ['register_automatically' => false],
+            'before_send_handler'             => ['register_automatically' => false],
+            'before_send_transaction_handler' => ['register_automatically' => false],
         ]);
 
         $extension->prepend($container);
@@ -202,7 +209,7 @@ class NowoSentryExtensionTest extends TestCase
         $this->assertSame([], $container->getExtensionConfig('sentry'));
     }
 
-    public function testPrependRegistersBeforeSendHandlerWhenEnabled(): void
+    public function testPrependRegistersBeforeSendHandlersWhenEnabled(): void
     {
         $extension = new NowoSentryExtension();
         $container = new ContainerBuilder();
@@ -214,5 +221,30 @@ class NowoSentryExtensionTest extends TestCase
         $sentryConfigs = $container->getExtensionConfig('sentry');
         $this->assertNotEmpty($sentryConfigs);
         $this->assertSame('nowo_sentry.before_send_handler', $sentryConfigs[0]['options']['before_send']);
+        $this->assertSame(
+            'nowo_sentry.before_send_transaction_handler',
+            $sentryConfigs[0]['options']['before_send_transaction'],
+        );
+    }
+
+    public function testPrependRegistersOnlyTransactionHandlerWhenBeforeSendDisabled(): void
+    {
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+        $container->registerExtension($extension);
+        $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
+        $container->loadFromExtension('nowo_sentry', [
+            'before_send_handler' => ['enabled' => false],
+        ]);
+
+        $extension->prepend($container);
+
+        $sentryConfigs = $container->getExtensionConfig('sentry');
+        $this->assertNotEmpty($sentryConfigs);
+        $this->assertArrayNotHasKey('before_send', $sentryConfigs[0]['options']);
+        $this->assertSame(
+            'nowo_sentry.before_send_transaction_handler',
+            $sentryConfigs[0]['options']['before_send_transaction'],
+        );
     }
 }

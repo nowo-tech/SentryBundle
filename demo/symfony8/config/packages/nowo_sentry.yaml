@@ -18,6 +18,16 @@ nowo_sentry:
         ignore_pure_access_denied: true
         register_automatically: true
 
+    # Trim oversized performance transactions (envelope ~1 MiB limit)
+    before_send_transaction_handler:
+        enabled: true
+        register_automatically: true
+        max_spans: 400
+        max_breadcrumbs: 50
+        max_string_length: 2048
+        max_array_keys: 50
+        max_array_depth: 3
+
     sub_request_access_denied_listener:
         enabled: true
         priority: 256

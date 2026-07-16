@@ -10,6 +10,7 @@ use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
+use Nowo\SentryBundle\Sentry\EventPayloadTrimmer;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -40,18 +41,26 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $configuration = $this->getConfiguration($configs, $container);
         $config        = $this->processConfiguration($configuration, $configs);
 
-        if (!($config['before_send_handler']['enabled'] ?? true)) {
-            return;
+        $sentryOptions = [];
+
+        if (($config['before_send_handler']['enabled'] ?? true)
+            && ($config['before_send_handler']['register_automatically'] ?? true)
+        ) {
+            $sentryOptions['before_send'] = 'nowo_sentry.before_send_handler';
         }
 
-        if (!($config['before_send_handler']['register_automatically'] ?? true)) {
+        if (($config['before_send_transaction_handler']['enabled'] ?? true)
+            && ($config['before_send_transaction_handler']['register_automatically'] ?? true)
+        ) {
+            $sentryOptions['before_send_transaction'] = 'nowo_sentry.before_send_transaction_handler';
+        }
+
+        if ($sentryOptions === []) {
             return;
         }
 
         $container->prependExtensionConfig('sentry', [
-            'options' => [
-                'before_send' => 'nowo_sentry.before_send_handler',
-            ],
+            'options' => $sentryOptions,
         ]);
     }
 
@@ -78,6 +87,7 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $container->setParameter(Configuration::ALIAS . '.ignore_access_denied_listener', $config['ignore_access_denied_listener']);
         $container->setParameter(Configuration::ALIAS . '.sub_request_access_denied_listener', $config['sub_request_access_denied_listener']);
         $container->setParameter(Configuration::ALIAS . '.before_send_handler', $beforeSendHandler);
+        $container->setParameter(Configuration::ALIAS . '.before_send_transaction_handler', $config['before_send_transaction_handler']);
         $container->setParameter(Configuration::ALIAS . '.uptime_bot_listener', $config['uptime_bot_listener']);
         $container->setParameter(Configuration::ALIAS . '.error_reporter', $config['error_reporter']);
         $container->setParameter(Configuration::ALIAS . '.dbal_exception_reporter', $config['dbal_exception_reporter']);
@@ -137,6 +147,11 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
 
         if (!($config['before_send_handler']['enabled'] ?? true)) {
             $container->removeDefinition('nowo_sentry.before_send_handler');
+        }
+
+        if (!($config['before_send_transaction_handler']['enabled'] ?? true)) {
+            $container->removeDefinition('nowo_sentry.before_send_transaction_handler');
+            $container->removeDefinition(EventPayloadTrimmer::class);
         }
 
         // Register uptime bot listener if enabled

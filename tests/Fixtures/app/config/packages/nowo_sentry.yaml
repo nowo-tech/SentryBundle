@@ -8,6 +8,18 @@ nowo_sentry:
     priority: 0
   ignore_access_denied_listener:
     enabled: true
+  before_send_handler:
+    enabled: true
+    ignore_pure_access_denied: true
+    register_automatically: true
+  before_send_transaction_handler:
+    enabled: true
+    register_automatically: true
+    max_spans: 400
+    max_breadcrumbs: 50
+    max_string_length: 2048
+    max_array_keys: 50
+    max_array_depth: 3
   uptime_bot_listener:
     enabled: true
     user_agents:

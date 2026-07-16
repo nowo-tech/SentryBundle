@@ -10,6 +10,7 @@ Symfony bundle extending Sentry integration with enhanced event listeners and co
 
 - ✅ Enhanced request context with user and session information
 - ✅ Pure access denied filtered via `before_send`; parent-page failures from sub-request 403 reported with context
+- ✅ Oversized performance transactions trimmed via `before_send_transaction` (avoids Relay envelope size drops)
 - ✅ Doctrine DBAL SQL exception reporting (`dbal_exception_reporter`) — captures schema/query errors even in `catch` blocks
 - ✅ Uptime bot detection and handling
 - ✅ Compatible with existing Sentry configuration
@@ -84,15 +85,19 @@ Enriches Sentry reports with request context:
 
 Registered as `sentry.options.before_send` (automatically when not configured). Drops **pure** access denied responses (main or sub). Keeps parent-page failures where the reported exception wraps a sub-request 403 (e.g. Twig template rendering error).
 
-#### 3. SubRequestAccessDeniedContextListener
+#### 3. BeforeSendTransactionHandler (`nowo_sentry.before_send_transaction_handler`)
+
+Registered as `sentry.options.before_send_transaction` (automatically when not configured). Trims oversized performance transactions (span cap, breadcrumbs, request/extra/context) so Relay does not drop them with `envelope exceeded size limits for type 'event'`. Useful on Symfony pages with many Twig modal sub-requests. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#before-send-transaction-handler-configuration).
+
+#### 4. SubRequestAccessDeniedContextListener
 
 When a sub-request access denied breaks the parent page, adds `access_denied.*` tags and route/controller context to Sentry.
 
-#### 4. SentryUptimeBotListener
+#### 5. SentryUptimeBotListener
 
 Handles requests from uptime monitoring bots (default: Sentry Uptime Bot on `/health`). Configure additional user agents and paths as needed.
 
-#### 5. DBAL exception reporter (`dbal_exception_reporter`)
+#### 6. DBAL exception reporter (`dbal_exception_reporter`)
 
 Optional Doctrine DBAL driver middleware. Reports SQL/driver exceptions to Sentry with query context **before** your code catches them. Requires `doctrine/dbal` + `doctrine/doctrine-bundle`. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#dbal-exception-reporter-configuration).
 
@@ -185,6 +190,15 @@ nowo_sentry:
     enabled: true
     ignore_pure_access_denied: true  # Drop pure 403; keep parent-page failures wrapping sub-request 403
     register_automatically: true     # Prepend sentry.options.before_send when not set
+
+  before_send_transaction_handler:
+    enabled: true
+    register_automatically: true     # Prepend sentry.options.before_send_transaction when not set
+    max_spans: 400                   # Cap spans to avoid Relay envelope size drops (~1 MiB)
+    max_breadcrumbs: 50
+    max_string_length: 2048
+    max_array_keys: 50
+    max_array_depth: 3
 
   sub_request_access_denied_listener:
     enabled: true          # Add context when sub-request 403 breaks the parent page

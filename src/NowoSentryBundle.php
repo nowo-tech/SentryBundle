@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * - Enhanced request context with user and session information
  * - Configurable filtering of main-request access denied exceptions
  * - Sub-request access denied reporting with Sentry context enrichment
+ * - Truncation of oversized performance transactions (envelope size limits)
  * - Uptime bot detection and handling
  * - Doctrine DBAL SQL exception reporting (including caught errors)
  * - Compatible with existing Sentry configuration
@@ -36,6 +37,7 @@ class NowoSentryBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new DependencyInjection\Compiler\BeforeSendChainPass());
+        $container->addCompilerPass(new DependencyInjection\Compiler\BeforeSendTransactionChainPass());
     }
 
     /**

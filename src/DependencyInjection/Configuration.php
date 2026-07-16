@@ -99,6 +99,41 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('before_send_transaction_handler')
+                    ->addDefaultsIfNotSet()
+                    ->canBeDisabled()
+                    ->children()
+                        ->booleanNode('register_automatically')
+                            ->defaultTrue()
+                            ->info('Register as sentry.options.before_send_transaction; chains with an existing app callback when present')
+                        ->end()
+                        ->integerNode('max_spans')
+                            ->defaultValue(400)
+                            ->min(0)
+                            ->info('Maximum spans kept on a transaction (0 = do not truncate spans). Prevents envelope size rejections on heavy pages.')
+                        ->end()
+                        ->integerNode('max_breadcrumbs')
+                            ->defaultValue(50)
+                            ->min(0)
+                            ->info('Maximum breadcrumbs kept on a transaction (0 = do not truncate breadcrumbs)')
+                        ->end()
+                        ->integerNode('max_string_length')
+                            ->defaultValue(2048)
+                            ->min(0)
+                            ->info('Maximum string length kept in request/extra/context payloads')
+                        ->end()
+                        ->integerNode('max_array_keys')
+                            ->defaultValue(50)
+                            ->min(1)
+                            ->info('Maximum keys kept per truncated array level')
+                        ->end()
+                        ->integerNode('max_array_depth')
+                            ->defaultValue(3)
+                            ->min(0)
+                            ->info('Maximum nesting depth when truncating arrays')
+                        ->end()
+                    ->end()
+                ->end()
                 ->arrayNode('uptime_bot_listener')
                     ->addDefaultsIfNotSet()
                     ->canBeDisabled()
@@ -193,6 +228,15 @@ class Configuration implements ConfigurationInterface
                     'enabled'                   => true,
                     'ignore_pure_access_denied' => true,
                     'register_automatically'    => true,
+                ],
+                'before_send_transaction_handler' => [
+                    'enabled'                => true,
+                    'register_automatically' => true,
+                    'max_spans'              => 400,
+                    'max_breadcrumbs'        => 50,
+                    'max_string_length'      => 2048,
+                    'max_array_keys'         => 50,
+                    'max_array_depth'        => 3,
                 ],
                 'uptime_bot_listener' => [
                     'enabled'     => true,

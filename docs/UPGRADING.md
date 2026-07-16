@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.9.0](#upgrading-to-190)
   - [Upgrading to 1.8.0](#upgrading-to-180)
   - [Upgrading to 1.7.0](#upgrading-to-170)
   - [Upgrading to 1.6.2](#upgrading-to-162)
@@ -36,6 +37,42 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.9.0
+
+**Release Date**: 2026-07-16
+
+**New feature (non-breaking):** oversized transaction trimming is **enabled by default**.
+
+1. No config change required for apps that already use `nowo_sentry` defaults.
+2. Optional tuning in `config/packages/nowo_sentry.yaml`:
+
+```yaml
+nowo_sentry:
+    before_send_transaction_handler:
+        enabled: true
+        register_automatically: true
+        max_spans: 400
+        max_breadcrumbs: 50
+        max_string_length: 2048
+        max_array_keys: 50
+        max_array_depth: 3
+```
+
+3. If the app already defines `sentry.options.before_send_transaction`, the bundle handler runs first and then chains to yours (same pattern as `before_send_handler`).
+4. To opt out:
+
+```yaml
+nowo_sentry:
+    before_send_transaction_handler:
+        enabled: false
+```
+
+5. Clear cache after upgrade: `php bin/console cache:clear`
+
+Also recommended alongside this feature (in `sentry.yaml`, not this bundle): lower `traces_sample_rate` on heavy pages, avoid `max_request_body_size: always`, and consider disabling Twig tracing in production.
+
+See [CONFIGURATION.md](CONFIGURATION.md#before-send-transaction-handler-configuration) and [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.8.0
 

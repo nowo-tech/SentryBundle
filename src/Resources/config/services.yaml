@@ -26,6 +26,17 @@ services:
       $config: '%nowo_sentry.before_send_handler%'
       $reportedSqlExceptionRegistry: '@?Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry'
 
+  Nowo\SentryBundle\Sentry\EventPayloadTrimmer:
+    class: Nowo\SentryBundle\Sentry\EventPayloadTrimmer
+    arguments:
+      $config: '%nowo_sentry.before_send_transaction_handler%'
+
+  nowo_sentry.before_send_transaction_handler:
+    class: Nowo\SentryBundle\Sentry\BeforeSendTransactionHandler
+    arguments:
+      $config: '%nowo_sentry.before_send_transaction_handler%'
+      $trimmer: '@Nowo\SentryBundle\Sentry\EventPayloadTrimmer'
+
   Nowo\SentryBundle\Service\SentryErrorReporter:
     class: Nowo\SentryBundle\Service\SentryErrorReporter
     arguments:

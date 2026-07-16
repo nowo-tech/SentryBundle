@@ -12,6 +12,7 @@ This document provides a complete reference for all configuration options availa
   - [Request Listener Configuration](#request-listener-configuration)
   - [Ignore Access Denied Listener Configuration](#ignore-access-denied-listener-configuration)
   - [Uptime Bot Listener Configuration](#uptime-bot-listener-configuration)
+  - [Before Send Transaction Handler Configuration](#before-send-transaction-handler-configuration)
   - [DBAL Exception Reporter Configuration](#dbal-exception-reporter-configuration)
 - [Complete Configuration Example](#complete-configuration-example)
 - [Default Configuration](#default-configuration)
@@ -192,6 +193,39 @@ nowo_sentry:
 
 When `dbal_exception_reporter` is enabled, `before_send_handler` also drops duplicate events for SQL exceptions already reported by the DBAL middleware (`deduplicate_sql_exceptions`, driven by `dbal_exception_reporter.deduplicate`).
 
+### Before Send Transaction Handler Configuration
+
+Trims oversized **performance transactions** before they are sent, so Relay does not reject them with:
+
+`envelope exceeded size limits for type 'event'` (~1 MiB per event/transaction item).
+
+Typical causes on Symfony backoffice pages: many Twig modal sub-requests, DBAL/Twig/cache spans, large request bodies, and long breadcrumb trails.
+
+```yaml
+nowo_sentry:
+    before_send_transaction_handler:
+        enabled: true
+        register_automatically: true
+        max_spans: 400
+        max_breadcrumbs: 50
+        max_string_length: 2048
+        max_array_keys: 50
+        max_array_depth: 3
+```
+
+- **`register_automatically`**: register as `sentry.options.before_send_transaction`. If the app already defines `before_send_transaction`, the bundle chains both (bundle trimmer first, then the app callback). Set `false` to opt out.
+- **`max_spans`**: keep at most N spans (0 = do not truncate spans). Extra metadata is stored in `extra.spans_truncated`.
+- **`max_breadcrumbs`**: keep the newest N breadcrumbs (0 = do not truncate).
+- **`max_string_length` / `max_array_keys` / `max_array_depth`**: truncate request/extra/context payloads.
+
+Disable:
+
+```yaml
+nowo_sentry:
+    before_send_transaction_handler:
+        enabled: false
+```
+
 ### DBAL Exception Reporter Configuration
 
 Reports Doctrine DBAL **driver/SQL exceptions** to Sentry at query time, including errors later caught in application `catch` blocks.
@@ -344,6 +378,15 @@ nowo_sentry:
         ignore_pure_access_denied: true
         register_automatically: true
 
+    before_send_transaction_handler:
+        enabled: true
+        register_automatically: true
+        max_spans: 400
+        max_breadcrumbs: 50
+        max_string_length: 2048
+        max_array_keys: 50
+        max_array_depth: 3
+
     sub_request_access_denied_listener:
         enabled: true
         priority: 256
@@ -386,6 +429,15 @@ nowo_sentry:
         enabled: true
         ignore_pure_access_denied: true
         register_automatically: true
+
+    before_send_transaction_handler:
+        enabled: true
+        register_automatically: true
+        max_spans: 400
+        max_breadcrumbs: 50
+        max_string_length: 2048
+        max_array_keys: 50
+        max_array_depth: 3
 
     sub_request_access_denied_listener:
         enabled: true

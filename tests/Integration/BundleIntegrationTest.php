@@ -48,6 +48,10 @@ final class BundleIntegrationTest extends KernelTestCase
             'before_send_handler should be registered',
         );
         $this->assertTrue(
+            $container->has('nowo_sentry.before_send_transaction_handler'),
+            'before_send_transaction_handler should be registered',
+        );
+        $this->assertTrue(
             $container->has(SentryUptimeBotListener::class),
             'SentryUptimeBotListener should be registered',
         );

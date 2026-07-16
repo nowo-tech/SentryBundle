@@ -11,6 +11,7 @@ declare(strict_types=1);
  * @see https://getrector.com/documentation
  */
 use Rector\Config\RectorConfig;
+use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPublicMethodParameterRector;
 use Rector\ValueObject\PhpVersion;
 
 return RectorConfig::configure()
@@ -28,4 +29,8 @@ return RectorConfig::configure()
         __DIR__ . '/demo',
         __DIR__ . '/vendor',
         __DIR__ . '/tests', // Skip tests: some Symfony rules (e.g. RequestStack constructor) don't match Symfony's actual API
+        // Keep EventHint for Sentry before_send_transaction / BeforeSendChain callable shape
+        RemoveUnusedPublicMethodParameterRector::class => [
+            __DIR__ . '/src/Sentry/BeforeSendTransactionHandler.php',
+        ],
     ]);

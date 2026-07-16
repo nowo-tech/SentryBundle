@@ -701,7 +701,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/sentry-bundle",
-                "reference": "5cb939ad0845f66101be14d10680c8eb12bcee5e"
+                "reference": "2b014f5dc3d329075c33ba8cee7f33eab98e0778"
             },
             "require": {
                 "php": ">=8.2 <8.6",
@@ -729,6 +729,11 @@
                 "doctrine/doctrine-bundle": "Required to report SQL exceptions via dbal_exception_reporter"
             },
             "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.9.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Nowo\\SentryBundle\\": "src/"
