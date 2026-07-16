@@ -49,7 +49,7 @@ class NowoSentryExtensionTest extends TestCase
 
         $config = [
             'request_listener'                   => ['enabled' => true, 'priority' => 0],
-            'ignore_access_denied_listener'      => ['enabled' => true, 'priority' => 254],
+            'ignore_access_denied_listener'      => ['enabled' => true],
             'sub_request_access_denied_listener' => ['enabled' => true, 'priority' => 256],
             'before_send_handler'                => ['enabled' => true, 'ignore_pure_access_denied' => true, 'register_automatically' => true],
             'uptime_bot_listener'                => ['enabled' => true, 'priority' => 255, 'user_agents' => [], 'paths' => []],
@@ -70,7 +70,7 @@ class NowoSentryExtensionTest extends TestCase
 
         $config = [
             'request_listener'                   => ['enabled' => false, 'priority' => 0],
-            'ignore_access_denied_listener'      => ['enabled' => false, 'priority' => 254],
+            'ignore_access_denied_listener'      => ['enabled' => false],
             'sub_request_access_denied_listener' => ['enabled' => false, 'priority' => 256],
             'before_send_handler'                => ['enabled' => false, 'ignore_pure_access_denied' => true, 'register_automatically' => true],
             'uptime_bot_listener'                => ['enabled' => false, 'priority' => 255, 'user_agents' => [], 'paths' => []],
@@ -82,6 +82,68 @@ class NowoSentryExtensionTest extends TestCase
         $this->assertFalse($container->hasDefinition(SubRequestAccessDeniedContextListener::class));
         $this->assertFalse($container->hasDefinition('nowo_sentry.before_send_handler'));
         $this->assertFalse($container->hasDefinition(SentryUptimeBotListener::class));
+    }
+
+    public function testLoadRemovesErrorReporterAliasWhenDisabledButKeepsServiceForDbal(): void
+    {
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $extension->load([
+            [
+                'error_reporter'          => ['enabled' => false],
+                'dbal_exception_reporter' => ['enabled' => true],
+            ],
+        ], $container);
+
+        $this->assertFalse($container->hasAlias('nowo_sentry.error_reporter'));
+
+        if (interface_exists(\Doctrine\DBAL\Driver\Middleware::class)
+            && interface_exists(\Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface::class)) {
+            $this->assertTrue($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+            $this->assertFalse($container->getDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class)->isPublic());
+            $this->assertTrue($container->hasDefinition(\Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter::class));
+        } else {
+            $this->assertFalse($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+        }
+    }
+
+    public function testLoadRemovesErrorReporterWhenDisabledAndDbalDisabled(): void
+    {
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $extension->load([
+            [
+                'error_reporter'          => ['enabled' => false],
+                'dbal_exception_reporter' => ['enabled' => false],
+            ],
+        ], $container);
+
+        $this->assertFalse($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+        $this->assertFalse($container->hasAlias('nowo_sentry.error_reporter'));
+    }
+
+    public function testLoadRegistersErrorReporterAliasWhenEnabled(): void
+    {
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $extension->load([], $container);
+
+        $this->assertTrue($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+        $this->assertTrue($container->hasAlias('nowo_sentry.error_reporter'));
+    }
+
+    public function testLoadDoesNotSetDuplicatePriorityParameters(): void
+    {
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $extension->load([], $container);
+
+        $this->assertFalse($container->hasParameter('nowo_sentry.request_listener.priority'));
+        $this->assertFalse($container->hasParameter('nowo_sentry.uptime_bot_listener.priority'));
     }
 
     public function testIgnoreAccessDeniedDisabledMapsToBeforeSendHandler(): void

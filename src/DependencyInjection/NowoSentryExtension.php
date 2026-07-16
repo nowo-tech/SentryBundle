@@ -6,9 +6,11 @@ namespace Nowo\SentryBundle\DependencyInjection;
 
 use Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionMiddleware;
 use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
+use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
+use Nowo\SentryBundle\Service\SentryErrorReporter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -80,12 +82,6 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $container->setParameter(Configuration::ALIAS . '.error_reporter', $config['error_reporter']);
         $container->setParameter(Configuration::ALIAS . '.dbal_exception_reporter', $config['dbal_exception_reporter']);
 
-        // Set individual priority parameters for easier access in services.yaml
-        $container->setParameter(Configuration::ALIAS . '.request_listener.priority', $config['request_listener']['priority']);
-        $container->setParameter(Configuration::ALIAS . '.ignore_access_denied_listener.priority', $config['ignore_access_denied_listener']['priority']);
-        $container->setParameter(Configuration::ALIAS . '.sub_request_access_denied_listener.priority', $config['sub_request_access_denied_listener']['priority']);
-        $container->setParameter(Configuration::ALIAS . '.uptime_bot_listener.priority', $config['uptime_bot_listener']['priority']);
-
         // Load services configuration
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
@@ -98,6 +94,7 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         // Conditionally register listeners based on configuration
         $this->registerListeners($container, $config);
         $this->registerDbalExceptionReporter($container, $config);
+        $this->registerErrorReporter($container, $config);
     }
 
     /**
@@ -159,6 +156,34 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
     }
 
     /**
+     * Registers or removes SentryErrorReporter independently from DBAL reporting.
+     *
+     * @param ContainerBuilder $container The container builder
+     * @param array<string, mixed> $config The processed configuration
+     */
+    private function registerErrorReporter(ContainerBuilder $container, array $config): void
+    {
+        if ($config['error_reporter']['enabled'] ?? true) {
+            return;
+        }
+
+        if ($container->hasAlias('nowo_sentry.error_reporter')) {
+            $container->removeAlias('nowo_sentry.error_reporter');
+        }
+
+        // DBAL SqlExceptionReporter depends on SentryErrorReporter; keep it private if still needed
+        if ($container->hasDefinition(SqlExceptionReporter::class)) {
+            if ($container->hasDefinition(SentryErrorReporter::class)) {
+                $container->getDefinition(SentryErrorReporter::class)->setPublic(false);
+            }
+
+            return;
+        }
+
+        $container->removeDefinition(SentryErrorReporter::class);
+    }
+
+    /**
      * Registers the DBAL SQL exception middleware when enabled and Doctrine is available.
      *
      * @param ContainerBuilder $container The container builder
@@ -171,16 +196,10 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
             return;
         }
 
-        if (!($config['error_reporter']['enabled'] ?? true)) {
-            $container->removeDefinition(SentryDbalExceptionMiddleware::class);
-            $container->removeDefinition(ReportedSqlExceptionRegistry::class);
-
-            return;
-        }
-
         if (!($config['dbal_exception_reporter']['enabled'] ?? true)) {
             $container->removeDefinition(SentryDbalExceptionMiddleware::class);
             $container->removeDefinition(ReportedSqlExceptionRegistry::class);
+            $container->removeDefinition(SqlExceptionReporter::class);
 
             return;
         }

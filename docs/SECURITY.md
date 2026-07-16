@@ -21,12 +21,14 @@ Thank you for helping keep Sentry Bundle and its users safe.
 
 ## Data sent to Sentry
 
-This bundle enriches Sentry scope with request context. Review these defaults in production:
+This bundle enriches Sentry scope with request context and optional SQL extras. Review these defaults in production (full table in [CONFIGURATION.md](CONFIGURATION.md#privacy-pii-sent-to-sentry)):
 
 | Setting | Default | Notes |
 |---------|---------|-------|
 | `set_user_info` | `true` | Sends authenticated user id/username when available |
 | `set_session_id` | `false` | Disabled by default to reduce PII in error reports |
+| `set_domain_tag` / `set_environment_tag` | `true` | Host and kernel environment tags |
+| `dbal_exception_reporter` | on when Doctrine present | May send truncated SQL in event extras |
 
 Enable `set_session_id` only when session correlation is required and your privacy policy allows it.
 

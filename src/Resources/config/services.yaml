@@ -33,6 +33,10 @@ services:
       $logger: '@?logger'
     public: true
 
+  nowo_sentry.error_reporter:
+    alias: Nowo\SentryBundle\Service\SentryErrorReporter
+    public: true
+
   Nowo\SentryBundle\EventListener\SentryUptimeBotListener:
     class: Nowo\SentryBundle\EventListener\SentryUptimeBotListener
     arguments:

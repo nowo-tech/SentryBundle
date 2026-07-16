@@ -56,10 +56,7 @@
     "autoload": {
         "psr-4": {
             "Nowo\\SentryBundle\\": "src/"
-        },
-        "files": [
-            "tests/RedisExceptionStub.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -76,7 +73,18 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "archive": {
-        "exclude": ["/demo", "/.cursor"]
+        "exclude": [
+            "/demo",
+            "/.cursor",
+            "/.specify",
+            "/specs",
+            "/docs/ENGRAM.md",
+            "/docs/SPEC-KIT.md",
+            "/docs/SPEC-DRIVEN-DEVELOPMENT.md",
+            "/.scripts",
+            "/.coderabbit.yaml",
+            "/coverage.xml"
+        ]
     },
     "scripts": {
         "test": "phpunit --colors=always",

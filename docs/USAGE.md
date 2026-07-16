@@ -102,4 +102,4 @@ class MyController extends AbstractController
 - `setUser(array $userData): bool`
 - `setContext(array $context): bool`
 
-See the demo projects (`demo/symfony7`, `demo/symfony8`, `demo/symfony8-php85`) for full examples and routes.
+See the demo project (`demo/symfony8`) for full examples and routes.

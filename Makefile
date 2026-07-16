@@ -8,7 +8,7 @@ SERVICE_PHP  := php
 .PHONY: help up down build shell install assets test test-coverage coverage-php-percent coverage-check check-no-cursor-coauthor strip-cursor-coauthor-from-history
 .PHONY: cs-check cs-fix rector rector-dry phpstan qa
 .PHONY: release-check composer-sync clean update validate setup-hooks ensure-up
-.PHONY: release-check-demos up-symfony7 up-symfony8 up-symfony8-php85 demo-down
+.PHONY: release-check-demos up-symfony8 demo-down
 
 help:
 	@echo "Sentry Bundle - Development Commands"
@@ -39,9 +39,7 @@ help:
 	@echo "  setup-hooks     Install git pre-commit hooks"
 	@echo ""
 	@echo "Demos (from repo root):"
-	@echo "  make -C demo up-symfony7        Start Symfony 7 demo"
 	@echo "  make -C demo up-symfony8        Start Symfony 8 demo"
-	@echo "  make -C demo up-symfony8-php85  Start Symfony 8 + PHP 8.5 demo"
 	@echo "  make -C demo demo-down          Stop all demos (use demo/Makefile)"
 	@echo ""
 

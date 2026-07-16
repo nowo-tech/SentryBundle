@@ -1,26 +1,20 @@
 # Sentry Bundle - Demo
 
-This directory contains demo projects demonstrating the usage of the Sentry Bundle with different Symfony and PHP versions.
+This directory contains a demo project demonstrating the usage of the Sentry Bundle with Symfony.
 
 ## Features
 
-- Demo projects for different Symfony/PHP combinations
 - Example Sentry integration
 - Doctrine DBAL SQL exception reporting demos (<code>/sentry/sql-caught</code>, <code>/sentry/sql-uncaught</code>)
 - Docker setup for easy development
-- Independent Docker containers for each demo
-- Comprehensive test suite for each demo
+- Comprehensive test suite
 - Symfony Web Profiler included for debugging (dev and test environments)
 
-## Demo Projects
+## Demo Project
 
-The bundle includes demo projects:
+1. **Symfony 8.1 Demo** - PHP 8.4 (Port 8008 by default, configurable via `.env`)
 
-1. **Symfony 7.4 Demo** - PHP 8.2 (Port 8007 by default, configurable via `.env`)
-2. **Symfony 8.1 Demo** - PHP 8.4 (Port 8008 by default, configurable via `.env`)
-3. **Symfony 8.1 Demo with PHP 8.5** - PHP 8.5 (Port 8009 by default, configurable via `.env`)
-
-Each demo is independent and includes:
+The demo includes:
 - FrankenPHP (Caddy + PHP) Docker setup — see [../docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md)
 - Comprehensive test suite
 - Port configuration via `.env` file
@@ -29,7 +23,7 @@ Each demo is independent and includes:
 
 ## Sentry demo routes
 
-Open <code>/sentry</code> in any running demo to browse all use cases. Highlights:
+Open <code>/sentry</code> in the running demo to browse all use cases. Highlights:
 
 | Route | What it demonstrates |
 |-------|----------------------|
@@ -38,36 +32,9 @@ Open <code>/sentry</code> in any running demo to browse all use cases. Highlight
 | <code>/sentry/access-denied</code> | Pure 403 filtered by <code>before_send_handler</code> |
 | <code>/sentry/trigger-error</code> | Uncaught exception captured by the Sentry SDK |
 
-Demos use SQLite (<code>var/demo.db</code>) via Doctrine DBAL. Rebuild Docker images after pulling so <code>pdo_sqlite</code> is available.
+The demo uses SQLite (<code>var/demo.db</code>) via Doctrine DBAL. Rebuild Docker images after pulling so <code>pdo_sqlite</code> is available.
 
 ## Quick Start with Docker
-
-Each demo has its own `docker-compose.yml` and can be run independently. You can start any demo you want:
-
-### Symfony 7.4 Demo (PHP 8.2)
-
-```bash
-# Navigate to the demo directory
-cd demo/symfony7
-
-# Start containers
-docker-compose up -d
-
-# Install dependencies
-docker-compose exec php composer install
-
-# Access at: http://localhost:8007 (default for Symfony 7.4, configurable via PORT)
-```
-
-Or using the Makefile from the `demo/` directory:
-
-```bash
-cd demo
-make up-symfony7
-make install-symfony7
-```
-
-### Symfony 8.1 Demo (PHP 8.4)
 
 ```bash
 cd demo
@@ -75,38 +42,21 @@ make up-symfony8
 make install-symfony8
 ```
 
-### Symfony 8.1 Demo with PHP 8.5
-
-```bash
-cd demo
-make up-symfony8-php85
-make install-symfony8-php85
-```
+Access at: http://localhost:8008 (default, configurable via `PORT` in `.env`).
 
 ## Running Tests
 
-Each demo includes a comprehensive test suite. You can run tests for individual demos or all demos at once:
-
-### Run tests for a specific demo
-
 ```bash
 cd demo
-make test-symfony7        # Run tests for Symfony 7.4 demo
-make test-symfony8        # Run tests for Symfony 8.1 demo
-make test-symfony8-php85  # Run tests for Symfony 8.1 + PHP 8.5 demo
-```
-
-### Run all tests
-
-```bash
-cd demo
+make test-symfony8
+# or
 make test-all
 ```
 
-Or run tests directly in a demo:
+Or run tests directly in the demo:
 
 ```bash
-cd demo/symfony7
+cd demo/symfony8
 docker-compose exec php vendor/bin/phpunit
 ```
 
@@ -114,14 +64,14 @@ docker-compose exec php vendor/bin/phpunit
 
 All commands are available through the Makefile in the `demo/` directory:
 
-- `make up-symfony7` / `make up-symfony8` / `make up-symfony8-php85` - Start demo containers
-- `make down-symfony7` / `make down-symfony8` / `make down-symfony8-php85` - Stop demo containers
-- `make install-symfony7` / `make install-symfony8` / `make install-symfony8-php85` - Install dependencies
-- `make shell-symfony7` / `make shell-symfony8` / `make shell-symfony8-php85` - Open shell in PHP container
-- `make logs-symfony7` / `make logs-symfony8` / `make logs-symfony8-php85` - Show container logs
-- `make test-symfony7` / `make test-symfony8` / `make test-symfony8-php85` - Run tests for specific demo
+- `make up-symfony8` - Start demo containers
+- `make down-symfony8` - Stop demo containers
+- `make install-symfony8` - Install dependencies
+- `make shell-symfony8` - Open shell in PHP container
+- `make logs-symfony8` - Show container logs
+- `make test-symfony8` - Run tests
 - `make test-all` - Run tests for all demos
-- `make clean` - Remove vendor and cache from all demos
+- `make clean` - Remove vendor and cache
 
 ## License
 

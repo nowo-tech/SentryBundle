@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.7.0] - 2026-07-16](#170---2026-07-16)
 - [[1.6.2] - 2026-07-16](#162---2026-07-16)
 - [[1.6.1] - 2026-07-14](#161---2026-07-14)
 - [[1.6.0] - 2026-07-14](#160---2026-07-14)
@@ -35,6 +36,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.7.0] - 2026-07-16
+
+### Added
+- `BeforeSendChain` + compiler pass: when the app already sets `sentry.options.before_send`, the bundle handler runs first and then chains to the app callback
+- Stable public alias `nowo_sentry.error_reporter` for `SentryErrorReporter`
+
+### Changed
+- `error_reporter.enabled=false` removes the public alias / service for app injection; DBAL reporting stays independent (`dbal_exception_reporter.enabled`)
+- Uptime bot defaults: `user_agents: [SentryUptimeBot/1.0]`, `paths: [/health]` (aligned with safer health-check path)
+- Flex recipe registers both `SentryBundle` and `NowoSentryBundle`
+- `ignore_access_denied_listener` marked deprecated via `setDeprecated()` (use `before_send_handler.ignore_pure_access_denied`); **`priority` key removed** from that node
+- `error_reporter` uses `canBeDisabled()` like other feature nodes
+- `Configuration::generateConfigFile()` marked `@internal`
+- Packagist archive excludes SpecKit/Engram meta (`.specify`, `specs`, related docs)
+- Empty/`non-string` `dbal_exception_reporter.sql_states` entries are ignored (empty string no longer matches every SQLSTATE)
+
+### Fixed
+- `SqlExceptionReporter` truncation/filter tests (UTF-8 ellipsis; invalid sql_states)
+
+### Removed
+- Runtime YAML generation in `NowoSentryBundle::boot()` (use Flex recipe or defaults)
+- Obsolete `NowoSentryBundle::getParent()` (bundle inheritance is not used on Symfony 6+)
+- Demo apps `demo/symfony7` and `demo/symfony8-php85`; remaining demo is `demo/symfony8`
+- Duplicate DI parameters `nowo_sentry.*.priority` (priorities remain inside each listener config array)
+- RedisException stub from production autoload (session failures caught via `Exception`)
 
 ## [1.6.2] - 2026-07-16
 

@@ -40,9 +40,9 @@ This command will display the current bundle configuration in the console.
 
 The bundle configuration is defined in `config/packages/nowo_sentry.yaml`. 
 
-**Automatic Generation**: This file is automatically created when the bundle is installed if it doesn't already exist. The bundle will generate it with default values during the first boot.
+**Installation**: The Symfony Flex recipe creates this file with defaults. Without Flex, copy the recipe config or rely on built-in defaults (no config file required).
 
-If you prefer to use default values without a configuration file, you can delete it and the bundle will work with defaults.
+If you prefer to use default values without a configuration file, you can omit it and the bundle will work with defaults.
 
 ## Complete Configuration Reference
 
@@ -188,9 +188,7 @@ nowo_sentry:
 ```
 
 - **`ignore_pure_access_denied`**: drop pure access denied events (main or sub).
-- **`register_automatically`**: prepend `sentry.options.before_send: nowo_sentry.before_send_handler` when the app did not set one.
-
-If your app defines its own `before_send`, chain both handlers or set `register_automatically: false`.
+- **`register_automatically`**: register as `sentry.options.before_send`. If the app already defines `before_send`, the bundle chains both (bundle filter first, then the app callback). Set `false` to opt out.
 
 When `dbal_exception_reporter` is enabled, `before_send_handler` also drops duplicate events for SQL exceptions already reported by the DBAL middleware (`deduplicate_sql_exceptions`, driven by `dbal_exception_reporter.deduplicate`).
 
@@ -215,7 +213,7 @@ nowo_sentry:
 
 - **`enabled`** (boolean, default: `true`)
   - Registers `SentryDbalExceptionMiddleware` when Doctrine DBAL middleware is available.
-  - Disabled automatically when `error_reporter.enabled` is `false`.
+  - Independent from `error_reporter.enabled` (each toggle controls its own feature).
 
 - **`connections`** (array of strings, default: `[]`)
   - Doctrine connection names to monitor. Empty registers the middleware for **all** connections.
@@ -270,12 +268,8 @@ nowo_sentry:
         enabled: true                    # Enable/disable the uptime bot handler
         user_agents:                     # List of user agent prefixes
             - 'SentryUptimeBot/1.0'
-            - 'Uptime-Kuma'
-            - 'kube-probe'
         paths:                           # List of paths to monitor
-            - '/dashboard'
-            - '/'
-            - '/login'
+            - '/health'
         priority: 255                    # Event listener priority
 ```
 
@@ -286,16 +280,17 @@ nowo_sentry:
   - When disabled, monitoring bot requests will be processed normally.
   - Default: `true`
 
-- **`user_agents`** (array of strings, default: `['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe']`)
+- **`user_agents`** (array of strings, default: `['SentryUptimeBot/1.0']`)
   - List of user agent prefixes to detect as uptime bots.
   - The listener checks if the request User-Agent starts with any of these prefixes.
-  - Default: `['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe']`
+  - Add `Uptime-Kuma`, `kube-probe`, etc. when needed.
+  - Default: `['SentryUptimeBot/1.0']`
 
-- **`paths`** (array of strings, default: `['/dashboard', '/', '/login']`)
+- **`paths`** (array of strings, default: `['/health']`)
   - List of paths that should return OK for uptime bots.
-  - Exact path matches: `/` or `/login`
-  - Path prefix matches: `/dashboard` matches `/dashboard` and `/dashboard/anything`
-  - Default: `['/dashboard', '/', '/login']`
+  - Exact path match: `/health`
+  - Path prefix matches apply when the path is not `/`
+  - Default: `['/health']`
 
 - **`priority`** (integer, default: `255`)
   - Event listener priority for the `kernel.request` event.
@@ -365,12 +360,8 @@ nowo_sentry:
         enabled: true
         user_agents:
             - 'SentryUptimeBot/1.0'
-            - 'Uptime-Kuma'
-            - 'kube-probe'
         paths:
-            - '/dashboard'
-            - '/'
-            - '/login'
+            - '/health'
         priority: 255
 ```
 
@@ -412,12 +403,8 @@ nowo_sentry:
         enabled: true
         user_agents:
             - 'SentryUptimeBot/1.0'
-            - 'Uptime-Kuma'
-            - 'kube-probe'
         paths:
-            - '/dashboard'
-            - '/'
-            - '/login'
+            - '/health'
         priority: 255
 ```
 
@@ -491,8 +478,9 @@ nowo_sentry:
 #### Options
 
 - **`enabled`** (boolean, default: `true`)
-  - Enables or disables the error reporter service.
-  - When disabled, the service is still available but may not function as expected.
+  - When `true`, registers the public `SentryErrorReporter` service and alias `nowo_sentry.error_reporter`.
+  - When `false`, removes the public alias. The class definition is removed unless `dbal_exception_reporter` still needs it as a private helper.
+  - Does **not** disable DBAL SQL reporting — use `dbal_exception_reporter.enabled` for that.
   - Default: `true`
 
 #### Usage
@@ -565,12 +553,27 @@ class MyController extends AbstractController
 - Priority values determine the **execution order** of event listeners:
   - Higher values execute earlier
   - Default priorities are chosen to work well with Symfony's default listeners
-- The bundle **extends** the official Sentry Symfony bundle, so your existing `config/packages/sentry.yaml` configuration continues to work.
+- The bundle **complements** the official Sentry Symfony bundle, so your existing `config/packages/sentry.yaml` configuration continues to work.
 - The `request_listener` requires Symfony Security Bundle for user information features.
 - The `uptime_bot_listener` returns a simple `200 OK` response for matching requests, preventing them from going through the full application stack.
 - The `error_reporter` service is **always safe to use** - it never throws exceptions, even if Sentry is completely broken.
 - **`dbal_exception_reporter`** is a no-op when Doctrine DBAL/Bundle is not installed; disable with `enabled: false` if you do not want SQL reporting.
 - SQL deduplication uses `ReportedSqlExceptionRegistry` with **`kernel.reset`** — safe for FrankenPHP worker mode.
+
+### Privacy (PII) sent to Sentry
+
+Review your privacy policy before enabling optional fields. By default this bundle may attach:
+
+| Source | Data | Default |
+|--------|------|---------|
+| `request_listener` | Tag `domain` (request host) | on |
+| `request_listener` | Tag `environment` (`%kernel.environment%`) | on |
+| `request_listener` | User `id` / `username` (Security user identifier) | on |
+| `request_listener` | Extra `session_id` | **off** (`set_session_id: false`) |
+| `sub_request_access_denied_listener` | Tags `access_denied.*`; extras route/URI/controller (and parent request when available) | on |
+| `dbal_exception_reporter` | Extra `sql` (truncated), `connection`, `sql_state` | on when Doctrine is present |
+
+SQL statements and user identifiers can contain personal or sensitive data. Prefer `set_session_id: false`, restrict `sql_states`, and/or lower `max_sql_length` when needed. Sentry project scrubbing rules remain the last line of defense.
 
 ## Troubleshooting
 

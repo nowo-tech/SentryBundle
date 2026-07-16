@@ -10,8 +10,6 @@ parameters:
         - demo/*
         - vendor/*
         - tests/Fixtures/*
-    bootstrapFiles:
-        - phpstan-stubs/RedisException.php
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
     ignoreErrors:

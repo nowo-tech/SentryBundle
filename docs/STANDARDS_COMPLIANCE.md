@@ -24,7 +24,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 |-----------|--------|
 | **2.1** Base image `php:8.2-cli-alpine`, single Dockerfile, PCOV, Composer 2, `git safe.directory` | ✅ |
 | **2.2** Single `docker-compose.yml` (no docker-compose.test.yml), `name: sentry-bundle`, service `php`, coverage volume | ✅ |
-| **2.3** Demos in `demo/symfony7`, `demo/symfony8`, `demo/symfony8-php85`; each has `docker-compose.yml` with `name: <bundle-slug>-demo-symfony-<n>` | ✅ (added `name` to each demo compose) |
+| **2.3** Demo in `demo/symfony8`; has `docker-compose.yml` with `name: <bundle-slug>-demo-symfony-<n>` | ✅ (added `name` to demo compose) |
 | **2.4** FrankenPHP | ✅ (demos use FrankenPHP; see `docs/DEMO-FRANKENPHP.md`) |
 
 ---
@@ -70,9 +70,9 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 |-----------|--------|
 | demo/Makefile with DEMOS, help, per-demo targets delegating via `$(MAKE) -C <demo> <target>` | ✅ |
 | restart-*, build-*, update-bundle-*, verify-*, test-all, test-coverage-all, verify-all, release-verify, clean, **demo-down** | ✅ |
-| **demo/symfony7**, **demo/symfony8**, **demo/symfony8-php85** each have Makefile with up, down, restart, build, install, test, test-coverage, update-bundle, ensure-up, shell, logs, verify | ✅ |
+| **demo/symfony8** has Makefile with up, down, restart, build, install, test, test-coverage, update-bundle, ensure-up, shell, logs, verify | ✅ |
 | demo/README.md | ✅ |
-| README in each demo subfolder (demo/symfony7, etc.) | ⚠️ Optional: only demo/ has README; subfolders could have a short README each |
+| README in each demo subfolder (demo/symfony8, etc.) | ⚠️ Optional: only demo/ has README; subfolders could have a short README each |
 
 ---
 
@@ -119,7 +119,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 | Criterion | Status |
 |-----------|--------|
 | composer.json Symfony ^6.0 \|\| ^7.0 \|\| ^8.0 | ✅ |
-| Demos: symfony7, symfony8, symfony8-php85 (no symfony6) | ✅ (aligned with supported versions) |
+| Demos: symfony8 (no symfony6 / symfony7 / symfony8-php85) | ✅ (aligned with supported versions) |
 
 ---
 
@@ -127,4 +127,4 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 
 - **Fully aligned** with BUNDLES_STANDARDS_PROMPT.md for Docker, License, archive, PHP-CS-Fixer, Rector, PHPStan, Makefile (root and demo), docs, tests, CI, recipe, Symfony versions, and **FrankenPHP-based demos** (§2.4).
 - **Earlier check:** added `name:` to each demo `docker-compose.yml` (§2.3) and target **demo-down** in demo/Makefile (§5.5).
-- **Optional:** add a short README.md in each of demo/symfony7, demo/symfony8, demo/symfony8-php85 if you want to match the “demo/symfonyX con README.md” note in the standards tables.
+- **Optional:** add a short README.md in demo/symfony8 if you want to match the “demo/symfonyX con README.md” note in the standards tables.

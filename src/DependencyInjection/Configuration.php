@@ -67,14 +67,13 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('ignore_access_denied_listener')
+                    ->setDeprecated(
+                        'nowo-tech/sentry-bundle',
+                        '1.7',
+                        'The "%node%" option is deprecated; use "before_send_handler.ignore_pure_access_denied" instead.',
+                    )
                     ->addDefaultsIfNotSet()
                     ->canBeDisabled()
-                    ->children()
-                        ->integerNode('priority')
-                            ->defaultValue(254)
-                            ->info('Deprecated: listener removed; kept for BC. Use before_send_handler.ignore_pure_access_denied.')
-                        ->end()
-                    ->end()
                 ->end()
                 ->arrayNode('sub_request_access_denied_listener')
                     ->addDefaultsIfNotSet()
@@ -96,7 +95,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                         ->booleanNode('register_automatically')
                             ->defaultTrue()
-                            ->info('Prepend sentry.options.before_send with nowo_sentry.before_send_handler when not configured by the app')
+                            ->info('Register as sentry.options.before_send; chains with an existing app before_send when present')
                         ->end()
                     ->end()
                 ->end()
@@ -105,12 +104,12 @@ class Configuration implements ConfigurationInterface
                     ->canBeDisabled()
                     ->children()
                         ->arrayNode('user_agents')
-                            ->defaultValue(['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'])
+                            ->defaultValue(['SentryUptimeBot/1.0'])
                             ->prototype('scalar')->end()
                             ->info('List of user agent prefixes to detect as uptime bots')
                         ->end()
                         ->arrayNode('paths')
-                            ->defaultValue(['/dashboard', '/', '/login'])
+                            ->defaultValue(['/health'])
                             ->prototype('scalar')->end()
                             ->info('List of paths that should return OK for uptime bots')
                         ->end()
@@ -122,12 +121,8 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('error_reporter')
                     ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('enabled')
-                            ->defaultTrue()
-                            ->info('Whether the error reporter service is enabled')
-                        ->end()
-                    ->end()
+                    ->canBeDisabled()
+                    ->info('Registers SentryErrorReporter and alias nowo_sentry.error_reporter')
                 ->end()
                 ->arrayNode('dbal_exception_reporter')
                     ->addDefaultsIfNotSet()
@@ -165,6 +160,8 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates a default configuration YAML file at the given path.
      *
+     * @internal used by tests and optional tooling; not part of the public consumer API
+     *
      * @param string $configPath Absolute path to the configuration file to generate
      *
      * @throws RuntimeException If the symfony/yaml component is not installed
@@ -186,8 +183,7 @@ class Configuration implements ConfigurationInterface
                     'priority'            => 0,
                 ],
                 'ignore_access_denied_listener' => [
-                    'enabled'  => true,
-                    'priority' => 254,
+                    'enabled' => true,
                 ],
                 'sub_request_access_denied_listener' => [
                     'enabled'  => true,
@@ -202,13 +198,9 @@ class Configuration implements ConfigurationInterface
                     'enabled'     => true,
                     'user_agents' => [
                         'SentryUptimeBot/1.0',
-                        'Uptime-Kuma',
-                        'kube-probe',
                     ],
                     'paths' => [
-                        '/dashboard',
-                        '/',
-                        '/login',
+                        '/health',
                     ],
                     'priority' => 255,
                 ],

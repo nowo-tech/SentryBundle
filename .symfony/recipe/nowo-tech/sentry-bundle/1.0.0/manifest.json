@@ -1,5 +1,6 @@
 {
     "bundles": {
+        "Sentry\\SentryBundle\\SentryBundle": ["all"],
         "Nowo\\SentryBundle\\NowoSentryBundle": ["all"]
     },
     "copy-from-recipe": {

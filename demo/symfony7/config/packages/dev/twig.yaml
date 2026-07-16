@@ -1,3 +1,0 @@
-# Disable Twig cache in dev so template changes are visible on refresh (FrankenPHP dev)
-twig:
-    cache: false

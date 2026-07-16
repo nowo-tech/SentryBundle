@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * Tests for Sentry Bundle integration.
  *
- * Verifies that the bundle is correctly registered and extends SentryBundle.
+ * Verifies that the bundle is correctly registered.
  *
  * @covers \Nowo\SentryBundle\NowoSentryBundle
  */
@@ -40,13 +40,10 @@ final class NowoSentryBundleTest extends TestCase
     }
 
     /**
-     * Tests that the bundle extends SentryBundle.
+     * Bundle inheritance via getParent() is not used on Symfony 6+.
      */
-    public function testBundleExtendsSentryBundle(): void
+    public function testDoesNotDeclareParentBundle(): void
     {
-        $bundle = new NowoSentryBundle();
-        $parent = $bundle->getParent();
-
-        $this->assertEquals('SentryBundle', $parent);
+        $this->assertFalse(method_exists(NowoSentryBundle::class, 'getParent'));
     }
 }

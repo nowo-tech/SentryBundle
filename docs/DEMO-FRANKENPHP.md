@@ -25,7 +25,7 @@ The demos use:
 - **Two Caddyfiles**: `Caddyfile` (production, with worker) and `Caddyfile.dev` (development, no worker).
 - An **entrypoint** script that, when `APP_ENV=dev`, copies `Caddyfile.dev` over the default Caddyfile and then starts FrankenPHP.
 
-There are demos for **Symfony 7**, **Symfony 8**, and **Symfony 8 with PHP 8.5** (**demo/symfony7**, **demo/symfony8**, **demo/symfony8-php85**). Each has its own Dockerfile, docker-compose.yml and Makefile. From the bundle root you run e.g. `make -C demo/symfony8 up` (see the demo’s README for the URL and port).
+There is a demo for **Symfony 8** (**demo/symfony8**). It has its own Dockerfile, docker-compose.yml and Makefile. From the bundle root you run e.g. `make -C demo/symfony8 up` (see the demo’s README for the URL and port).
 
 The main difference between development and production is:
 
@@ -38,7 +38,7 @@ The main difference between development and production is:
 | Symfony cache on startup | Cleared in Makefile before `up` | Not cleared (or warmup only) |
 | `APP_ENV` / `APP_DEBUG` | `dev` / `1` | `prod` / `0` |
 
-**Ports:** Each demo uses `PORT` from its `.env` with different defaults: **8007** (symfony7), **8008** (symfony8), **8009** (symfony8-php85). You can still override `PORT` when needed.
+**Ports:** The demo uses `PORT` from its `.env` with default **8008** (symfony8). You can still override `PORT` when needed.
 
 ---
 
@@ -109,7 +109,7 @@ The demos’ Docker entrypoint copies this file over `/etc/frankenphp/Caddyfile`
 
 The demos include **docker/php-dev.ini** so OPcache rechecks file modification time on every request; recompiled Twig templates in `var/cache` are then picked up immediately.
 
-- **demo/symfony7/docker/php-dev.ini**, **demo/symfony8/docker/php-dev.ini**, and **demo/symfony8-php85/docker/php-dev.ini**:
+- **demo/symfony8/docker/php-dev.ini**:
 
 ```ini
 ; Recheck compiled PHP files every request so Twig-compiled templates in var/cache are always fresh
@@ -122,7 +122,7 @@ opcache.revalidate_freq=0
 
 The demos disable Twig’s compiled template cache in the dev environment so Twig recompiles from source on each request.
 
-- **demo/symfony7/config/packages/dev/twig.yaml**, **demo/symfony8/config/packages/dev/twig.yaml**, and **demo/symfony8-php85/config/packages/dev/twig.yaml**:
+- **demo/symfony8/config/packages/dev/twig.yaml**:
 
 ```yaml
 # Disable Twig cache in dev so template changes are visible on refresh
@@ -154,12 +154,6 @@ From the bundle root:
 ```bash
 make -C demo/symfony8 up
 # → App ready at http://127.0.0.1:8001/ (or the PORT set in demo/symfony8/.env)
-
-make -C demo/symfony7 up
-# → App ready at http://127.0.0.1:8001/
-
-make -C demo/symfony8-php85 up
-# → App ready at http://127.0.0.1:8001/
 ```
 
 Or from inside the demo directory: `make up`. The Makefile runs `composer install` after starting the stack. After editing a Twig template or PHP file, refresh the browser; with worker mode off, Twig cache disabled and OPcache revalidating every request, changes should appear without restarting the container.
@@ -233,8 +227,6 @@ After changing the Caddyfile or env, restart the container:
 docker-compose restart
 # or from bundle root:
 make -C demo/symfony8 restart
-# or make -C demo/symfony7 restart
-# or make -C demo/symfony8-php85 restart
 ```
 
 ---

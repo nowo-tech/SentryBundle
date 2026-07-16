@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.7.0](#upgrading-to-170)
   - [Upgrading to 1.6.2](#upgrading-to-162)
   - [Upgrading to 1.6.1](#upgrading-to-161)
   - [Upgrading to 1.6.0](#upgrading-to-160)
@@ -34,6 +35,27 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.7.0
+
+**Release Date**: 2026-07-16
+
+**Breaking / behavior changes:**
+
+1. **`NowoSentryBundle::getParent()` removed** — register `Sentry\SentryBundle\SentryBundle` explicitly in `config/bundles.php` (Flex recipe now does this).
+2. **No more config file auto-creation on boot** — if you relied on first-boot YAML generation without Flex, copy `config/packages/nowo_sentry.yaml` from the recipe or use built-in defaults.
+3. **Uptime defaults** — without explicit config, only `SentryUptimeBot/1.0` on `/health` is handled. Re-add previous agents/paths in YAML if needed (`/`, `/login`, `Uptime-Kuma`, etc.).
+4. **`error_reporter.enabled: false`** — removes public alias `nowo_sentry.error_reporter` (and the service if DBAL reporting is also off). Does **not** disable `dbal_exception_reporter`; toggle that node separately.
+5. **`ignore_access_denied_listener` is deprecated** — migrate to `before_send_handler.ignore_pure_access_denied`. Remove any `priority` key under `ignore_access_denied_listener` (no longer accepted).
+6. **Custom `sentry.options.before_send`** — the bundle now chains automatically (bundle filter first, then your callback). Set `before_send_handler.register_automatically: false` to opt out.
+7. **Removed parameters** `nowo_sentry.*.priority` — read `priority` from the corresponding config array parameter instead.
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.6.2
 

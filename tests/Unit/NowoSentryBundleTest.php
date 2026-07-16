@@ -7,7 +7,6 @@ namespace Nowo\SentryBundle\Tests\Unit;
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Nowo\SentryBundle\NowoSentryBundle;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 /**
@@ -43,183 +42,28 @@ class NowoSentryBundleTest extends TestCase
     }
 
     /**
-     * Test that the bundle extends SentryBundle.
+     * Bundle inheritance via getParent() is not used on Symfony 6+.
      */
-    public function testGetParent(): void
+    public function testDoesNotDeclareParentBundle(): void
     {
-        $bundle = new NowoSentryBundle();
-        $parent = $bundle->getParent();
-
-        $this->assertEquals('SentryBundle', $parent);
+        $this->assertFalse(method_exists(NowoSentryBundle::class, 'getParent'));
     }
 
-    /**
-     * Test that boot() does nothing when kernel.project_dir is not set.
-     */
-    public function testBootWhenNoProjectDir(): void
+    public function testBuildRegistersBeforeSendChainPass(): void
     {
-        $container = new ContainerBuilder();
+        $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
         $bundle    = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
+        $bundle->build($container);
 
-        $this->assertFalse($container->hasParameter('kernel.project_dir'));
-    }
+        $passes = $container->getCompilerPassConfig()->getPasses();
+        $found  = false;
+        foreach ($passes as $pass) {
+            if ($pass instanceof \Nowo\SentryBundle\DependencyInjection\Compiler\BeforeSendChainPass) {
+                $found = true;
+                break;
+            }
+        }
 
-    /**
-     * Test that boot() does nothing when kernel.project_dir is not a string (e.g. wrong type).
-     */
-    public function testBootWhenProjectDirIsNotString(): void
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', ['invalid' => 'array']);
-
-        $bundle = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-
-        $this->assertSame(['invalid' => 'array'], $container->getParameter('kernel.project_dir'));
-    }
-
-    /**
-     * Test that boot() creates config file and config dir when config/packages does not exist yet.
-     */
-    public function testBootCreatesConfigWhenConfigDirDoesNotExist(): void
-    {
-        $projectDir = sys_get_temp_dir() . '/sentry-bundle-boot-nodir-' . uniqid('', true);
-        mkdir($projectDir, 0o775, true);
-        $configDir = $projectDir . '/config/packages';
-        $this->assertDirectoryDoesNotExist($configDir);
-
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', $projectDir);
-
-        $bundle = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-
-        $configPath = $configDir . '/nowo_sentry.yaml';
-        $this->assertDirectoryExists($configDir);
-        $this->assertFileExists($configPath);
-        $content = file_get_contents($configPath);
-        $this->assertNotFalse($content);
-        $this->assertStringContainsString('nowo_sentry:', $content);
-
-        unlink($configPath);
-        rmdir($configDir);
-        rmdir($projectDir . '/config');
-        rmdir($projectDir);
-    }
-
-    /**
-     * Test that boot() creates config file when config dir exists and file does not.
-     */
-    public function testBootCreatesConfigFileWhenMissing(): void
-    {
-        $projectDir = sys_get_temp_dir() . '/sentry-bundle-boot-' . uniqid('', true);
-        $configDir  = $projectDir . '/config/packages';
-        mkdir($configDir, 0o775, true);
-
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', $projectDir);
-
-        $bundle = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-
-        $configPath = $configDir . '/nowo_sentry.yaml';
-        $this->assertFileExists($configPath);
-        $content = file_get_contents($configPath);
-        $this->assertNotFalse($content);
-        $this->assertStringContainsString('nowo_sentry:', $content);
-
-        unlink($configPath);
-        rmdir($configDir);
-        rmdir($projectDir . '/config');
-        rmdir($projectDir);
-    }
-
-    /**
-     * Test that boot() creates config when config dir has other files but none define nowo_sentry.
-     */
-    public function testBootCreatesConfigWhenOtherConfigFilesExist(): void
-    {
-        $projectDir = sys_get_temp_dir() . '/sentry-bundle-boot-other-' . uniqid('', true);
-        $configDir  = $projectDir . '/config/packages';
-        mkdir($configDir, 0o775, true);
-        file_put_contents($configDir . '/framework.yaml', "framework:\n  secret: test\n");
-
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', $projectDir);
-
-        $bundle = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-
-        $configPath = $configDir . '/nowo_sentry.yaml';
-        $this->assertFileExists($configPath);
-        $content = file_get_contents($configPath);
-        $this->assertNotFalse($content);
-        $this->assertStringContainsString('nowo_sentry:', $content);
-
-        unlink($configPath);
-        unlink($configDir . '/framework.yaml');
-        rmdir($configDir);
-        rmdir($projectDir . '/config');
-        rmdir($projectDir);
-    }
-
-    /**
-     * Test that boot() does not overwrite when config is already defined in a file.
-     */
-    public function testBootSkipsWhenConfigurationDefined(): void
-    {
-        $projectDir = sys_get_temp_dir() . '/sentry-bundle-boot-skip-' . uniqid('', true);
-        $configDir  = $projectDir . '/config/packages';
-        mkdir($configDir, 0o775, true);
-        $existingFile = $configDir . '/some.yaml';
-        file_put_contents($existingFile, "nowo_sentry:\n  request_listener:\n    enabled: true\n");
-
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', $projectDir);
-
-        $bundle = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-
-        $configPath = $configDir . '/nowo_sentry.yaml';
-        $this->assertFileDoesNotExist($configPath);
-
-        unlink($existingFile);
-        rmdir($configDir);
-        rmdir($projectDir . '/config');
-        rmdir($projectDir);
-    }
-
-    /**
-     * Test that boot() skips when config is defined in a .yml file (covers glob *.yml branch).
-     */
-    public function testBootSkipsWhenConfigurationDefinedInYmlFile(): void
-    {
-        $projectDir = sys_get_temp_dir() . '/sentry-bundle-boot-yml-' . uniqid('', true);
-        $configDir  = $projectDir . '/config/packages';
-        mkdir($configDir, 0o775, true);
-        $existingFile = $configDir . '/nowo_sentry.yml';
-        file_put_contents($existingFile, "nowo_sentry:\n  request_listener:\n    enabled: true\n");
-
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', $projectDir);
-
-        $bundle = new NowoSentryBundle();
-        $bundle->setContainer($container);
-        $bundle->boot();
-
-        $configPath = $configDir . '/nowo_sentry.yaml';
-        $this->assertFileDoesNotExist($configPath);
-
-        unlink($existingFile);
-        rmdir($configDir);
-        rmdir($projectDir . '/config');
-        rmdir($projectDir);
+        $this->assertTrue($found);
     }
 }

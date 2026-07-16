@@ -13,11 +13,11 @@ Symfony bundle extending Sentry integration with enhanced event listeners and co
 - ✅ Doctrine DBAL SQL exception reporting (`dbal_exception_reporter`) — captures schema/query errors even in `catch` blocks
 - ✅ Uptime bot detection and handling
 - ✅ Compatible with existing Sentry configuration
-- ✅ Full integration with Sentry Symfony bundle (extends SentryBundle)
+- ✅ Full integration with Sentry Symfony bundle (complements SentryBundle)
 - ✅ Fully configurable event listeners (enable/disable per listener)
 - ✅ Type-safe error handling
 - ✅ 100% code coverage with comprehensive tests
-- ✅ Demo projects for Symfony 7.4, 8.1, and 8.1 with PHP 8.5
+- ✅ Demo project for Symfony 8.1
 
 ## Installation
 
@@ -26,25 +26,26 @@ composer require nowo-tech/sentry-bundle
 ```
 
 **Symfony Flex Recipe**: If you're installing from Packagist, the Symfony Flex recipe will automatically:
-- Register the bundle in `config/bundles.php`
+- Register `SentryBundle` and `NowoSentryBundle` in `config/bundles.php`
 - Create the default configuration file at `config/packages/nowo_sentry.yaml`
 
 **Manual Installation** (for private bundles or Git installations):
-If the Flex recipe doesn't work, manually register the bundle in your `config/bundles.php`:
+If the Flex recipe doesn't work, manually register **both** bundles in your `config/bundles.php`:
 
 ```php
 <?php
 
 return [
   // ... other bundles
+  Sentry\SentryBundle\SentryBundle::class => ['all' => true],
   Nowo\SentryBundle\NowoSentryBundle::class => ['all' => true],
 ];
 ```
 
 **Important**: 
-- This bundle **extends** the official Sentry Symfony bundle (`Sentry\SentryBundle\SentryBundle`). 
-- The parent bundle is automatically registered when you register `NowoSentryBundle`.
-- Make sure you have `sentry/sentry-symfony` installed and configured first.
+- This bundle **complements** the official Sentry Symfony bundle (`Sentry\SentryBundle\SentryBundle`).
+- Register `SentryBundle` first (or via its own Flex recipe), then `NowoSentryBundle`.
+- Make sure you have `sentry/sentry-symfony` installed and configured.
 - Your existing `config/packages/sentry.yaml` configuration will continue to work as before.
 
 ## Usage
@@ -89,7 +90,7 @@ When a sub-request access denied breaks the parent page, adds `access_denied.*` 
 
 #### 4. SentryUptimeBotListener
 
-Handles requests from uptime monitoring bots (Sentry Uptime Bot, Uptime-Kuma, kube-probe) by returning a simple OK response for specific paths (`/dashboard`, `/`, `/login`).
+Handles requests from uptime monitoring bots (default: Sentry Uptime Bot on `/health`). Configure additional user agents and paths as needed.
 
 #### 5. DBAL exception reporter (`dbal_exception_reporter`)
 
@@ -193,16 +194,12 @@ nowo_sentry:
     enabled: true          # Enable/disable the uptime bot handler
     user_agents:           # List of user agent prefixes to detect as uptime bots
       - 'SentryUptimeBot/1.0'
-      - 'Uptime-Kuma'
-      - 'kube-probe'
     paths:              # List of paths that should return OK for uptime bots
-      - '/dashboard'
-      - '/'
-      - '/login'
+      - '/health'
     priority: 255          # Event listener priority (higher = earlier execution)
   
   error_reporter:
-    enabled: true          # Enable/disable the error reporter service
+    enabled: true          # Public SentryErrorReporter + alias; independent from dbal_exception_reporter
 
   dbal_exception_reporter:
     enabled: true          # Requires doctrine/dbal + doctrine-bundle; reports SQL errors at query time
@@ -255,13 +252,11 @@ php bin/console config:dump nowo_sentry
 
 ## Demo Projects
 
-The bundle includes demo projects demonstrating usage with different Symfony and PHP versions:
+The bundle includes a demo project demonstrating usage with Symfony:
 
-- **Symfony 7.4 Demo** (PHP 8.2) - Port 8007 (default, configurable via `.env`)
 - **Symfony 8.1 Demo** (PHP 8.4) - Port 8008 (default, configurable via `.env`)
-- **Symfony 8.1 Demo with PHP 8.5** - Port 8009 (default, configurable via `.env`)
 
-Each demo is independent and includes:
+The demo is independent and includes:
 - FrankenPHP (Caddy + PHP) Docker setup — see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)
 - FrankenPHP worker mode: supported and documented (production uses worker mode; dev uses request/classic mode)
 - Comprehensive test suite
@@ -283,31 +278,20 @@ Each demo is independent and includes:
 
 ```bash
 cd demo
-make up-symfony7    # Start Symfony 7.4 demo
-make install-symfony7  # Install dependencies
-# Access at: http://localhost:8007 (default for symfony7, configurable via .env)
-```
-
-Or start any other demo:
-
-```bash
-make up-symfony8    # Symfony 8.1
-make up-symfony8-php85 # Symfony 8.1 with PHP 8.5
+make up-symfony8    # Start Symfony 8.1 demo
+make install-symfony8  # Install dependencies
+# Access at: http://localhost:8008 (default for symfony8, configurable via .env)
 ```
 
 ### Running Demo Tests
 
-Each demo includes a comprehensive test suite:
-
 ```bash
 cd demo
-make test-symfony7    # Run tests for Symfony 7.4 demo
-make test-symfony8    # Run tests for Symfony 8.1 demo
-make test-symfony8-php85 # Run tests for Symfony 8.1 + PHP 8.5 demo
-make test-all       # Run tests for all demos
+make test-symfony8
+make test-all
 ```
 
-See `demo/README.md` for detailed instructions for all demos.
+See `demo/README.md` for detailed instructions.
 
 ## Development
 
@@ -384,7 +368,7 @@ The bundle uses GitHub Actions for continuous integration:
  - PHP 8.1: Symfony 6.4 only (Symfony 7.x requires PHP 8.2+; Symfony 8.x requires PHP 8.4+)
  - PHP 8.2–8.3: Symfony 6.4, 7.0, and 7.4 (Symfony 8.x requires PHP 8.4+)
  - PHP 8.4 and 8.5: All Symfony versions (6.4, 7.0, 7.4, 8.0, 8.1)
-- **Demo Tests**: All demo projects are tested (Symfony 7.4, 8.1, and 8.1 with PHP 8.5)
+- **Demo Tests**: Demo project is tested (Symfony 8.1)
 - **Code Style**: Automatically fixes code style on push to main/master
 - **Code Style Check**: Validates code style on pull requests
 - **Coverage**: Validates 100% code coverage requirement for bundle code

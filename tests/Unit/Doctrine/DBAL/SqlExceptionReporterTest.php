@@ -13,8 +13,6 @@ use RuntimeException;
 use Sentry\EventId;
 use Sentry\State\HubInterface;
 
-use function strlen;
-
 /**
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
@@ -278,6 +276,6 @@ final class SqlExceptionReporterTest extends TestCase
 
         $this->assertIsString($capturedSql);
         $this->assertStringEndsWith('…', $capturedSql);
-        $this->assertSame(11, strlen($capturedSql));
+        $this->assertSame('AAAAAAAAAA…', $capturedSql);
     }
 }

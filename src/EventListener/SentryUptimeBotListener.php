@@ -10,10 +10,10 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 /**
  * Listener that handles requests from uptime monitoring bots.
  *
- * This listener intercepts health check requests from various monitoring services
- * (Sentry Uptime Bot, Uptime-Kuma, and kube-probe) and returns a simple OK response
- * for specific paths. This prevents these monitoring requests from being processed
- * by the full application stack.
+ * This listener intercepts health check requests from configured monitoring
+ * user agents (default: Sentry Uptime Bot) and returns a simple OK response
+ * for configured paths (default: `/` and `/login`). This prevents these
+ * monitoring requests from being processed by the full application stack.
  *
  * The listener runs with priority 255 to ensure it executes early in the request lifecycle.
  *
@@ -55,8 +55,8 @@ final class SentryUptimeBotListener
         $userAgent = $request->headers->get('User-Agent');
         $pathInfo  = $request->getPathInfo();
 
-        $userAgents = $this->config['user_agents'] ?? ['SentryUptimeBot/1.0', 'Uptime-Kuma', 'kube-probe'];
-        $paths      = $this->config['paths'] ?? ['/dashboard', '/', '/login'];
+        $userAgents = $this->config['user_agents'] ?? ['SentryUptimeBot/1.0'];
+        $paths      = $this->config['paths'] ?? ['/health'];
 
         $isBot = false;
         if ($userAgent) {

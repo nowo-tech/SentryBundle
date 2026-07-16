@@ -1289,9 +1289,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         set_session_id?: bool|Param, // Whether to set session ID in Sentry scope extra data // Default: false
  *         priority?: int|Param, // Event listener priority // Default: 0
  *     },
- *     ignore_access_denied_listener?: bool|array{
+ *     ignore_access_denied_listener?: bool|array{ // Deprecated: The "ignore_access_denied_listener" option is deprecated; use "before_send_handler.ignore_pure_access_denied" instead.
  *         enabled?: bool|Param, // Default: true
- *         priority?: int|Param, // Deprecated: listener removed; kept for BC. Use before_send_handler.ignore_pure_access_denied. // Default: 254
  *     },
  *     sub_request_access_denied_listener?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -1300,7 +1299,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     before_send_handler?: bool|array{
  *         enabled?: bool|Param, // Default: true
  *         ignore_pure_access_denied?: bool|Param, // Drop pure AccessDeniedException/AccessDeniedHttpException; keep parent-page failures that wrap a sub-request 403 // Default: true
- *         register_automatically?: bool|Param, // Prepend sentry.options.before_send with nowo_sentry.before_send_handler when not configured by the app // Default: true
+ *         register_automatically?: bool|Param, // Register as sentry.options.before_send; chains with an existing app before_send when present // Default: true
  *     },
  *     uptime_bot_listener?: bool|array{
  *         enabled?: bool|Param, // Default: true
@@ -1308,8 +1307,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         paths?: list<scalar|Param|null>,
  *         priority?: int|Param, // Event listener priority (higher = earlier execution) // Default: 255
  *     },
- *     error_reporter?: array{
- *         enabled?: bool|Param, // Whether the error reporter service is enabled // Default: true
+ *     error_reporter?: bool|array{ // Registers SentryErrorReporter and alias nowo_sentry.error_reporter
+ *         enabled?: bool|Param, // Default: true
  *     },
  *     dbal_exception_reporter?: bool|array{
  *         enabled?: bool|Param, // Default: true

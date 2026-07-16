@@ -30,8 +30,7 @@ nowo_sentry:
         user_agents:
             - 'SentryUptimeBot/1.0'
         paths:
-            - '/'
-            - '/login'
+            - '/health'
         priority: 255
 
     error_reporter:

@@ -1,7 +1,7 @@
 # Makefile for Sentry Bundle Demo
-# Delegates to each demo's Makefile (demo/symfony7, demo/symfony8, demo/symfony8-php85)
+# Delegates to each demo's Makefile (demo/symfony8)
 
-DEMOS := symfony7 symfony8 symfony8-php85
+DEMOS := symfony8
 
 .PHONY: help clean demo-down test-all test-coverage-all verify-all update-bundle-all release-check release-verify up-all down-all
 .PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) cache-clear-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
@@ -43,7 +43,7 @@ help:
 	@echo ""
 	@echo "Generic (use DEMO=<name>):"
 	@echo "  up, down, restart, build, install, test, test-coverage, cache-clear, shell, logs"
-	@echo "  e.g. make up DEMO=symfony7"
+	@echo "  e.g. make up DEMO=symfony8"
 	@echo ""
 	@echo "Other:"
 	@echo "  demo-down          Stop all demos"
@@ -140,43 +140,43 @@ down-all:
 
 # Generic targets (require DEMO=)
 up:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make up DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make up DEMO=symfony8"; exit 1; fi
 	@$(MAKE) up-$(DEMO)
 
 down:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make down DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make down DEMO=symfony8"; exit 1; fi
 	@$(MAKE) down-$(DEMO)
 
 restart:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make restart DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make restart DEMO=symfony8"; exit 1; fi
 	@$(MAKE) restart-$(DEMO)
 
 build:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make build DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make build DEMO=symfony8"; exit 1; fi
 	@$(MAKE) build-$(DEMO)
 
 install:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make install DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make install DEMO=symfony8"; exit 1; fi
 	@$(MAKE) install-$(DEMO)
 
 test:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test DEMO=symfony8"; exit 1; fi
 	@$(MAKE) test-$(DEMO)
 
 test-coverage:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test-coverage DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make test-coverage DEMO=symfony8"; exit 1; fi
 	@$(MAKE) test-coverage-$(DEMO)
 
 cache-clear:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make cache-clear DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make cache-clear DEMO=symfony8"; exit 1; fi
 	@$(MAKE) cache-clear-$(DEMO)
 
 shell:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make shell DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make shell DEMO=symfony8"; exit 1; fi
 	@$(MAKE) shell-$(DEMO)
 
 logs:
-	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make logs DEMO=symfony7|symfony8|symfony8-php85"; exit 1; fi
+	@if [ -z "$(DEMO)" ]; then echo "❌ Usage: make logs DEMO=symfony8"; exit 1; fi
 	@$(MAKE) logs-$(DEMO)
 
 test-all:

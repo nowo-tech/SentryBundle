@@ -97,7 +97,7 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 - Session unavailable (Redis failure): request listener continues without session extra.
 - Sub-requests: request listener skips non-main requests; sub-request access-denied context listener runs only on main request.
 - Doctrine DBAL or Doctrine Bundle absent: `dbal_exception_reporter` services and middleware MUST NOT be registered.
-- `error_reporter.enabled=false`: DBAL SQL reporter MUST be disabled.
+- `error_reporter.enabled=false`: public `SentryErrorReporter` / alias MUST be unavailable to the app; DBAL SQL reporter remains controlled only by `dbal_exception_reporter.enabled`.
 - Uncaught SQL error: middleware reports once; SDK listener event deduplicated via `BeforeSendHandler`.
 - FrankenPHP worker mode: `ReportedSqlExceptionRegistry` MUST reset between requests via `kernel.reset`.
 

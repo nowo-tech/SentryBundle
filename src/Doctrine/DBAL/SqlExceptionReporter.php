@@ -68,7 +68,7 @@ final class SqlExceptionReporter
         }
 
         foreach ($allowedStates as $allowedState) {
-            if (!is_string($allowedState)) {
+            if (!is_string($allowedState) || $allowedState === '') {
                 continue;
             }
 

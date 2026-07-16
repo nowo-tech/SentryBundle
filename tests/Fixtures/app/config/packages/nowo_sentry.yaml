@@ -8,7 +8,6 @@ nowo_sentry:
     priority: 0
   ignore_access_denied_listener:
     enabled: true
-    priority: 255
   uptime_bot_listener:
     enabled: true
     user_agents:
@@ -16,9 +15,7 @@ nowo_sentry:
       - Uptime-Kuma
       - kube-probe
     paths:
-      - /dashboard
-      - /
-      - /login
+      - '/health'
     priority: 255
   error_reporter:
     enabled: true

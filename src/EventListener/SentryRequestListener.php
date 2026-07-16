@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle\EventListener;
 
 use Exception;
-use Redis\Exception\RedisException;
-use RuntimeException;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -69,7 +67,7 @@ final class SentryRequestListener
 
         try {
             $session = $request->hasSession() ? $request->getSession() : null;
-        } catch (RedisException|RuntimeException|Exception) {
+        } catch (Exception) {
             $session = null;
         }
 
