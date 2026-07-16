@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **CI (Symfony 8.x)**: install step upgrades `doctrine/doctrine-bundle` to `^3.1` and updates `doctrine/*` with Symfony packages (2.x only allows Symfony 6.4/7). `require-dev` allows `^2.11 || ^3.1`.
+
 ## [1.7.0] - 2026-07-16
 
 ### Added
