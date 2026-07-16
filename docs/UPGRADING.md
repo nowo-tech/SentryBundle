@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.8.0](#upgrading-to-180)
   - [Upgrading to 1.7.0](#upgrading-to-170)
   - [Upgrading to 1.6.2](#upgrading-to-162)
   - [Upgrading to 1.6.1](#upgrading-to-161)
@@ -35,6 +36,28 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.8.0
+
+**Release Date**: 2026-07-16
+
+**Breaking platform requirements:**
+
+1. **PHP >= 8.2** is required (PHP 8.1 is no longer supported).
+2. **Symfony ^7.0 || ^8.0** is required (Symfony 6.x is no longer supported).
+
+If you must stay on PHP 8.1 or Symfony 6, keep using `nowo-tech/sentry-bundle:^1.7`.
+
+CI also installs `doctrine/doctrine-bundle` `^3.1` on the Symfony 8 matrix (dev/CI only; no change to the public bundle API).
+
+```bash
+# Ensure platform first, then update
+php -v   # >= 8.2
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.7.0
 

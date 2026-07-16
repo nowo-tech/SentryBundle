@@ -45,7 +45,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 |-----------|--------|
 | **4.1–4.2** `.php-cs-fixer.dist.php` in root, canonical config (@PSR12 + @Symfony + @Symfony:risky), tests not excluded | ✅ |
 | **4.4** Scripts `cs-check`, `cs-fix`, `qa` in composer.json | ✅ |
-| **4.6** Rector: `rector.php`, scripts `rector`, `rector-dry`, PHP 8.1+ target, skip demo/vendor/tests | ✅ |
+| **4.6** Rector: `rector.php`, scripts `rector`, `rector-dry`, PHP 8.2+ target, skip demo/vendor/tests | ✅ |
 | **4.6** PHPStan: `phpstan.neon.dist`, level 8, paths src+tests, excludePaths demo/*, memoryLimit 512M, script `phpstan` | ✅ |
 
 ---
@@ -101,7 +101,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 
 | Criterion | Status |
 |-----------|--------|
-| **8.1** .github/workflows/ci.yml (push/PR main|master; matrix PHP 8.1–8.5 × Symfony 6.4/7.0/7.4/8.0/8.1; Symfony 7.x only on PHP 8.2+, Symfony 8.x only on PHP 8.4+; code-style; coverage job) | ✅ |
+| **8.1** .github/workflows/ci.yml (push/PR main|master; matrix PHP 8.2–8.5 × Symfony 7.0/7.4/8.0/8.1; Symfony 8.x only on PHP 8.4+; code-style; coverage job) | ✅ |
 | **8.2** .github/workflows/release.yml (tags v*, create/update Release with changelog) | ✅ |
 
 ---
@@ -118,7 +118,7 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 
 | Criterion | Status |
 |-----------|--------|
-| composer.json Symfony ^6.0 \|\| ^7.0 \|\| ^8.0 | ✅ |
+| composer.json Symfony ^7.0 \|\| ^8.0 | ✅ |
 | Demos: symfony8 (no symfony6 / symfony7 / symfony8-php85) | ✅ (aligned with supported versions) |
 
 ---

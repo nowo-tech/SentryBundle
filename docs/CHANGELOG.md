@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.8.0] - 2026-07-16](#180---2026-07-16)
 - [[1.7.0] - 2026-07-16](#170---2026-07-16)
 - [[1.6.2] - 2026-07-16](#162---2026-07-16)
 - [[1.6.1] - 2026-07-14](#161---2026-07-14)
@@ -37,8 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-07-16
+
+### Changed
+- **Minimum requirements**: PHP **>= 8.2** (was 8.1) and Symfony **^7.0 || ^8.0** (Symfony 6.x dropped). CI matrix and Rector target aligned (PHP 8.2–8.5 × Symfony 7.0/7.4/8.0/8.1).
+
 ### Fixed
-- **CI (Symfony 8.x)**: install step upgrades `doctrine/doctrine-bundle` to `^3.1` and updates `doctrine/*` with Symfony packages (2.x only allows Symfony 6.4/7). `require-dev` allows `^2.11 || ^3.1`.
+- **CI (Symfony 8.x)**: install step upgrades `doctrine/doctrine-bundle` to `^3.1` and updates `doctrine/*` with Symfony packages (2.x only allows Symfony 7). `require-dev` allows `^2.11 || ^3.1`.
 
 ## [1.7.0] - 2026-07-16
 

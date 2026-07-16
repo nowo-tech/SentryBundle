@@ -701,21 +701,21 @@
             "dist": {
                 "type": "path",
                 "url": "/var/sentry-bundle",
-                "reference": "d665f5f96638e749ab1378753e6b260f8b54c97b"
+                "reference": "5cb939ad0845f66101be14d10680c8eb12bcee5e"
             },
             "require": {
-                "php": ">=8.1 <8.6",
+                "php": ">=8.2 <8.6",
                 "sentry/sentry-symfony": "^5.0 || ^6.0",
-                "symfony/config": "^6.0 || ^7.0 || ^8.0",
-                "symfony/dependency-injection": "^6.0 || ^7.0 || ^8.0",
-                "symfony/framework-bundle": "^6.0 || ^7.0 || ^8.0",
-                "symfony/http-kernel": "^6.0 || ^7.0 || ^8.0",
-                "symfony/security-bundle": "^6.0 || ^7.0 || ^8.0",
-                "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
+                "symfony/config": "^7.0 || ^8.0",
+                "symfony/dependency-injection": "^7.0 || ^8.0",
+                "symfony/framework-bundle": "^7.0 || ^8.0",
+                "symfony/http-kernel": "^7.0 || ^8.0",
+                "symfony/security-bundle": "^7.0 || ^8.0",
+                "symfony/yaml": "^7.0 || ^8.0"
             },
             "require-dev": {
                 "doctrine/dbal": "^3.8 || ^4.0",
-                "doctrine/doctrine-bundle": "^2.11 || ^3.0",
+                "doctrine/doctrine-bundle": "^2.11 || ^3.1",
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.0",
