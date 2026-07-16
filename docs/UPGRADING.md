@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.6.2](#upgrading-to-162)
   - [Upgrading to 1.6.1](#upgrading-to-161)
   - [Upgrading to 1.6.0](#upgrading-to-160)
   - [Upgrading to 1.5.0](#upgrading-to-150)
@@ -33,6 +34,19 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.6.2
+
+**Release Date**: 2026-07-16
+
+Patch release: git hygiene tooling (REQ-GIT-001), Code of Conduct, CI documentation, and additional unit tests. **No** configuration or public API changes for consumers of the bundle.
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.6.1
 

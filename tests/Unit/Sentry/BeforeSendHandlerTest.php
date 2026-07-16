@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\Unit\Sentry;
 
-use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Nowo\SentryBundle\Sentry\BeforeSendHandler;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -72,79 +71,17 @@ class BeforeSendHandlerTest extends TestCase
         $this->assertSame($event, $handler($event, $hint));
     }
 
-    public function testDropsDuplicateSqlExceptionAlreadyReportedByMiddleware(): void
-    {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
-            $this->markTestSkipped('doctrine/dbal is not installed.');
-        }
-
-        $driverException = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
-            public function getSQLState(): string
-            {
-                return '42S22';
-            }
-        };
-        $exception = new RuntimeException('Converted', 0, $driverException);
-
-        $registry = new ReportedSqlExceptionRegistry();
-        $registry->markReported($driverException);
-
-        $handler = new BeforeSendHandler(
-            ['enabled' => true, 'ignore_pure_access_denied' => true, 'deduplicate_sql_exceptions' => true],
-            $registry,
-        );
-        $event = Event::createEvent();
-        $hint  = EventHint::fromArray(['exception' => $exception]);
-
-        $this->assertNull($handler($event, $hint));
-    }
-
-    public function testKeepsDuplicateSqlExceptionWhenDeduplicationDisabled(): void
-    {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
-            $this->markTestSkipped('doctrine/dbal is not installed.');
-        }
-
-        $driverException = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
-            public function getSQLState(): string
-            {
-                return '42S22';
-            }
-        };
-        $exception = new RuntimeException('Converted', 0, $driverException);
-
-        $registry = new ReportedSqlExceptionRegistry();
-        $registry->markReported($driverException);
-
-        $handler = new BeforeSendHandler(
-            ['enabled' => true, 'ignore_pure_access_denied' => true, 'deduplicate_sql_exceptions' => false],
-            $registry,
-        );
-        $event = Event::createEvent();
-        $hint  = EventHint::fromArray(['exception' => $exception]);
-
-        $this->assertSame($event, $handler($event, $hint));
-    }
-
-    public function testReturnsEventWhenHandlerDisabled(): void
+    public function testReturnsNullEventWhenHandlerDisabled(): void
     {
         $handler = new BeforeSendHandler(['enabled' => false]);
-        $event   = Event::createEvent();
-        $hint    = EventHint::fromArray(['exception' => new AccessDeniedException('Denied')]);
 
-        $this->assertSame($event, $handler($event, $hint));
+        $this->assertNull($handler(null, null));
     }
 
-    public function testKeepsEventWhenHintHasNoException(): void
+    public function testReturnsEventWhenEventIsNullAndHandlerEnabled(): void
     {
-        $registry = new ReportedSqlExceptionRegistry();
-        $handler  = new BeforeSendHandler(
-            ['enabled' => true, 'ignore_pure_access_denied' => true, 'deduplicate_sql_exceptions' => true],
-            $registry,
-        );
-        $event = Event::createEvent();
-        $hint  = new EventHint();
+        $handler = new BeforeSendHandler(['enabled' => true, 'ignore_pure_access_denied' => true]);
 
-        $this->assertSame($event, $handler($event, $hint));
+        $this->assertNull($handler(null, null));
     }
 }

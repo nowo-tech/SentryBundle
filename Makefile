@@ -5,7 +5,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE      := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP  := php
 
-.PHONY: help up down build shell install assets test test-coverage coverage-php-percent coverage-check
+.PHONY: help up down build shell install assets test test-coverage coverage-php-percent coverage-check check-no-cursor-coauthor strip-cursor-coauthor-from-history
 .PHONY: cs-check cs-fix rector rector-dry phpstan qa
 .PHONY: release-check composer-sync clean update validate setup-hooks ensure-up
 .PHONY: release-check-demos up-symfony7 up-symfony8 up-symfony8-php85 demo-down
@@ -115,7 +115,7 @@ composer-sync: ensure-up
 release-check-demos:
 	@$(MAKE) -C demo release-check
 
-release-check: ensure-up composer-sync cs-fix cs-check rector-dry phpstan coverage-check release-check-demos
+release-check: check-no-cursor-coauthor ensure-up composer-sync cs-fix cs-check rector-dry phpstan coverage-check release-check-demos
 	@echo "✅ release-check passed"
 
 clean:
@@ -132,12 +132,21 @@ update: ensure-up
 validate: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
 
+check-no-cursor-coauthor:
+	@chmod +x .scripts/check-no-cursor-coauthor.sh
+	@./.scripts/check-no-cursor-coauthor.sh HEAD
+
 setup-hooks:
-	chmod +x .githooks/pre-commit
-	git config core.hooksPath .githooks
-	@echo "✅ Git hooks installed! CS-check and tests will run before each commit."
+	@chmod +x .githooks/pre-commit 2>/dev/null || true
+	@chmod +x .githooks/commit-msg 2>/dev/null || true
+	@git config core.hooksPath .githooks
+	@echo "✅ Git hooks installed (.githooks — includes commit-msg for REQ-GIT-001)."
 
 
 # REQ-MAKE-008: update-deps (REQ-MAKE-008)
 BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 include $(BUNDLE_ROOT)/.scripts/Makefile.update-deps.mk
+
+strip-cursor-coauthor-from-history:
+	@chmod +x .scripts/strip-cursor-coauthor-from-history.sh
+	@./.scripts/strip-cursor-coauthor-from-history.sh main

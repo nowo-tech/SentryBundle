@@ -56,7 +56,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - Verify the release on Packagist and that the Flex recipe (if used) applies correctly.
 - Optionally announce in your usual channels.
 
-## Example: releasing 1.6.1
+## Example: releasing 1.6.2
 
 After CHANGELOG and UPGRADING are updated and committed:
 
@@ -66,12 +66,14 @@ make release-check
 
 # 2. Commit release docs (if not already committed)
 git add docs/CHANGELOG.md docs/UPGRADING.md docs/RELEASE.md
-git commit -m "docs: prepare release 1.6.1"
+git commit -m "docs: prepare release 1.6.2"
 
 # 3. Create and push tag (triggers GitHub Release via Actions)
-git tag -a v1.6.1 -m "Release v1.6.1"
+git tag -a v1.6.2 -m "Release v1.6.2"
 git push origin main
-git push origin v1.6.1
+git push origin v1.6.2
 ```
 
 (Adjust `main` if your default branch is `master`.)
+
+After creating the release commit and tag, run `make check-no-cursor-coauthor` again **before** `git push` (REQ-GIT-001). The release commit itself is not covered by an earlier `release-check` run.

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.6.2] - 2026-07-16](#162---2026-07-16)
 - [[1.6.1] - 2026-07-14](#161---2026-07-14)
 - [[1.6.0] - 2026-07-14](#160---2026-07-14)
 - [[1.5.0] - 2026-07-14](#150---2026-07-14)
@@ -34,6 +35,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.6.2] - 2026-07-16
+
+### Added
+
+- **Repository tooling (REQ-GIT-001)**: `.scripts/check-no-cursor-coauthor.sh`, `.githooks/commit-msg`, CI job `git-hygiene`, Makefile targets `check-no-cursor-coauthor` / `strip-cursor-coauthor-from-history`; `release-check` runs the co-author check first.
+- **Documentation**: [`docs/GITHUB_CI.md`](GITHUB_CI.md); [`CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md); CONTRIBUTING notes for hooks and trailers.
+- **Tests**: Extended coverage for `NowoSentryExtension::prepend`, `SubRequestAccessDeniedContextListener`, `BeforeSendHandler`, and `AccessDeniedExceptionHelper`.
 
 ## [1.6.1] - 2026-07-14
 

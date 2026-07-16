@@ -11,28 +11,35 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
- * @copyright 2026 Nowo.tech
+ * Test case for AccessDeniedExceptionHelper.
  */
-final class AccessDeniedExceptionHelperTest extends TestCase
+class AccessDeniedExceptionHelperTest extends TestCase
 {
-    public function testDetectsAccessDeniedTypes(): void
+    public function testIsAccessDeniedDetectsSecurityException(): void
     {
         $this->assertTrue(AccessDeniedExceptionHelper::isAccessDenied(new AccessDeniedException('Denied')));
+    }
+
+    public function testIsAccessDeniedDetectsHttpException(): void
+    {
         $this->assertTrue(AccessDeniedExceptionHelper::isAccessDenied(new AccessDeniedHttpException('Denied')));
+    }
+
+    public function testIsAccessDeniedReturnsFalseForOtherExceptions(): void
+    {
         $this->assertFalse(AccessDeniedExceptionHelper::isAccessDenied(new RuntimeException('Other')));
     }
 
-    public function testFindsAccessDeniedInPreviousChain(): void
+    public function testHasAccessDeniedInChainFindsNestedAccessDenied(): void
     {
         $exception = new RuntimeException('Wrapper', 0, new AccessDeniedException('Denied'));
 
         $this->assertTrue(AccessDeniedExceptionHelper::hasAccessDeniedInChain($exception));
     }
 
-    public function testReturnsFalseWhenChainHasNoAccessDenied(): void
+    public function testHasAccessDeniedInChainReturnsFalseWhenChainHasNoAccessDenied(): void
     {
-        $exception = new RuntimeException('Other', 0, new RuntimeException('Inner'));
+        $exception = new RuntimeException('Wrapper', 0, new RuntimeException('Inner'));
 
         $this->assertFalse(AccessDeniedExceptionHelper::hasAccessDeniedInChain($exception));
     }
