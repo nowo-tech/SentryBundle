@@ -264,6 +264,7 @@ nowo_sentry:
 
 - **`deduplicate`** (boolean, default: `true`)
   - When true, `BeforeSendHandler` drops SDK events if the exception chain was already reported by this middleware.
+  - The registry is updated only after a successful capture, so the middleware’s own event is not dropped as a false duplicate.
 
 #### Example: column-not-found only
 

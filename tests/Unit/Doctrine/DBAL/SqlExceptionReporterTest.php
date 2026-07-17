@@ -89,14 +89,82 @@ final class SqlExceptionReporterTest extends TestCase
         $hub = $this->createMock(HubInterface::class);
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 
+        $registry = new ReportedSqlExceptionRegistry();
         $reporter = new SqlExceptionReporter(
             new SentryErrorReporter($hub),
-            new ReportedSqlExceptionRegistry(),
+            $registry,
             ['enabled' => true, 'sql_states' => []],
         );
 
         $reporter->report($exception, 'SELECT a FROM t', 'default');
         $reporter->report($exception, 'SELECT a FROM t', 'default');
+
+        $this->assertTrue($registry->isReported($exception));
+    }
+
+    public function testDoesNotMarkRegistryWhenCaptureFails(): void
+    {
+        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+            $this->markTestSkipped('doctrine/dbal is not installed.');
+        }
+
+        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+            public function getSQLState(): string
+            {
+                return '42S22';
+            }
+        };
+
+        $hub = $this->createMock(HubInterface::class);
+        $hub->expects($this->once())->method('captureException')->willReturn(null);
+
+        $registry = new ReportedSqlExceptionRegistry();
+        $reporter = new SqlExceptionReporter(
+            new SentryErrorReporter($hub),
+            $registry,
+            ['enabled' => true, 'sql_states' => []],
+        );
+
+        $reporter->report($exception, 'SELECT a FROM t', 'default');
+
+        $this->assertFalse($registry->isReported($exception));
+    }
+
+    public function testMarksRegistryOnlyAfterSuccessfulCaptureSoBeforeSendCanKeepEvent(): void
+    {
+        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+            $this->markTestSkipped('doctrine/dbal is not installed.');
+        }
+
+        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+            public function getSQLState(): string
+            {
+                return '42S22';
+            }
+        };
+
+        $registry = new ReportedSqlExceptionRegistry();
+        $hub      = $this->createMock(HubInterface::class);
+        $hub->expects($this->once())
+            ->method('captureException')
+            ->with($exception)
+            ->willReturnCallback(static function () use ($registry, $exception): EventId {
+                // Mimic Sentry Client: before_send runs during captureException.
+                // Registry must still be empty so BeforeSendHandler does not drop this event.
+                TestCase::assertFalse($registry->isReported($exception));
+
+                return EventId::generate();
+            });
+
+        $reporter = new SqlExceptionReporter(
+            new SentryErrorReporter($hub),
+            $registry,
+            ['enabled' => true, 'sql_states' => []],
+        );
+
+        $reporter->report($exception, 'SELECT missing_column FROM t', 'default');
+
+        $this->assertTrue($registry->isReported($exception));
     }
 
     public function testRegistryDetectsReportedExceptionInPreviousChain(): void

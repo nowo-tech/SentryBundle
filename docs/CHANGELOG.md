@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.9.1] - 2026-07-17](#191---2026-07-17)
 - [[1.9.0] - 2026-07-16](#190---2026-07-16)
 - [[1.8.0] - 2026-07-16](#180---2026-07-16)
 - [[1.7.0] - 2026-07-16](#170---2026-07-16)
@@ -38,6 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.9.1] - 2026-07-17
+
+### Fixed
+- **`SqlExceptionReporter`**: mark the exception in `ReportedSqlExceptionRegistry` **after** a successful `captureException()`, not before. Marking first caused `BeforeSendHandler` (`deduplicate_sql_exceptions`) to drop the DBAL event itself, so SQL errors (e.g. SQLSTATE `42S22`) never reached Sentry; the Twig/`ErrorListener` wrapper was then dropped as a duplicate too.
 
 ## [1.9.0] - 2026-07-16
 

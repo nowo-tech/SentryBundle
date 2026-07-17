@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.9.1](#upgrading-to-191)
   - [Upgrading to 1.9.0](#upgrading-to-190)
   - [Upgrading to 1.8.0](#upgrading-to-180)
   - [Upgrading to 1.7.0](#upgrading-to-170)
@@ -37,6 +38,21 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.9.1
+
+**Release Date**: 2026-07-17
+
+Patch release: fixes DBAL SQL exception reporting so events reach Sentry when `dbal_exception_reporter.deduplicate` is enabled (default).
+
+**No** configuration changes required. Clear cache after upgrade:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.9.0
 
@@ -175,7 +191,7 @@ nowo_sentry:
         deduplicate: true     # drop duplicate SDK events already reported by the middleware
 ```
 
-4. **Behaviour:** failed `query` / `exec` / prepared `execute` report to Sentry with SQL, connection name, and SQLSTATE, then rethrow. Uncaught SQL errors are deduplicated via `before_send_handler`.
+4. **Behaviour:** failed `query` / `exec` / prepared `execute` report to Sentry with SQL, connection name, and SQLSTATE, then rethrow. Uncaught SQL errors are deduplicated via `before_send_handler` (the registry is marked only after a successful capture so the middleware event itself is not dropped).
 
 5. **FrankenPHP / worker mode:** no extra setup; registry resets via `kernel.reset`.
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\Unit\Sentry;
 
+use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Nowo\SentryBundle\Sentry\BeforeSendHandler;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -83,5 +84,39 @@ class BeforeSendHandlerTest extends TestCase
         $handler = new BeforeSendHandler(['enabled' => true, 'ignore_pure_access_denied' => true]);
 
         $this->assertNull($handler(null, null));
+    }
+
+    public function testKeepsSqlExceptionWhenNotYetMarkedReported(): void
+    {
+        $registry = new ReportedSqlExceptionRegistry();
+        $handler  = new BeforeSendHandler([
+            'enabled'                    => true,
+            'ignore_pure_access_denied'  => true,
+            'deduplicate_sql_exceptions' => true,
+        ], $registry);
+        $event    = Event::createEvent();
+        $sqlError = new RuntimeException('SQLSTATE[42S22]: Unknown column');
+        $hint     = EventHint::fromArray(['exception' => $sqlError]);
+
+        $this->assertSame($event, $handler($event, $hint));
+    }
+
+    public function testDropsSqlExceptionAlreadyMarkedReportedIncludingTwigWrapper(): void
+    {
+        $registry = new ReportedSqlExceptionRegistry();
+        $sqlError = new RuntimeException('SQLSTATE[42S22]: Unknown column');
+        $registry->markReported($sqlError);
+
+        $handler = new BeforeSendHandler([
+            'enabled'                    => true,
+            'ignore_pure_access_denied'  => true,
+            'deduplicate_sql_exceptions' => true,
+        ], $registry);
+        $event = Event::createEvent();
+
+        $this->assertNull($handler($event, EventHint::fromArray(['exception' => $sqlError])));
+        $this->assertNull($handler($event, EventHint::fromArray([
+            'exception' => new RuntimeException('Twig render failed', 0, $sqlError),
+        ])));
     }
 }

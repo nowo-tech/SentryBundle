@@ -43,14 +43,19 @@ final class SqlExceptionReporter
             return;
         }
 
-        $this->registry->markReported($exception);
-
-        $this->errorReporter->captureException($exception, [
+        // Mark only after a successful capture. Marking before captureException() makes
+        // BeforeSendHandler drop the same event (deduplicate_sql_exceptions), so neither
+        // the DBAL report nor the later Twig/ErrorListener wrapper reach Sentry.
+        $captured = $this->errorReporter->captureException($exception, [
             'sql'              => $this->truncateSql($sql),
             'connection'       => $connectionName,
             'sql_state'        => SqlExceptionHelper::getSqlState($exception),
             'reporting_source' => 'nowo_sentry.dbal_exception_reporter',
         ]);
+
+        if ($captured) {
+            $this->registry->markReported($exception);
+        }
     }
 
     private function matchesSqlState(Throwable $exception): bool
