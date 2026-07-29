@@ -4,11 +4,11 @@
 
 > ⭐ **Found this useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
+Symfony bundle extending Sentry integration with enhanced event listeners and configuration options.
+
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
 This bundle is **FrankenPHP worker mode friendly**.
-
-Symfony bundle extending Sentry integration with enhanced event listeners and configuration options.
 
 ## Features
 
@@ -23,6 +23,10 @@ Symfony bundle extending Sentry integration with enhanced event listeners and co
 - ✅ Type-safe error handling
 - ✅ 100% code coverage with comprehensive tests
 - ✅ Demo project for Symfony 8.1
+
+## Version information
+
+Supported PHP and Symfony versions match `composer.json` constraints and the [CI workflow](.github/workflows/ci.yml) matrix.
 
 ## Installation
 
@@ -53,115 +57,11 @@ return [
 - Make sure you have `sentry/sentry-symfony` installed and configured.
 - Your existing `config/packages/sentry.yaml` configuration will continue to work as before.
 
-## Usage
-
-### Basic Setup
-
-The bundle works out of the box with your existing Sentry configuration. No additional configuration is required.
-
-Your existing `config/packages/sentry.yaml` will continue to work as before:
-
-```yaml
-when@prod:
-  sentry:
-    dsn: "%env(SENTRY_DSN)%"
-    messenger:
-      enabled: true
-      capture_soft_fails: true
-    options:
-      environment: '%kernel.environment%'
-      release: '%env(APP_LAST_VERSION)%'
-      # ... your existing configuration
-```
-
-### Event listeners and Sentry integration
-
-The bundle registers **kernel event listeners**, a **`before_send` handler**, optional **Doctrine DBAL middleware**, and the **`SentryErrorReporter`** service:
-
-#### 1. SentryRequestListener
-
-Enriches Sentry reports with request context:
-- Sets domain and environment tags
-- Configures user information if available
-- Adds session ID to extra data when enabled
-
-#### 2. BeforeSendHandler (`nowo_sentry.before_send_handler`)
-
-Registered as `sentry.options.before_send` (automatically when not configured). Drops **pure** access denied responses (main or sub). Keeps parent-page failures where the reported exception wraps a sub-request 403 (e.g. Twig template rendering error).
-
-#### 3. BeforeSendTransactionHandler (`nowo_sentry.before_send_transaction_handler`)
-
-Registered as `sentry.options.before_send_transaction` (automatically when not configured). Trims oversized performance transactions (span cap, breadcrumbs, request/extra/context) so Relay does not drop them with `envelope exceeded size limits for type 'event'`. Useful on Symfony pages with many Twig modal sub-requests. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#before-send-transaction-handler-configuration).
-
-#### 4. SubRequestAccessDeniedContextListener
-
-When a sub-request access denied breaks the parent page, adds `access_denied.*` tags and route/controller context to Sentry.
-
-#### 5. SentryUptimeBotListener
-
-Handles requests from uptime monitoring bots (default: Sentry Uptime Bot on `/health`). Configure additional user agents and paths as needed.
-
-#### 6. DBAL exception reporter (`dbal_exception_reporter`)
-
-Optional Doctrine DBAL driver middleware. Reports SQL/driver exceptions to Sentry with query context **before** your code catches them. Requires `doctrine/dbal` + `doctrine/doctrine-bundle`. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#dbal-exception-reporter-configuration).
-
-### SentryErrorReporter service
-
-A safe service for reporting errors to Sentry without breaking your application. All operations are wrapped in try-catch blocks to ensure that failures in Sentry reporting never break the application flow.
-
-**Features:**
-- ✅ Safe error reporting (never throws exceptions)
-- ✅ Support for exceptions, messages, and context data
-- ✅ Automatic error logging if Sentry fails
-- ✅ Configurable error levels
-- ✅ Breadcrumb tracking
-- ✅ User context management
-
-**Usage Example:**
-
-```php
-use Nowo\SentryBundle\Service\SentryErrorReporter;
-
-class MyController extends AbstractController
-{
-  public function myAction(SentryErrorReporter $errorReporter): Response
-  {
-    try {
-      // Your code that might throw an exception
-      $this->doSomething();
-    } catch (\Throwable $e) {
-      // Capture exception safely - never throws
-      $errorReporter->captureException(
-        $e,
-        ['context' => 'data'],
-        'Custom message'
-      );
-      
-      // Application continues normally
-    }
-    
-    // Capture a message
-    $errorReporter->captureMessage('Something happened', 'warning', ['data' => 'value']);
-    
-    // Add breadcrumbs
-    $errorReporter->addBreadcrumb('User performed action', 'info', ['action' => 'click']);
-    
-    return new Response('OK');
-  }
-}
-```
-
-See the [demo routes](#demo-projects) for more examples.
-
 ## Requirements
 
 - PHP >= 8.2, < 8.6
 - Symfony >= 7.0 || >= 8.0
 - Sentry Symfony Bundle >= 5.0 || >= 6.0
-
-## Version information
-
-Supported PHP and Symfony versions match `composer.json` constraints and the [CI workflow](.github/workflows/ci.yml) matrix.
 
 ## Configuration
 
@@ -265,6 +165,105 @@ You can also view the current configuration using:
 php bin/console config:dump nowo_sentry
 ```
 
+## Usage
+### Basic Setup
+
+The bundle works out of the box with your existing Sentry configuration. No additional configuration is required.
+
+Your existing `config/packages/sentry.yaml` will continue to work as before:
+
+```yaml
+when@prod:
+  sentry:
+    dsn: "%env(SENTRY_DSN)%"
+    messenger:
+      enabled: true
+      capture_soft_fails: true
+    options:
+      environment: '%kernel.environment%'
+      release: '%env(APP_LAST_VERSION)%'
+      # ... your existing configuration
+```
+
+### Event listeners and Sentry integration
+
+The bundle registers **kernel event listeners**, a **`before_send` handler**, optional **Doctrine DBAL middleware**, and the **`SentryErrorReporter`** service:
+
+#### 1. SentryRequestListener
+
+Enriches Sentry reports with request context:
+- Sets domain and environment tags
+- Configures user information if available
+- Adds session ID to extra data when enabled
+
+#### 2. BeforeSendHandler (`nowo_sentry.before_send_handler`)
+
+Registered as `sentry.options.before_send` (automatically when not configured). Drops **pure** access denied responses (main or sub). Keeps parent-page failures where the reported exception wraps a sub-request 403 (e.g. Twig template rendering error).
+
+#### 3. BeforeSendTransactionHandler (`nowo_sentry.before_send_transaction_handler`)
+
+Registered as `sentry.options.before_send_transaction` (automatically when not configured). Trims oversized performance transactions (span cap, breadcrumbs, request/extra/context) so Relay does not drop them with `envelope exceeded size limits for type 'event'`. Useful on Symfony pages with many Twig modal sub-requests. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#before-send-transaction-handler-configuration).
+
+#### 4. SubRequestAccessDeniedContextListener
+
+When a sub-request access denied breaks the parent page, adds `access_denied.*` tags and route/controller context to Sentry.
+
+#### 5. SentryUptimeBotListener
+
+Handles requests from uptime monitoring bots (default: Sentry Uptime Bot on `/health`). Configure additional user agents and paths as needed.
+
+#### 6. DBAL exception reporter (`dbal_exception_reporter`)
+
+Optional Doctrine DBAL driver middleware. Reports SQL/driver exceptions to Sentry with query context **before** your code catches them. Requires `doctrine/dbal` + `doctrine/doctrine-bundle`. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md#dbal-exception-reporter-configuration).
+
+### SentryErrorReporter service
+
+A safe service for reporting errors to Sentry without breaking your application. All operations are wrapped in try-catch blocks to ensure that failures in Sentry reporting never break the application flow.
+
+**Features:**
+- ✅ Safe error reporting (never throws exceptions)
+- ✅ Support for exceptions, messages, and context data
+- ✅ Automatic error logging if Sentry fails
+- ✅ Configurable error levels
+- ✅ Breadcrumb tracking
+- ✅ User context management
+
+**Usage Example:**
+
+```php
+use Nowo\SentryBundle\Service\SentryErrorReporter;
+
+class MyController extends AbstractController
+{
+  public function myAction(SentryErrorReporter $errorReporter): Response
+  {
+    try {
+      // Your code that might throw an exception
+      $this->doSomething();
+    } catch (\Throwable $e) {
+      // Capture exception safely - never throws
+      $errorReporter->captureException(
+        $e,
+        ['context' => 'data'],
+        'Custom message'
+      );
+      
+      // Application continues normally
+    }
+    
+    // Capture a message
+    $errorReporter->captureMessage('Something happened', 'warning', ['data' => 'value']);
+    
+    // Add breadcrumbs
+    $errorReporter->addBreadcrumb('User performed action', 'info', ['action' => 'click']);
+    
+    return new Response('OK');
+  }
+}
+```
+
+See the [demo routes](#demo-projects) for more examples.
+
 ## Demo Projects
 
 The bundle includes a demo project demonstrating usage with Symfony:
@@ -309,7 +308,6 @@ make test-all
 See `demo/README.md` for detailed instructions.
 
 ## Development
-
 ### Using Docker (Recommended)
 
 ```bash
@@ -338,31 +336,6 @@ composer test-coverage
 composer qa
 ```
 
-## Testing
-
-The bundle has **100% code coverage** (all lines, methods, and classes). All tests are located in the `tests/` directory.
-
-### Running Tests
-
-```bash
-# Run all tests
-composer test
-
-# Run tests with coverage report
-composer test-coverage
-
-# View coverage report
-open coverage/index.html
-```
-
-### Test Structure
-
-- `tests/Unit/` — bundle class, `DependencyInjection/`, `EventListener/`, `Service/`
-- `tests/Integration/` — bundle wiring (e.g. `BundleIntegrationTest.php`)
-- `tests/Fixtures/` / `tests/Kernel/` — test kernel and config
-
-All bundle code is covered (100% line coverage enforced in CI for the main coverage job).
-
 ## Code Quality
 
 The bundle uses PHP-CS-Fixer to enforce code style (PSR-12).
@@ -390,15 +363,6 @@ The bundle uses GitHub Actions for continuous integration:
 
 See `.github/workflows/ci.yml` for details.
 
-## Tests and coverage
-
-- Tests: PHPUnit (PHP)
-- PHP: 100%
-
-## License
-
-The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
-
 ## Documentation
 
 - [GitHub Actions CI requirements](docs/GITHUB_CI.md)
@@ -418,6 +382,40 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 ### Additional documentation
 
 - [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
+
+## Testing
+
+The bundle has **100% code coverage** (all lines, methods, and classes). All tests are located in the `tests/` directory.
+
+### Running Tests
+
+```bash
+# Run all tests
+composer test
+
+# Run tests with coverage report
+composer test-coverage
+
+# View coverage report
+open coverage/index.html
+```
+
+### Test Structure
+
+- `tests/Unit/` — bundle class, `DependencyInjection/`, `EventListener/`, `Service/`
+- `tests/Integration/` — bundle wiring (e.g. `BundleIntegrationTest.php`)
+- `tests/Fixtures/` / `tests/Kernel/` — test kernel and config
+
+All bundle code is covered (100% line coverage enforced in CI for the main coverage job).
+
+## Tests and coverage
+
+- Tests: PHPUnit (PHP)
+- PHP: 100%
+
+## License
+
+The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 
 ## Contributing
 
