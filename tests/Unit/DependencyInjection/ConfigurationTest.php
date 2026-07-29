@@ -17,8 +17,8 @@ use function rmdir;
 use function set_error_handler;
 use function str_contains;
 use function sys_get_temp_dir;
-use function unlink;
 use function uniqid;
+use function unlink;
 
 use const E_USER_DEPRECATED;
 

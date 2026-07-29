@@ -78,7 +78,7 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $configuration = $this->getConfiguration($configs, $container);
         $config        = $this->processConfiguration($configuration, $configs);
 
-        $beforeSendHandler = $config['before_send_handler'];
+        $beforeSendHandler        = $config['before_send_handler'];
         $legacyIgnoreAccessDenied = $config['ignore_access_denied_listener'] ?? null;
         if (is_array($legacyIgnoreAccessDenied) && ($legacyIgnoreAccessDenied['enabled'] ?? true) === false) {
             $beforeSendHandler['ignore_pure_access_denied'] = false;
