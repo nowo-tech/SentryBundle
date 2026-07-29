@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Sentry;
 
+use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Sentry\Event;
 use Sentry\EventHint;
 
@@ -19,7 +20,7 @@ use function is_array;
  * can produce transactions that exceed the ingest limit and are dropped.
  *
  * Wire as `sentry.options.before_send_transaction` (the bundle can register it
- * automatically via {@see \Nowo\SentryBundle\DependencyInjection\NowoSentryExtension::prepend}).
+ * automatically via {@see NowoSentryExtension::prepend}).
  */
 final class BeforeSendTransactionHandler
 {

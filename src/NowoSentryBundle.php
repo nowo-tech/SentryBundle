@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle;
 
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
+use Sentry\SentryBundle\SentryBundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -24,15 +26,15 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * - Doctrine DBAL SQL exception reporting (including caught errors)
  * - Compatible with existing Sentry configuration
  *
- * Register both {@see \Sentry\SentryBundle\SentryBundle} and this bundle.
+ * Register both {@see SentryBundle} and this bundle.
  * Symfony Flex recipes typically register both; otherwise add them in bundles.php.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-class NowoSentryBundle extends Bundle
+final class NowoSentryBundle extends Bundle
 {
-    public function build(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 

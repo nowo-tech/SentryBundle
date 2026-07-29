@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\Unit\Doctrine\DBAL;
 
+use Doctrine\DBAL\Driver\Exception;
 use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionHelper;
 use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
@@ -21,11 +22,11 @@ final class SqlExceptionReporterTest extends TestCase
 {
     public function testReportsDriverExceptionWithSqlContext(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -50,11 +51,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testFiltersBySqlStateWhenConfigured(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '23000';
@@ -75,11 +76,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testDoesNotReportTwiceForSameException(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -104,11 +105,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testDoesNotMarkRegistryWhenCaptureFails(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -132,11 +133,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testMarksRegistryOnlyAfterSuccessfulCaptureSoBeforeSendCanKeepEvent(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -169,11 +170,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testRegistryDetectsReportedExceptionInPreviousChain(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $driverException = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $driverException = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -190,11 +191,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testSkipsWhenDisabled(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -229,11 +230,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testMatchesSqlStatePrefix(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -254,11 +255,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testRejectsWhenSqlStateMissingAndFilterConfigured(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): ?string
             {
                 return null;
@@ -279,11 +280,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testIgnoresInvalidSqlStateEntries(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -304,11 +305,11 @@ final class SqlExceptionReporterTest extends TestCase
 
     public function testTruncatesLongSql(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $exception = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $exception = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';

@@ -22,7 +22,7 @@ Filters events before they are sent to Sentry:
 - Keeps parent-page failures that wrap a sub-request 403 (e.g. Twig rendering error)
 - Deduplicates SQL exceptions already reported by `dbal_exception_reporter`
 
-The legacy `ignore_access_denied_listener.enabled` toggle maps to `before_send_handler.ignore_pure_access_denied`.
+The legacy `ignore_access_denied_listener` toggle (deprecated since 1.7) still maps to `before_send_handler.ignore_pure_access_denied` when set explicitly, and triggers a deprecation. Prefer the latter; omit the legacy key from YAML.
 
 ### SubRequestAccessDeniedContextListener
 

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\Unit;
 
+use Nowo\SentryBundle\DependencyInjection\Compiler\BeforeSendChainPass;
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Nowo\SentryBundle\NowoSentryBundle;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 /**
@@ -51,14 +53,14 @@ class NowoSentryBundleTest extends TestCase
 
     public function testBuildRegistersBeforeSendChainPass(): void
     {
-        $container = new \Symfony\Component\DependencyInjection\ContainerBuilder();
+        $container = new ContainerBuilder();
         $bundle    = new NowoSentryBundle();
         $bundle->build($container);
 
         $passes = $container->getCompilerPassConfig()->getPasses();
         $found  = false;
         foreach ($passes as $pass) {
-            if ($pass instanceof \Nowo\SentryBundle\DependencyInjection\Compiler\BeforeSendChainPass) {
+            if ($pass instanceof BeforeSendChainPass) {
                 $found = true;
                 break;
             }

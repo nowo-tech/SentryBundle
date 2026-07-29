@@ -3,7 +3,7 @@
 
 DEMOS := symfony8
 
-.PHONY: help clean demo-down test-all test-coverage-all verify-all update-bundle-all release-check release-verify up-all down-all
+.PHONY: help clean demo-down test-all test-coverage-all verify-all update-bundle-all release-check release-verify demo-smoke up-all down-all
 .PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) cache-clear-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
 .PHONY: up down restart build install test test-coverage cache-clear shell logs
 
@@ -36,6 +36,7 @@ help:
 	@echo "  update-bundle-all  Run update-bundle in every demo (before tests)"
 	@echo "  release-check      Pre-release: update-bundle-all → test-coverage-all → release-verify"
 	@echo "  release-verify     For release-check: up → verify → down per demo"
+	@echo "  demo-smoke         REQ-TEST-011: boot primary demo + HTTP 200"
 	@echo ""
 	@echo "All demos:"
 	@echo "  up-all           Start all demos (build + composer install per demo)"
@@ -219,6 +220,18 @@ release-verify:
 		$(MAKE) -C $$demo up && sleep 10 && $(MAKE) -C $$demo verify && $(MAKE) -C $$demo down || { $(MAKE) -C $$demo down 2>/dev/null; exit 1; }; \
 	done
 	@echo ""; echo "✅ release-verify passed for all demos"
+
+# REQ-TEST-011: boot primary demo and expect HTTP 200
+demo-smoke:
+	@PORT=$$(grep "^PORT=" symfony8/.env.example 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
+	[ -z "$$PORT" ] && PORT=8008; \
+	echo "Demo smoke: symfony8 (http://127.0.0.1:$$PORT)"; \
+	$(MAKE) up-symfony8 || exit 1; \
+	sleep 12; \
+	code=$$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$$PORT" 2>/dev/null || echo "000"); \
+	$(MAKE) down-symfony8 2>/dev/null || true; \
+	if [ "$$code" != "200" ]; then echo "symfony8 failed with HTTP $$code"; exit 1; fi; \
+	echo "symfony8 OK (HTTP $$code)"
 
 clean:
 	@echo "Cleaning vendor/var/.phpunit.cache from all demos..."

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle\EventListener;
 
 use Nowo\SentryBundle\Sentry\AccessDeniedExceptionHelper;
+use Nowo\SentryBundle\Sentry\BeforeSendHandler;
 use Sentry\State\HubInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 /**
  * Enriches Sentry when a sub-request access denied breaks the parent page.
  *
- * Pure access denied (main or sub) is ignored by {@see \Nowo\SentryBundle\Sentry\BeforeSendHandler}.
+ * Pure access denied (main or sub) is ignored by {@see BeforeSendHandler}.
  * This listener only runs for the main request when the outer exception is not access denied
  * but the chain contains one (typical Twig "exception during template rendering" case).
  *

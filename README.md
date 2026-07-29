@@ -4,6 +4,10 @@
 
 > ⭐ **Found this useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
+![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
+
+This bundle is **FrankenPHP worker mode friendly**.
+
 Symfony bundle extending Sentry integration with enhanced event listeners and configuration options.
 
 ## Features
@@ -183,9 +187,6 @@ nowo_sentry:
     set_session_id: false     # Disabled by default; enable only when needed for correlation
     priority: 0           # Event listener priority
   
-  ignore_access_denied_listener:
-    enabled: true          # BC toggle; maps to before_send_handler.ignore_pure_access_denied
-
   before_send_handler:
     enabled: true
     ignore_pure_access_denied: true  # Drop pure 403; keep parent-page failures wrapping sub-request 403

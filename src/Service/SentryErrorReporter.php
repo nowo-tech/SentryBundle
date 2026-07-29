@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle\Service;
 
 use Psr\Log\LoggerInterface;
 use Sentry\Breadcrumb;
+use Sentry\EventId;
 use Sentry\Severity;
 use Sentry\State\HubInterface;
 use Throwable;
@@ -79,7 +80,7 @@ final class SentryErrorReporter
 
             $eventId = $this->sentryHub->captureException($exception);
 
-            return $eventId instanceof \Sentry\EventId;
+            return $eventId instanceof EventId;
         } catch (Throwable $e) {
             // Log the error but don't throw to avoid breaking the application
             $this->logError('Failed to capture exception in Sentry', [
@@ -127,7 +128,7 @@ final class SentryErrorReporter
 
             $eventId = $this->sentryHub->captureMessage($message, $sentryLevel);
 
-            return $eventId instanceof \Sentry\EventId;
+            return $eventId instanceof EventId;
         } catch (Throwable $e) {
             // Log the error but don't throw to avoid breaking the application
             $this->logError('Failed to capture message in Sentry', [

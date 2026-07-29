@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.9.2] - 2026-07-29](#192---2026-07-29)
 - [[1.9.1] - 2026-07-17](#191---2026-07-17)
 - [[1.9.0] - 2026-07-16](#190---2026-07-16)
 - [[1.8.0] - 2026-07-16](#180---2026-07-16)
@@ -39,6 +40,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.9.2] - 2026-07-29
+
+### Added
+
+- FrankenPHP Friendly Worker Mode banner in README (REQ-DOCS-017).
+- `make down-dev` and `make demo-smoke` (REQ-MAKE-007, REQ-TEST-011).
+- PHPUnit `SYMFONY_DEPRECATIONS_HELPER=max[direct]=0` (REQ-SF-005).
+- Packagist keywords `php` and `symfony-bundle` (REQ-PKG-004).
+- **REQ-CS-005:** `nowo-tech/phpstan-frankenphp` in `require-dev` with classic + worker rulesets.
+
+### Changed
+
+- Demo Symfony 8 image bumped to FrankenPHP **PHP 8.5**; demo `require.php` `>=8.5,<8.6` (REQ-DEMO-010).
+- `NowoSentryBundle` is `final` (REQ-PHP-001).
+- PHPStan `ignoreErrors: []` (src only); `SqlExceptionHelper` uses `is_a()` for the driver interface (REQ-CS-006).
+- `docs/COVERAGE_ANALYSIS.md` translated to English (REQ-DOCS-016).
+
+### Fixed
+
+- **`ignore_access_denied_listener` deprecation**: no longer fired on every boot. The deprecated node no longer uses `canBeDisabled()`/`addDefaultsIfNotSet()`, so the warning only appears when the option is still set explicitly. Prefer `before_send_handler.ignore_pure_access_denied`.
+
+### Documentation
+
+- [UPGRADING.md](UPGRADING.md), [RELEASE.md](RELEASE.md), README / CONFIGURATION examples cleaned of the deprecated listener block.
 
 ## [1.9.1] - 2026-07-17
 

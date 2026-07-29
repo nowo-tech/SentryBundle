@@ -66,14 +66,19 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                // No addDefaultsIfNotSet/canBeDisabled: those materialize the node and would
+                // trigger the deprecation on every boot. Only warn when apps still set it.
                 ->arrayNode('ignore_access_denied_listener')
                     ->setDeprecated(
                         'nowo-tech/sentry-bundle',
                         '1.7',
                         'The "%node%" option is deprecated; use "before_send_handler.ignore_pure_access_denied" instead.',
                     )
-                    ->addDefaultsIfNotSet()
-                    ->canBeDisabled()
+                    ->treatFalseLike(['enabled' => false])
+                    ->treatTrueLike(['enabled' => true])
+                    ->children()
+                        ->booleanNode('enabled')->end()
+                    ->end()
                 ->end()
                 ->arrayNode('sub_request_access_denied_listener')
                     ->addDefaultsIfNotSet()
@@ -216,9 +221,6 @@ class Configuration implements ConfigurationInterface
                     'set_user_info'       => true,
                     'set_session_id'      => false,
                     'priority'            => 0,
-                ],
-                'ignore_access_denied_listener' => [
-                    'enabled' => true,
                 ],
                 'sub_request_access_denied_listener' => [
                     'enabled'  => true,

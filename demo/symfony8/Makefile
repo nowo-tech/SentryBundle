@@ -3,7 +3,13 @@
 
 .PHONY: help up down restart build install test test-coverage update-bundle cache-clear ensure-up shell logs verify
 
-COMPOSE     := docker-compose
+# Prefer Compose V2; absolute docker path avoids shadowing by local docker/ when PATH has "." (REQ-MAKE-010).
+DOCKER_BIN := $(shell command -v docker 2>/dev/null)
+ifeq ($(DOCKER_BIN),)
+COMPOSE ?= docker-compose
+else
+COMPOSE ?= $(shell $(DOCKER_BIN) compose version >/dev/null 2>&1 && echo "$(DOCKER_BIN) compose" || echo "docker-compose")
+endif
 SERVICE_PHP := php
 
 help:
@@ -27,55 +33,55 @@ help:
 	@echo ""
 
 ensure-up:
-	@if ! docker-compose exec -T $(SERVICE_PHP) true 2>/dev/null; then \
+	@if ! $(COMPOSE) exec -T $(SERVICE_PHP) true 2>/dev/null; then \
 		echo "Starting containers..."; \
-		docker-compose up -d; \
+		$(COMPOSE) up -d; \
 		sleep 5; \
-		docker-compose exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction; \
+		$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction; \
 	fi
 
 up:
 	@if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi
-	docker-compose up -d
+	$(COMPOSE) up -d
 	@echo "Waiting for container to be ready..."
 	@sleep 5
 	@echo "Installing dependencies..."
-	@docker-compose exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction
+	@$(COMPOSE) exec -T -e COMPOSER_MEMORY_LIMIT=-1 $(SERVICE_PHP) composer install --no-interaction
 	@PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
 	[ -z "$$PORT" ] && PORT=$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
 	echo "Demo started at: http://localhost:$$PORT"
 down:
-	docker-compose down
+	$(COMPOSE) down
 
 restart: ensure-up
-	docker-compose restart
+	$(COMPOSE) restart
 
 build:
-	docker-compose build --no-cache
+	$(COMPOSE) build --no-cache
 
 install: ensure-up
-	docker-compose exec -T $(SERVICE_PHP) composer install
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer install
 
 # Run tests (no -T so TTY is allocated and PHPUnit can show colors in console)
 test: ensure-up
-	docker-compose exec $(SERVICE_PHP) composer test
+	$(COMPOSE) exec $(SERVICE_PHP) composer test
 
 # Run tests (demos have no PCOV; release-check uses this target for smoke tests)
 test-coverage: ensure-up
-	docker-compose exec $(SERVICE_PHP) composer test
+	$(COMPOSE) exec $(SERVICE_PHP) composer test
 
 update-bundle: ensure-up
-	docker-compose exec -T $(SERVICE_PHP) composer update nowo-tech/sentry-bundle --with-all-dependencies
-	docker-compose exec -T $(SERVICE_PHP) php bin/console cache:clear
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer update nowo-tech/sentry-bundle --with-all-dependencies
+	$(COMPOSE) exec -T $(SERVICE_PHP) php bin/console cache:clear
 
 cache-clear: ensure-up
-	docker-compose exec -T $(SERVICE_PHP) php bin/console cache:clear
+	$(COMPOSE) exec -T $(SERVICE_PHP) php bin/console cache:clear
 
 shell:
-	docker-compose exec $(SERVICE_PHP) sh
+	$(COMPOSE) exec $(SERVICE_PHP) sh
 
 logs:
-	docker-compose logs -f
+	$(COMPOSE) logs -f
 
 verify: ensure-up
 	@PORT=$$(grep '^PORT=' .env 2>/dev/null | cut -d= -f2 || echo "8001"); \

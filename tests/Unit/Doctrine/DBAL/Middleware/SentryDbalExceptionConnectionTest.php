@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle\Tests\Unit\Doctrine\DBAL\Middleware;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Driver\Statement;
 use Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionConnection;
 use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
@@ -23,11 +24,11 @@ final class SentryDbalExceptionConnectionTest extends TestCase
 {
     public function testQueryReportsSqlExceptionAndRethrows(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $sqlException = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $sqlException = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -55,11 +56,11 @@ final class SentryDbalExceptionConnectionTest extends TestCase
 
     public function testPrepareWrapsStatementExecution(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $sqlException = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $sqlException = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';
@@ -92,11 +93,11 @@ final class SentryDbalExceptionConnectionTest extends TestCase
 
     public function testExecReportsSqlExceptionAndRethrows(): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Exception::class)) {
+        if (!interface_exists(Exception::class)) {
             $this->markTestSkipped('doctrine/dbal is not installed.');
         }
 
-        $sqlException = new class extends RuntimeException implements \Doctrine\DBAL\Driver\Exception {
+        $sqlException = new class extends RuntimeException implements Exception {
             public function getSQLState(): string
             {
                 return '42S22';

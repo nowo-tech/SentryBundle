@@ -12,9 +12,6 @@ nowo_sentry:
         priority: 0
 
     # Pure 403 responses are dropped; parent-page failures caused by a sub-request 403 are kept
-    ignore_access_denied_listener:
-        enabled: true                    # BC toggle; maps to before_send_handler.ignore_pure_access_denied
-
     before_send_handler:
         enabled: true
         ignore_pure_access_denied: true

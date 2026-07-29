@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Tests\Unit\DependencyInjection;
 
+use Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface;
+use Doctrine\DBAL\Driver\Middleware;
 use Nowo\SentryBundle\DependencyInjection\Configuration;
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
+use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
+use Nowo\SentryBundle\Service\SentryErrorReporter;
 use PHPUnit\Framework\TestCase;
+use Sentry\SentryBundle\DependencyInjection\SentryExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -103,13 +108,13 @@ class NowoSentryExtensionTest extends TestCase
 
         $this->assertFalse($container->hasAlias('nowo_sentry.error_reporter'));
 
-        if (interface_exists(\Doctrine\DBAL\Driver\Middleware::class)
-            && interface_exists(\Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface::class)) {
-            $this->assertTrue($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
-            $this->assertFalse($container->getDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class)->isPublic());
-            $this->assertTrue($container->hasDefinition(\Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter::class));
+        if (interface_exists(Middleware::class)
+            && interface_exists(ConnectionNameAwareInterface::class)) {
+            $this->assertTrue($container->hasDefinition(SentryErrorReporter::class));
+            $this->assertFalse($container->getDefinition(SentryErrorReporter::class)->isPublic());
+            $this->assertTrue($container->hasDefinition(SqlExceptionReporter::class));
         } else {
-            $this->assertFalse($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+            $this->assertFalse($container->hasDefinition(SentryErrorReporter::class));
         }
     }
 
@@ -125,7 +130,7 @@ class NowoSentryExtensionTest extends TestCase
             ],
         ], $container);
 
-        $this->assertFalse($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+        $this->assertFalse($container->hasDefinition(SentryErrorReporter::class));
         $this->assertFalse($container->hasAlias('nowo_sentry.error_reporter'));
     }
 
@@ -136,7 +141,7 @@ class NowoSentryExtensionTest extends TestCase
 
         $extension->load([], $container);
 
-        $this->assertTrue($container->hasDefinition(\Nowo\SentryBundle\Service\SentryErrorReporter::class));
+        $this->assertTrue($container->hasDefinition(SentryErrorReporter::class));
         $this->assertTrue($container->hasAlias('nowo_sentry.error_reporter'));
     }
 
@@ -182,7 +187,7 @@ class NowoSentryExtensionTest extends TestCase
         $extension = new NowoSentryExtension();
         $container = new ContainerBuilder();
         $container->registerExtension($extension);
-        $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
+        $container->registerExtension(new SentryExtension());
         $container->loadFromExtension('nowo_sentry', [
             'before_send_handler'             => ['enabled' => false],
             'before_send_transaction_handler' => ['enabled' => false],
@@ -198,7 +203,7 @@ class NowoSentryExtensionTest extends TestCase
         $extension = new NowoSentryExtension();
         $container = new ContainerBuilder();
         $container->registerExtension($extension);
-        $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
+        $container->registerExtension(new SentryExtension());
         $container->loadFromExtension('nowo_sentry', [
             'before_send_handler'             => ['register_automatically' => false],
             'before_send_transaction_handler' => ['register_automatically' => false],
@@ -214,7 +219,7 @@ class NowoSentryExtensionTest extends TestCase
         $extension = new NowoSentryExtension();
         $container = new ContainerBuilder();
         $container->registerExtension($extension);
-        $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
+        $container->registerExtension(new SentryExtension());
 
         $extension->prepend($container);
 
@@ -232,7 +237,7 @@ class NowoSentryExtensionTest extends TestCase
         $extension = new NowoSentryExtension();
         $container = new ContainerBuilder();
         $container->registerExtension($extension);
-        $container->registerExtension(new \Sentry\SentryBundle\DependencyInjection\SentryExtension());
+        $container->registerExtension(new SentryExtension());
         $container->loadFromExtension('nowo_sentry', [
             'before_send_handler' => ['enabled' => false],
         ]);

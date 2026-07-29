@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79032638885244d43a193330c297e4b7",
+    "content-hash": "371a811f6cc28e16c430577e2eb00bb0",
     "packages": [
         {
             "name": "doctrine/dbal",
-            "version": "4.4.3",
+            "version": "4.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "61e730f1658814821a85f2402c945f3883407dec"
+                "reference": "fb9e0ffe15e1590e24dc61c0c0a23f9a33ee42ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/61e730f1658814821a85f2402c945f3883407dec",
-                "reference": "61e730f1658814821a85f2402c945f3883407dec",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/fb9e0ffe15e1590e24dc61c0c0a23f9a33ee42ce",
+                "reference": "fb9e0ffe15e1590e24dc61c0c0a23f9a33ee42ce",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +94,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/4.4.3"
+                "source": "https://github.com/doctrine/dbal/tree/4.4.4"
             },
             "funding": [
                 {
@@ -110,7 +110,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-20T08:52:12+00:00"
+            "time": "2026-07-21T14:34:40+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -162,16 +162,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "3.2.4",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "75f1bf75d0ba099f23e7d43ebd804df5bec58c29"
+                "reference": "88ad38467d03e30b676069493fa96663ffa0a32b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/75f1bf75d0ba099f23e7d43ebd804df5bec58c29",
-                "reference": "75f1bf75d0ba099f23e7d43ebd804df5bec58c29",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/88ad38467d03e30b676069493fa96663ffa0a32b",
+                "reference": "88ad38467d03e30b676069493fa96663ffa0a32b",
                 "shasum": ""
             },
             "require": {
@@ -179,6 +179,7 @@
                 "doctrine/deprecations": "^1.0",
                 "doctrine/persistence": "^4",
                 "doctrine/sql-formatter": "^1.0.1",
+                "ext-mbstring": "*",
                 "php": "^8.4",
                 "symfony/cache": "^6.4 || ^7.0 || ^8.0",
                 "symfony/config": "^6.4 || ^7.0 || ^8.0",
@@ -206,6 +207,7 @@
                 "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
                 "symfony/messenger": "^6.4 || ^7.0 || ^8.0",
                 "symfony/property-info": "^6.4 || ^7.0 || ^8.0",
+                "symfony/runtime": "^6.4 || ^7.0 || ^8.0",
                 "symfony/security-bundle": "^6.4 || ^7.0 || ^8.0",
                 "symfony/stopwatch": "^6.4 || ^7.0 || ^8.0",
                 "symfony/string": "^6.4 || ^7.0 || ^8.0",
@@ -258,7 +260,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineBundle/issues",
-                "source": "https://github.com/doctrine/DoctrineBundle/tree/3.2.4"
+                "source": "https://github.com/doctrine/DoctrineBundle/tree/3.3.0"
             },
             "funding": [
                 {
@@ -274,7 +276,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-09T19:11:55+00:00"
+            "time": "2026-07-22T11:49:24+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -701,7 +703,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/sentry-bundle",
-                "reference": "96cc03e949c9e1122556403837fd5fd91e75e225"
+                "reference": "d43f18af9820726dc49e264c4f5ebc4fa7cee047"
             },
             "require": {
                 "php": ">=8.2 <8.6",
@@ -717,6 +719,7 @@
                 "doctrine/dbal": "^3.8 || ^4.0",
                 "doctrine/doctrine-bundle": "^2.11 || ^3.1",
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
@@ -813,8 +816,10 @@
                 "error-tracking",
                 "logging",
                 "monitoring",
+                "php",
                 "sentry",
-                "symfony"
+                "symfony",
+                "symfony-bundle"
             ],
             "support": {
                 "issues": "https://github.com/nowo-tech/SentryBundle/issues",
@@ -5368,16 +5373,16 @@
         },
         {
             "name": "nowo-tech/twig-inspector-bundle",
-            "version": "v1.0.36",
+            "version": "v1.0.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/TwigInspectorBundle.git",
-                "reference": "456043213d30938631b1c8548df7bde0f4aa3af1"
+                "reference": "38b44a33602670c6f4f44786dd529472be1aee3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/TwigInspectorBundle/zipball/456043213d30938631b1c8548df7bde0f4aa3af1",
-                "reference": "456043213d30938631b1c8548df7bde0f4aa3af1",
+                "url": "https://api.github.com/repos/nowo-tech/TwigInspectorBundle/zipball/38b44a33602670c6f4f44786dd529472be1aee3b",
+                "reference": "38b44a33602670c6f4f44786dd529472be1aee3b",
                 "shasum": ""
             },
             "require": {
@@ -5395,6 +5400,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",
@@ -5405,7 +5411,7 @@
                 "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
             },
             "suggest": {
-                "symfony/flex": "For automatic recipe installation (config and routes)"
+                "symfony/flex": "For automatic recipe installation (config and routes; registers this bundle for dev/test only — always install with composer require --dev)"
             },
             "type": "symfony-bundle",
             "autoload": {
@@ -5466,7 +5472,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-16T09:51:19+00:00"
+            "time": "2026-07-22T16:18:15+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -7221,7 +7227,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2,<8.6"
+        "php": ">=8.5,<8.6"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

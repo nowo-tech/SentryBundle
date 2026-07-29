@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 // This file is auto-generated and is for apps only. Bundles SHOULD NOT rely on its content.
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
@@ -1290,7 +1288,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         priority?: int|Param, // Event listener priority // Default: 0
  *     },
  *     ignore_access_denied_listener?: bool|array{ // Deprecated: The "ignore_access_denied_listener" option is deprecated; use "before_send_handler.ignore_pure_access_denied" instead.
- *         enabled?: bool|Param, // Default: true
+ *         enabled?: bool|Param,
  *     },
  *     sub_request_access_denied_listener?: bool|array{
  *         enabled?: bool|Param, // Default: true

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Sentry;
 
+use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Sentry\Event;
 use Sentry\EventHint;
@@ -19,7 +20,7 @@ use Throwable;
  * AccessDeniedException) are kept because the reported exception is not access denied itself.
  *
  * Wire as `sentry.options.before_send` (the bundle can register it automatically via
- * {@see \Nowo\SentryBundle\DependencyInjection\NowoSentryExtension::prepend}).
+ * {@see NowoSentryExtension::prepend}).
  */
 final class BeforeSendHandler
 {

@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.9.2](#upgrading-to-192)
   - [Upgrading to 1.9.1](#upgrading-to-191)
   - [Upgrading to 1.9.0](#upgrading-to-190)
   - [Upgrading to 1.8.0](#upgrading-to-180)
@@ -38,6 +39,30 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.9.2
+
+**Release Date**: 2026-07-29
+
+Patch release: FrankenPHP banner / demo PHP 8.5, Make targets, Packagist keywords, `NowoSentryBundle` marked `final`, and a fix so the deprecated `ignore_access_denied_listener` option no longer warns on every boot unless still present in config.
+
+**Recommended:** remove any remaining `ignore_access_denied_listener` block and use:
+
+```yaml
+nowo_sentry:
+    before_send_handler:
+        enabled: true
+        ignore_pure_access_denied: true
+```
+
+**Do not** extend `NowoSentryBundle` (class is `final`). Clear cache after upgrade:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.9.1
 
@@ -214,13 +239,10 @@ composer update nowo-tech/sentry-bundle
 php bin/console cache:clear
 ```
 
-2. Merge configuration:
+2. Merge configuration (use the new option; do not keep `ignore_access_denied_listener`):
 
 ```yaml
 nowo_sentry:
-    ignore_access_denied_listener:
-        enabled: true
-
     before_send_handler:
         enabled: true
         ignore_pure_access_denied: true

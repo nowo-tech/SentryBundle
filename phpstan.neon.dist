@@ -5,19 +5,13 @@ parameters:
     level: 8
     paths:
         - src
-        - tests
     excludePaths:
         - demo/*
         - vendor/*
-        - tests/Fixtures/*
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
-    ignoreErrors:
-        - identifier: method.alreadyNarrowedType
-          path: tests/*
-        - identifier: method.unresolvableReturnType
-          path: tests/*
-        - identifier: instanceof.alwaysFalse
-          path: src/Doctrine/DBAL/SqlExceptionHelper.php
-        - identifier: booleanAnd.alwaysFalse
-          path: src/Doctrine/DBAL/SqlExceptionHelper.php
+    ignoreErrors: []
+
+includes:
+  - vendor/nowo-tech/phpstan-frankenphp/ruleset-classic.neon
+  - vendor/nowo-tech/phpstan-frankenphp/ruleset-worker.neon

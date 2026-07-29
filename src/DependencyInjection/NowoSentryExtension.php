@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\DependencyInjection;
 
+use Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface;
+use Doctrine\DBAL\Driver\Middleware;
 use Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionMiddleware;
 use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
@@ -18,6 +20,7 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+use function is_array;
 use function is_string;
 
 /**
@@ -76,7 +79,8 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $config        = $this->processConfiguration($configuration, $configs);
 
         $beforeSendHandler = $config['before_send_handler'];
-        if (!($config['ignore_access_denied_listener']['enabled'] ?? true)) {
+        $legacyIgnoreAccessDenied = $config['ignore_access_denied_listener'] ?? null;
+        if (is_array($legacyIgnoreAccessDenied) && ($legacyIgnoreAccessDenied['enabled'] ?? true) === false) {
             $beforeSendHandler['ignore_pure_access_denied'] = false;
         }
         $beforeSendHandler['deduplicate_sql_exceptions'] = ($config['dbal_exception_reporter']['enabled'] ?? true)
@@ -84,7 +88,10 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
 
         // Set configuration parameters
         $container->setParameter(Configuration::ALIAS . '.request_listener', $config['request_listener']);
-        $container->setParameter(Configuration::ALIAS . '.ignore_access_denied_listener', $config['ignore_access_denied_listener']);
+        $container->setParameter(
+            Configuration::ALIAS . '.ignore_access_denied_listener',
+            $legacyIgnoreAccessDenied ?? ['enabled' => true],
+        );
         $container->setParameter(Configuration::ALIAS . '.sub_request_access_denied_listener', $config['sub_request_access_denied_listener']);
         $container->setParameter(Configuration::ALIAS . '.before_send_handler', $beforeSendHandler);
         $container->setParameter(Configuration::ALIAS . '.before_send_transaction_handler', $config['before_send_transaction_handler']);
@@ -96,8 +103,8 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
-        if (interface_exists(\Doctrine\DBAL\Driver\Middleware::class)
-            && interface_exists(\Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface::class)) {
+        if (interface_exists(Middleware::class)
+            && interface_exists(ConnectionNameAwareInterface::class)) {
             $loader->load('doctrine_dbal.yaml');
         }
 
@@ -206,8 +213,8 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
      */
     private function registerDbalExceptionReporter(ContainerBuilder $container, array $config): void
     {
-        if (!interface_exists(\Doctrine\DBAL\Driver\Middleware::class)
-            || !interface_exists(\Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface::class)) {
+        if (!interface_exists(Middleware::class)
+            || !interface_exists(ConnectionNameAwareInterface::class)) {
             return;
         }
 

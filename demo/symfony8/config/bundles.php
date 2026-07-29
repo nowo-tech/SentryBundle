@@ -1,14 +1,22 @@
 <?php
 
 declare(strict_types=1);
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Nowo\SentryBundle\NowoSentryBundle;
+use Nowo\TwigInspectorBundle\NowoTwigInspectorBundle;
+use Sentry\SentryBundle\SentryBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 
 return [
-    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class     => ['all' => true],
-    Symfony\Bundle\SecurityBundle\SecurityBundle::class       => ['all' => true],
-    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class      => ['all' => true],
-    Sentry\SentryBundle\SentryBundle::class                   => ['all' => true],
-    Nowo\SentryBundle\NowoSentryBundle::class                 => ['all' => true],
-    Symfony\Bundle\TwigBundle\TwigBundle::class               => ['all' => true],
-    Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
-    Nowo\TwigInspectorBundle\NowoTwigInspectorBundle::class   => ['dev' => true],
+    FrameworkBundle::class         => ['all' => true],
+    SecurityBundle::class          => ['all' => true],
+    DoctrineBundle::class          => ['all' => true],
+    SentryBundle::class            => ['all' => true],
+    NowoSentryBundle::class        => ['all' => true],
+    TwigBundle::class              => ['all' => true],
+    WebProfilerBundle::class       => ['dev' => true, 'test' => true],
+    NowoTwigInspectorBundle::class => ['dev' => true],
 ];

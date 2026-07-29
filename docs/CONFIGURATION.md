@@ -136,13 +136,8 @@ Pure access denied responses are filtered by `before_send_handler.ignore_pure_ac
 | Sub-request 403 handled in isolation | Ignored |
 | Sub-request 403 breaks parent page (`RuntimeError` wrapping `AccessDeniedException`) | **Reported** |
 
-The legacy `ignore_access_denied_listener.enabled` toggle still works and maps to `ignore_pure_access_denied`.
-
 ```yaml
 nowo_sentry:
-    ignore_access_denied_listener:
-        enabled: true
-
     before_send_handler:
         enabled: true
         ignore_pure_access_denied: true
@@ -153,17 +148,11 @@ nowo_sentry:
 
 ```yaml
 nowo_sentry:
-    ignore_access_denied_listener:
-        enabled: false
-```
-
-Or:
-
-```yaml
-nowo_sentry:
     before_send_handler:
         ignore_pure_access_denied: false
 ```
+
+> **Deprecated:** `ignore_access_denied_listener` still works as a BC toggle mapped to `ignore_pure_access_denied`, but triggers a deprecation when set and will be removed in a future major. Prefer `before_send_handler.ignore_pure_access_denied`. Do not keep the legacy key in YAML.
 
 ### Sub-request Access Denied Context Listener
 
@@ -370,9 +359,6 @@ nowo_sentry:
         set_user_info: true
         set_session_id: false
         priority: 0
-    
-    ignore_access_denied_listener:
-        enabled: true
 
     before_send_handler:
         enabled: true
@@ -422,9 +408,6 @@ nowo_sentry:
         set_user_info: true
         set_session_id: false
         priority: 0
-    
-    ignore_access_denied_listener:
-        enabled: true
 
     before_send_handler:
         enabled: true

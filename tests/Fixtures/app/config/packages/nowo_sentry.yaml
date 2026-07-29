@@ -6,8 +6,6 @@ nowo_sentry:
     set_user_info: true
     set_session_id: true
     priority: 0
-  ignore_access_denied_listener:
-    enabled: true
   before_send_handler:
     enabled: true
     ignore_pure_access_denied: true

@@ -196,7 +196,7 @@ class SentryRequestListenerTest extends TestCase
         $listener = new SentryRequestListener(null, $config, 'test', $security);
         $listener->onKernelRequest($event);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -270,7 +270,7 @@ class SentryRequestListenerTest extends TestCase
         $listener = new SentryRequestListener($hub, $config, 'test', $security);
         $listener->onKernelRequest($event);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -308,7 +308,7 @@ class SentryRequestListenerTest extends TestCase
         $listener = new SentryRequestListener($hub, $config, 'test', $security);
         $listener->onKernelRequest($event);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -328,7 +328,7 @@ class SentryRequestListenerTest extends TestCase
         $listener = new SentryRequestListener($hub, $config, 'test', $security);
         $listener->onKernelRequest($event);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -356,6 +356,6 @@ class SentryRequestListenerTest extends TestCase
         $listener = new SentryRequestListener($hub, $config, 'test', $security);
         $listener->onKernelRequest($event);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Doctrine\DBAL;
 
+use Doctrine\DBAL\Exception\DriverException;
 use Throwable;
 
 /**
@@ -11,29 +12,28 @@ use Throwable;
  */
 final class SqlExceptionHelper
 {
+    private const DRIVER_EXCEPTION_INTERFACE = 'Doctrine\\DBAL\\Driver\\Exception';
+
     public static function isSqlException(Throwable $exception): bool
     {
-        if (interface_exists(\Doctrine\DBAL\Driver\Exception::class)
-            && $exception instanceof \Doctrine\DBAL\Driver\Exception) {
+        if ($exception instanceof DriverException) {
             return true;
         }
 
-        return class_exists(\Doctrine\DBAL\Exception\DriverException::class)
-            && $exception instanceof \Doctrine\DBAL\Exception\DriverException;
+        return is_a($exception, self::DRIVER_EXCEPTION_INTERFACE, false);
     }
 
     public static function getSqlState(Throwable $exception): ?string
     {
-        if ($exception instanceof \Doctrine\DBAL\Driver\Exception) {
+        if ($exception instanceof DriverException) {
             return $exception->getSQLState();
         }
 
-        if (class_exists(\Doctrine\DBAL\Exception\DriverException::class)
-            && $exception instanceof \Doctrine\DBAL\Exception\DriverException) {
-            /* @var \Doctrine\DBAL\Exception\DriverException $exception */
-            return $exception->getSQLState();
+        if (!is_a($exception, self::DRIVER_EXCEPTION_INTERFACE, false)) {
+            return null;
         }
 
-        return null;
+        /* @var \Doctrine\DBAL\Driver\Exception $exception */
+        return $exception->getSQLState();
     }
 }
