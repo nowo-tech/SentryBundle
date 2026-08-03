@@ -21,7 +21,7 @@ This bundle is **FrankenPHP worker mode friendly**.
 - ✅ Full integration with Sentry Symfony bundle (complements SentryBundle)
 - ✅ Fully configurable event listeners (enable/disable per listener)
 - ✅ Type-safe error handling
-- ✅ 100% code coverage with comprehensive tests
+- ✅ ≥99% code coverage with comprehensive tests
 - ✅ Demo project for Symfony 8.1
 
 ## Version information
@@ -406,12 +406,12 @@ open coverage/index.html
 - `tests/Integration/` — bundle wiring (e.g. `BundleIntegrationTest.php`)
 - `tests/Fixtures/` / `tests/Kernel/` — test kernel and config
 
-All bundle code is covered (100% line coverage enforced in CI for the main coverage job).
+Line coverage is **≥99%** (currently **99.87%**). The only intentional uncovered statement is the Doctrine-DBAL interface guard in `NowoSentryExtension::registerDbalExceptionReporter()` when DBAL is not installed (unreachable when `doctrine/dbal` is present).
 
 ## Tests and coverage
 
 - Tests: PHPUnit (PHP)
-- PHP: 100%
+- PHP: 99.87% (≥99% required; see note above)
 
 ## License
 

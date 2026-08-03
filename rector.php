@@ -10,6 +10,7 @@ declare(strict_types=1);
  *
  * @see https://getrector.com/documentation
  */
+use Rector\CodeQuality\Rector\FuncCall\InlineIsAInstanceOfRector;
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPublicMethodParameterRector;
 use Rector\ValueObject\PhpVersion;
@@ -32,5 +33,9 @@ return RectorConfig::configure()
         // Keep EventHint for Sentry before_send_transaction / BeforeSendChain callable shape
         RemoveUnusedPublicMethodParameterRector::class => [
             __DIR__ . '/src/Sentry/BeforeSendTransactionHandler.php',
+        ],
+        // Keep string is_a() for Doctrine\DBAL\Driver\Exception when the interface is optional (REQ-CS-006).
+        InlineIsAInstanceOfRector::class => [
+            __DIR__ . '/src/Doctrine/DBAL/SqlExceptionHelper.php',
         ],
     ]);

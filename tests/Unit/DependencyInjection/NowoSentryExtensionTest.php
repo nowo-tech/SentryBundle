@@ -8,12 +8,14 @@ use Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface;
 use Doctrine\DBAL\Driver\Middleware;
 use Nowo\SentryBundle\DependencyInjection\Configuration;
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
+use Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionMiddleware;
 use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 use Sentry\SentryBundle\DependencyInjection\SentryExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -251,5 +253,82 @@ class NowoSentryExtensionTest extends TestCase
             'nowo_sentry.before_send_transaction_handler',
             $sentryConfigs[0]['options']['before_send_transaction'],
         );
+    }
+
+    public function testRegisterDbalExceptionReporterReturnsEarlyWhenDefinitionMissing(): void
+    {
+        if (!interface_exists(Middleware::class) || !interface_exists(ConnectionNameAwareInterface::class)) {
+            $this->markTestSkipped('Doctrine DBAL not available');
+        }
+
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $config = [
+            'dbal_exception_reporter' => ['enabled' => true, 'connections' => [], 'priority' => 20],
+        ];
+
+        $method = new ReflectionMethod(NowoSentryExtension::class, 'registerDbalExceptionReporter');
+        $method->setAccessible(true);
+        $method->invoke($extension, $container, $config);
+
+        $this->assertFalse($container->hasDefinition(SentryDbalExceptionMiddleware::class));
+    }
+
+    public function testRegisterDbalExceptionReporterWithNamedConnections(): void
+    {
+        if (!interface_exists(Middleware::class) || !interface_exists(ConnectionNameAwareInterface::class)) {
+            $this->markTestSkipped('Doctrine DBAL not available');
+        }
+
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $extension->load([[
+            'dbal_exception_reporter' => [
+                'enabled'     => true,
+                'connections' => ['default', 'secondary'],
+                'priority'    => 30,
+            ],
+        ]], $container);
+
+        $definition = $container->getDefinition(SentryDbalExceptionMiddleware::class);
+        $tags       = $definition->getTag('doctrine.middleware');
+
+        $connections = array_column($tags, 'connection');
+        $this->assertContains('default', $connections);
+        $this->assertContains('secondary', $connections);
+    }
+
+    public function testRegisterDbalExceptionReporterSkipsNonStringConnections(): void
+    {
+        if (!interface_exists(Middleware::class) || !interface_exists(ConnectionNameAwareInterface::class)) {
+            $this->markTestSkipped('Doctrine DBAL not available');
+        }
+
+        $extension = new NowoSentryExtension();
+        $container = new ContainerBuilder();
+
+        $extension->load([], $container);
+
+        $config = [
+            'dbal_exception_reporter' => [
+                'enabled'     => true,
+                'connections' => [null, '', 42, 'valid_connection'],
+                'priority'    => 20,
+            ],
+        ];
+
+        $method = new ReflectionMethod(NowoSentryExtension::class, 'registerDbalExceptionReporter');
+        $method->setAccessible(true);
+        $method->invoke($extension, $container, $config);
+
+        $definition  = $container->getDefinition(SentryDbalExceptionMiddleware::class);
+        $tags        = $definition->getTag('doctrine.middleware');
+        $connections = array_column($tags, 'connection');
+
+        $this->assertContains('valid_connection', $connections);
+        $this->assertNotContains('', $connections);
+        $this->assertCount(1, array_filter($connections, static fn ($v) => $v !== null));
     }
 }

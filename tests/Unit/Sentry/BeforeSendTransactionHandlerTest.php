@@ -131,4 +131,70 @@ class BeforeSendTransactionHandlerTest extends TestCase
 
         $this->assertNull($handler(null));
     }
+
+    public function testSkipsSpanTruncationWhenMaxSpansIsZero(): void
+    {
+        $handler = new BeforeSendTransactionHandler([
+            'enabled'   => true,
+            'max_spans' => 0,
+        ]);
+
+        $event = Event::createTransaction();
+        $event->setSpans([
+            new Span(SpanContext::make()->setOp('a')),
+            new Span(SpanContext::make()->setOp('b')),
+        ]);
+
+        $result = $handler($event);
+
+        $this->assertInstanceOf(Event::class, $result);
+        $this->assertCount(2, $result->getSpans());
+        $this->assertArrayNotHasKey('spans_truncated', $result->getExtra());
+    }
+
+    public function testSkipsBreadcrumbTruncationWhenMaxBreadcrumbsIsZero(): void
+    {
+        $handler = new BeforeSendTransactionHandler([
+            'enabled'         => true,
+            'max_breadcrumbs' => 0,
+        ]);
+
+        $event = Event::createTransaction();
+        $event->setBreadcrumb([
+            new Breadcrumb(Breadcrumb::LEVEL_INFO, Breadcrumb::TYPE_DEFAULT, 'a', 'one'),
+            new Breadcrumb(Breadcrumb::LEVEL_INFO, Breadcrumb::TYPE_DEFAULT, 'b', 'two'),
+            new Breadcrumb(Breadcrumb::LEVEL_INFO, Breadcrumb::TYPE_DEFAULT, 'c', 'three'),
+        ]);
+
+        $result = $handler($event);
+
+        $this->assertInstanceOf(Event::class, $result);
+        $this->assertCount(3, $result->getBreadcrumbs());
+    }
+
+    public function testTruncatesArrayContextsButSkipsTraceContext(): void
+    {
+        $handler = new BeforeSendTransactionHandler([
+            'enabled'           => true,
+            'max_string_length' => 5,
+        ], new EventPayloadTrimmer([
+            'max_string_length' => 5,
+        ]));
+
+        $event = Event::createTransaction();
+        $event->setContext('trace', ['trace_id' => 'abc123', 'span_id' => 'def456']);
+        $event->setContext('runtime', ['name' => str_repeat('x', 50)]);
+
+        $result = $handler($event);
+
+        $this->assertInstanceOf(Event::class, $result);
+
+        $contexts = $result->getContexts();
+
+        $this->assertArrayHasKey('trace', $contexts);
+        $this->assertSame('abc123', $contexts['trace']['trace_id']);
+
+        $this->assertArrayHasKey('runtime', $contexts);
+        $this->assertStringEndsWith('…[truncated]', $contexts['runtime']['name']);
+    }
 }

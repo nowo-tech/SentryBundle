@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle\Tests\Unit\Sentry;
 
 use Nowo\SentryBundle\Sentry\EventPayloadTrimmer;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 /**
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
@@ -55,5 +56,16 @@ class EventPayloadTrimmerTest extends TestCase
         $this->assertSame('abcd…[truncated]', $result['data']);
         $this->assertSame('Bear…[truncated]', $result['headers']['Authorization']);
         $this->assertSame('https://example.test', $result['url']);
+    }
+
+    public function testTruncateArrayRepresentsObjectsAsString(): void
+    {
+        $trimmer = new EventPayloadTrimmer([]);
+        $obj     = new stdClass();
+
+        $result = $trimmer->truncateArray(['obj' => $obj, 'num' => 42]);
+
+        $this->assertSame('object:stdClass', $result['obj']);
+        $this->assertSame(42, $result['num']);
     }
 }

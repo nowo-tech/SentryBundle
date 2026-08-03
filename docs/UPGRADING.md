@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.9.3](#upgrading-to-193)
   - [Upgrading to 1.9.2](#upgrading-to-192)
   - [Upgrading to 1.9.1](#upgrading-to-191)
   - [Upgrading to 1.9.0](#upgrading-to-190)
@@ -39,6 +40,21 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.9.3
+
+**Release Date**: 2026-08-03
+
+Patch release: broader unit-test coverage for BeforeSend chains / handlers and README clarification that PHP line coverage is **≥99%** (not a hard 100% gate when Doctrine DBAL is absent). Dependabot bumps for CS Fixer, Rector, and `actions/stale`.
+
+**No** configuration or API changes. Clear cache after upgrade:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear
+```
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ### Upgrading to 1.9.2
 

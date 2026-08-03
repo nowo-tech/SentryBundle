@@ -73,6 +73,64 @@ final class BeforeSendTransactionChainPassTest extends TestCase
         $this->assertFalse($container->hasDefinition(BeforeSendTransactionChainPass::CHAIN_ID));
     }
 
+    public function testSkipsWhenHandlerDefinitionMissing(): void
+    {
+        $container = $this->createContainerWithOptions([]);
+
+        (new BeforeSendTransactionChainPass())->process($container);
+
+        $options = $container->getDefinition('sentry.client.options')->getArgument(0);
+        $this->assertSame([], $options);
+        $this->assertFalse($container->hasDefinition(BeforeSendTransactionChainPass::CHAIN_ID));
+    }
+
+    public function testSkipsWhenParameterMissing(): void
+    {
+        $container = $this->createContainerWithOptions([]);
+        $container->setDefinition(BeforeSendTransactionChainPass::HANDLER_ID, new Definition());
+
+        (new BeforeSendTransactionChainPass())->process($container);
+
+        $options = $container->getDefinition('sentry.client.options')->getArgument(0);
+        $this->assertSame([], $options);
+        $this->assertFalse($container->hasDefinition(BeforeSendTransactionChainPass::CHAIN_ID));
+    }
+
+    public function testSkipsWhenOptionsArgumentIsNotArray(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setDefinition('sentry.client.options', (new Definition(Options::class))->setArgument(0, null));
+        $container->setDefinition(BeforeSendTransactionChainPass::HANDLER_ID, new Definition());
+        $container->setParameter('nowo_sentry.before_send_transaction_handler', [
+            'enabled'                => true,
+            'register_automatically' => true,
+        ]);
+
+        (new BeforeSendTransactionChainPass())->process($container);
+
+        $this->assertFalse($container->hasDefinition(BeforeSendTransactionChainPass::CHAIN_ID));
+    }
+
+    public function testChainsWhenAppConfiguredBeforeSendTransactionAsPlainString(): void
+    {
+        $container = $this->createContainerWithOptions([
+            'before_send_transaction' => 'app.custom_before_send_transaction',
+        ]);
+        $container->setParameter('nowo_sentry.before_send_transaction_handler', [
+            'enabled'                => true,
+            'register_automatically' => true,
+        ]);
+        $container->setDefinition(BeforeSendTransactionChainPass::HANDLER_ID, new Definition());
+        $container->setDefinition('app.custom_before_send_transaction', new Definition());
+
+        (new BeforeSendTransactionChainPass())->process($container);
+
+        $this->assertTrue($container->hasDefinition(BeforeSendTransactionChainPass::CHAIN_ID));
+        $chain = $container->getDefinition(BeforeSendTransactionChainPass::CHAIN_ID);
+        $this->assertSame(BeforeSendChain::class, $chain->getClass());
+        $this->assertSame('app.custom_before_send_transaction', (string) $chain->getArgument(1));
+    }
+
     /**
      * @param array<string, mixed> $options
      */

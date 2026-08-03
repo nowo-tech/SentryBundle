@@ -73,6 +73,64 @@ final class BeforeSendChainPassTest extends TestCase
         $this->assertFalse($container->hasDefinition(BeforeSendChainPass::CHAIN_ID));
     }
 
+    public function testSkipsWhenHandlerDefinitionMissing(): void
+    {
+        $container = $this->createContainerWithOptions([]);
+
+        (new BeforeSendChainPass())->process($container);
+
+        $options = $container->getDefinition('sentry.client.options')->getArgument(0);
+        $this->assertSame([], $options);
+        $this->assertFalse($container->hasDefinition(BeforeSendChainPass::CHAIN_ID));
+    }
+
+    public function testSkipsWhenParameterMissing(): void
+    {
+        $container = $this->createContainerWithOptions([]);
+        $container->setDefinition(BeforeSendChainPass::HANDLER_ID, new Definition());
+
+        (new BeforeSendChainPass())->process($container);
+
+        $options = $container->getDefinition('sentry.client.options')->getArgument(0);
+        $this->assertSame([], $options);
+        $this->assertFalse($container->hasDefinition(BeforeSendChainPass::CHAIN_ID));
+    }
+
+    public function testSkipsWhenOptionsArgumentIsNotArray(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setDefinition('sentry.client.options', (new Definition(Options::class))->setArgument(0, null));
+        $container->setDefinition(BeforeSendChainPass::HANDLER_ID, new Definition());
+        $container->setParameter('nowo_sentry.before_send_handler', [
+            'enabled'                => true,
+            'register_automatically' => true,
+        ]);
+
+        (new BeforeSendChainPass())->process($container);
+
+        $this->assertFalse($container->hasDefinition(BeforeSendChainPass::CHAIN_ID));
+    }
+
+    public function testChainsWhenAppConfiguredBeforeSendAsPlainString(): void
+    {
+        $container = $this->createContainerWithOptions([
+            'before_send' => 'app.custom_before_send',
+        ]);
+        $container->setParameter('nowo_sentry.before_send_handler', [
+            'enabled'                => true,
+            'register_automatically' => true,
+        ]);
+        $container->setDefinition(BeforeSendChainPass::HANDLER_ID, new Definition());
+        $container->setDefinition('app.custom_before_send', new Definition());
+
+        (new BeforeSendChainPass())->process($container);
+
+        $this->assertTrue($container->hasDefinition(BeforeSendChainPass::CHAIN_ID));
+        $chain = $container->getDefinition(BeforeSendChainPass::CHAIN_ID);
+        $this->assertSame(BeforeSendChain::class, $chain->getClass());
+        $this->assertSame('app.custom_before_send', (string) $chain->getArgument(1));
+    }
+
     /**
      * @param array<string, mixed> $options
      */

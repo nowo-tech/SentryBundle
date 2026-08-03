@@ -119,4 +119,32 @@ class BeforeSendHandlerTest extends TestCase
             'exception' => new RuntimeException('Twig render failed', 0, $sqlError),
         ])));
     }
+
+    public function testKeepsEventWhenHintHasNoException(): void
+    {
+        $handler = new BeforeSendHandler([
+            'enabled'                    => true,
+            'ignore_pure_access_denied'  => true,
+            'deduplicate_sql_exceptions' => true,
+        ]);
+        $event = Event::createEvent();
+
+        $this->assertSame($event, $handler($event, null));
+    }
+
+    public function testKeepsEventWhenDeduplicateSqlExceptionsIsDisabled(): void
+    {
+        $registry = new ReportedSqlExceptionRegistry();
+        $sqlError = new RuntimeException('SQLSTATE[42S22]: Unknown column');
+        $registry->markReported($sqlError);
+
+        $handler = new BeforeSendHandler([
+            'enabled'                    => true,
+            'ignore_pure_access_denied'  => true,
+            'deduplicate_sql_exceptions' => false,
+        ], $registry);
+        $event = Event::createEvent();
+
+        $this->assertSame($event, $handler($event, EventHint::fromArray(['exception' => $sqlError])));
+    }
 }
