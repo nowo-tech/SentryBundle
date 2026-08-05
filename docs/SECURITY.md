@@ -30,7 +30,20 @@ This bundle enriches Sentry scope with request context and optional SQL extras. 
 | `set_domain_tag` / `set_environment_tag` | `true` | Host and kernel environment tags |
 | `dbal_exception_reporter` | on when Doctrine present | May send truncated SQL in event extras |
 
-Enable `set_session_id` only when session correlation is required and your privacy policy allows it.
+### Production recommendation
+
+In **production**, prefer disabling user identity in Sentry events unless you have an explicit privacy review:
+
+```yaml
+# config/packages/nowo_sentry.yaml (or when@prod)
+when@prod:
+    nowo_sentry:
+        request_listener:
+            set_user_info: false   # recommended in production
+            set_session_id: false  # already the default
+```
+
+`set_session_id` is already `false` by default. Enable `set_session_id` only when session correlation is required and your privacy policy allows it. Prefer host-app `before_send` scrubbing for cookies/headers (see below) and Sentry project server-side scrubbing rules.
 
 ## Scrubbing sensitive data (`before_send`)
 

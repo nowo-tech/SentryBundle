@@ -7,6 +7,7 @@ nowo_sentry:
         enabled: true
         set_domain_tag: true
         set_environment_tag: true
+        # Prefer set_user_info: false in production (PII). session_id already false.
         set_user_info: true
         set_session_id: false
         priority: 0
