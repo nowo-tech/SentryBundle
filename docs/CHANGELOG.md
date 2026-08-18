@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.9.4] - 2026-08-18](#194---2026-08-18)
 - [[1.9.3] - 2026-08-03](#193---2026-08-03)
 - [[1.9.2] - 2026-07-29](#192---2026-07-29)
 - [[1.9.1] - 2026-07-17](#191---2026-07-17)
@@ -41,6 +42,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.9.4] - 2026-08-18
+
+### Changed
+
+- **Demos:** pin `nowo-tech/hot-reload-bundle` to `^1.4` with FrankenPHP Mercure/`hot_reload` (`dev`/`test` only).
 
 ## [1.9.3] - 2026-08-03
 

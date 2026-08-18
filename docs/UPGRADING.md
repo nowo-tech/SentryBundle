@@ -41,6 +41,25 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
+### Upgrading to 1.9.4
+
+**Release Date**: 2026-08-18
+
+#### What's New
+
+- No application upgrade steps. **Demos only:** Hot Reload Bundle `^1.4` (FrankenPHP Mercure/`hot_reload`, `dev`/`test`).
+
+#### Breaking Changes
+
+None for application consumers of `nowo-tech/sentry-bundle`.
+
+#### Migration Steps
+
+1. **Update the bundle** (if you use Composer):
+   ```bash
+   composer update nowo-tech/sentry-bundle
+   ```
+
 ### Upgrading to 1.9.3
 
 **Release Date**: 2026-08-03
