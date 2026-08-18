@@ -47,6 +47,7 @@ The main difference between development and production is:
 The demo applications are configured for **local development and debugging**:
 
 - **Symfony Web Profiler** (`Symfony\Bundle\WebProfilerBundle\WebProfilerBundle`) — enabled in `dev` and `test` environments.
+- **Nowo Twig Inspector** (`nowo-tech/twig-inspector-bundle`) and **Nowo Hot Reload** (`nowo-tech/hot-reload-bundle`) — required together on FrankenPHP demos (dev/test only; Caddyfile Mercure + `hot_reload`, plus `worker { watch }` in worker mode). Do not enable Hot Reload in production.
 - **Official Sentry Symfony bundle** (`Sentry\SentryBundle\SentryBundle`) — required alongside this bundle; registered for `all` environments in the demos.
 - **Sentry Bundle** (`Nowo\SentryBundle\NowoSentryBundle`) — the bundle under test; enabled in the demos. The demos are the bundle’s own test applications.
 - **Twig Inspector** (`nowo-tech/twig-inspector-bundle`) — optional dev tooling for Twig debugging; registered for `dev` in the demos (`test` can be added for parity with other bundles).
