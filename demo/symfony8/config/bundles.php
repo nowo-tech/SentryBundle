@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Nowo\SentryBundle\NowoSentryBundle;
 use Nowo\HotReloadBundle\NowoHotReloadBundle;
+use Nowo\SentryBundle\NowoSentryBundle;
 use Nowo\TwigInspectorBundle\NowoTwigInspectorBundle;
 use Sentry\SentryBundle\SentryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -20,7 +20,7 @@ return [
     NowoSentryBundle::class        => ['all' => true],
     TwigBundle::class              => ['all' => true],
     WebProfilerBundle::class       => ['dev' => true, 'test' => true],
-    NowoHotReloadBundle::class => ['dev' => true, 'test' => true],
+    NowoHotReloadBundle::class     => ['dev' => true, 'test' => true],
     NowoTwigInspectorBundle::class => ['dev' => true],
-    TwigExtraBundle::class => ['all' => true],
+    TwigExtraBundle::class         => ['all' => true],
 ];
