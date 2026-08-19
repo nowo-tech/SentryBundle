@@ -41,6 +41,25 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Upgrade Instructions by Version
 
+### Upgrading to 1.9.5
+
+**Release Date**: 2026-08-19
+
+#### What's New
+
+- **CI:** `composer audit --locked` after dependency install (REQ-SEC / P3). No application upgrade steps.
+
+#### Breaking Changes
+
+None.
+
+#### Migration Steps
+
+1. **Update the bundle** (if you use Composer):
+   ```bash
+   composer update nowo-tech/sentry-bundle
+   ```
+
 ### Upgrading to 1.9.4
 
 **Release Date**: 2026-08-18
