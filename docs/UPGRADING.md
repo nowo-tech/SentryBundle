@@ -6,6 +6,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.9.7](#upgrading-to-197)
   - [Upgrading to 1.9.3](#upgrading-to-193)
   - [Upgrading to 1.9.2](#upgrading-to-192)
   - [Upgrading to 1.9.1](#upgrading-to-191)
@@ -40,6 +41,29 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.9.7
+
+**Release Date**: 2026-08-20
+
+#### What's New
+
+- **Flex recipe `when@prod`:** `set_user_info: false` and `set_session_id: false`. Review if you previously relied on user context in production Sentry events.
+
+#### Breaking Changes
+
+None for applications that already set these flags explicitly.
+
+#### Migration Steps
+
+1. **Update the bundle**:
+
+```bash
+composer update nowo-tech/sentry-bundle
+php bin/console cache:clear --env=prod
+```
+
+2. Confirm Flex merged `when@prod` into your config (or copy the snippet from [SECURITY.md](SECURITY.md)).
 
 ### Upgrading to 1.9.6
 

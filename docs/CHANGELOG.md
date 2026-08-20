@@ -43,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.7] - 2026-08-20
+
+### Security
+
+- **Flex recipe `when@prod`:** force `request_listener.set_user_info: false` and keep `set_session_id: false` (PII). Prefer **`^1.9.7`**. REQ-SEC-004 re-audit **Pass (good)**.
+
 ## [1.9.6] - 2026-08-19
 
 ### Changed

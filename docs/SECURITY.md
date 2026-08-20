@@ -25,25 +25,23 @@ This bundle enriches Sentry scope with request context and optional SQL extras. 
 
 | Setting | Default | Notes |
 |---------|---------|-------|
-| `set_user_info` | `true` | Sends authenticated user id/username when available |
-| `set_session_id` | `false` | Disabled by default to reduce PII in error reports |
-| `set_domain_tag` / `set_environment_tag` | `true` | Host and kernel environment tags |
-| `dbal_exception_reporter` | on when Doctrine present | May send truncated SQL in event extras |
+| `set_user_info` | `true` (dev); **`false` in Flex `when@prod`** | Sends authenticated user id/username when available |
+| `set_session_id` | `false` | Disabled by default; prod recipe keeps it false |
 
 ### Production recommendation
 
-In **production**, prefer disabling user identity in Sentry events unless you have an explicit privacy review:
+Flex recipe ships:
 
 ```yaml
-# config/packages/nowo_sentry.yaml (or when@prod)
 when@prod:
     nowo_sentry:
         request_listener:
-            set_user_info: false   # recommended in production
-            set_session_id: false  # already the default
+            set_user_info: false
+            set_session_id: false
 ```
 
-`set_session_id` is already `false` by default. Enable `set_session_id` only when session correlation is required and your privacy policy allows it. Prefer host-app `before_send` scrubbing for cookies/headers (see below) and Sentry project server-side scrubbing rules.
+Enable `set_user_info` / `set_session_id` in production only after an explicit privacy review. Prefer host-app `before_send` scrubbing for cookies/headers (see below) and Sentry project server-side scrubbing rules.
+
 
 ## Scrubbing sensitive data (`before_send`)
 
@@ -97,4 +95,13 @@ Before tagging a release, confirm:
 | **Limits / DoS** | Timeouts, size limits, rate limits where applicable. |
 
 Record confirmation in the release PR or tag notes.
+
+## AI security audit (REQ-SEC-004)
+
+| Field | Value |
+| ----- | ----- |
+| Date | 2026-08-20 (re-audit; prior 2026-07-29) |
+| Grade | **Pass (good)** — overall **Low** |
+| Method | Static review; Flex `when@prod` disables `set_user_info` / keeps `set_session_id: false` |
+| Open residuals | Host may re-enable user/session tags after privacy review; scrub `before_send` for cookies/headers |
 
