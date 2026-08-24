@@ -43,6 +43,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.9.8] - 2026-08-24
+
+### Changed
+
+- **Docs:** PHP-FIG PSR evaluation (REQ-CS-007).
+- **Style:** PHP CS Fixer alignment.
+
+### Notes
+
+- **No API or configuration changes** for integrators unless noted above.
+
+[1.9.8]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.9.8
+
 ## [1.9.7] - 2026-08-20
 
 ### Security

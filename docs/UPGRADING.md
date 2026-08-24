@@ -4,6 +4,8 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Table of contents
 
+
+- [From 1.9.7 to 1.9.8](#from-197-to-198)
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
   - [Upgrading to 1.9.7](#upgrading-to-197)
