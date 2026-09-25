@@ -80,14 +80,14 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 ### Doctrine DBAL SQL reporting
 
 - **FR-DBAL-001**: `SqlExceptionHelper` MUST detect Doctrine driver and DBAL SQL exceptions.
-- **FR-DBAL-002**: `ReportedSqlExceptionRegistry` MUST track reported exceptions per request/worker cycle and reset via `kernel.reset`.
+- **FR-DBAL-002**: `ReportedSqlExceptionRegistry` MUST track reported exceptions using a `WeakMap` (entries die with the exception). It MUST remain correct when `kernel.reset` does not run (FrankenPHP worker without reset). A `kernel.reset` / `reset()` tag MAY remain for scenario A hygiene.
 - **FR-DBAL-003**: `SqlExceptionReporter` MUST capture SQL exceptions via `SentryErrorReporter` with SQL, connection, and SQLSTATE context; honor optional `sql_states` filter; never throw.
 - **FR-DBAL-004**: DBAL driver middleware stack (`SentryDbalExceptionMiddleware` → driver → connection → statement) MUST report on failed `query`, `exec`, and prepared `execute`, then rethrow.
 - **FR-SENTRY-003**: `BeforeSendHandler` MUST deduplicate events when the exception (or its previous chain) was already reported by the DBAL middleware and `deduplicate_sql_exceptions` is enabled.
 
 ### Service
 
-- **FR-SVC-001**: `SentryErrorReporter` MUST expose safe `captureException`, `captureMessage`, breadcrumb helpers; never throw; optional PSR-3 fallback logging on failure.
+- **FR-SVC-001**: `SentryErrorReporter` MUST expose safe `captureException`, `captureMessage`, breadcrumb helpers; never throw; optional PSR-3 fallback logging on failure. Per-call `$context` / `$message` MUST be applied via `HubInterface::withScope()` so they do not stick to later events.
 
 ---
 
@@ -99,7 +99,7 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 - Doctrine DBAL or Doctrine Bundle absent: `dbal_exception_reporter` services and middleware MUST NOT be registered.
 - `error_reporter.enabled=false`: public `SentryErrorReporter` / alias MUST be unavailable to the app; DBAL SQL reporter remains controlled only by `dbal_exception_reporter.enabled`.
 - Uncaught SQL error: middleware reports once; SDK listener event deduplicated via `BeforeSendHandler`.
-- FrankenPHP worker mode: `ReportedSqlExceptionRegistry` MUST reset between requests via `kernel.reset`.
+- FrankenPHP worker mode (kernel not rebooted, including when `services_resetter` / `kernel.reset` does not run): SQL de-duplication MUST NOT leak or collide across requests; Sentry scope isolation MUST rely on `sentry/sentry-symfony` ≥ 5.10 (`RuntimeContextListener`).
 
 ---
 

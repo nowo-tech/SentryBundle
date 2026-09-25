@@ -38,7 +38,7 @@
         "symfony/http-kernel": "^7.0 || ^8.0",
         "symfony/security-bundle": "^7.0 || ^8.0",
         "symfony/yaml": "^7.0 || ^8.0",
-        "sentry/sentry-symfony": "^5.0 || ^6.0"
+        "sentry/sentry-symfony": "^5.10 || ^6.0"
     },
     "suggest": {
         "doctrine/doctrine-bundle": "Required to report SQL exceptions via dbal_exception_reporter",
@@ -77,7 +77,7 @@
     "prefer-stable": true,
     "extra": {
         "branch-alias": {
-            "dev-main": "1.9.x-dev"
+            "dev-main": "1.10.x-dev"
         }
     },
     "archive": {

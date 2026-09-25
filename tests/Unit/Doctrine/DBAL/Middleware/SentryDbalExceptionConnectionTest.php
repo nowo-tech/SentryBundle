@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Sentry\EventId;
 use Sentry\State\HubInterface;
+use Sentry\State\Scope;
 
 /**
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
@@ -42,6 +43,8 @@ final class SentryDbalExceptionConnectionTest extends TestCase
             ->willThrowException($sqlException);
 
         $hub = $this->createMock(HubInterface::class);
+
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 
         $connection = new SentryDbalExceptionConnection(
@@ -77,6 +80,8 @@ final class SentryDbalExceptionConnectionTest extends TestCase
             ->willReturn($innerStatement);
 
         $hub = $this->createMock(HubInterface::class);
+
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 
         $connection = new SentryDbalExceptionConnection(
@@ -111,6 +116,8 @@ final class SentryDbalExceptionConnectionTest extends TestCase
             ->willThrowException($sqlException);
 
         $hub = $this->createMock(HubInterface::class);
+
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 
         $connection = new SentryDbalExceptionConnection(

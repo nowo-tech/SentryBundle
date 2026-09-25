@@ -4,10 +4,9 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Table of contents
 
-
-- [From 1.9.7 to 1.9.8](#from-197-to-198)
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.10.0](#upgrading-to-1100)
   - [Upgrading to 1.9.7](#upgrading-to-197)
   - [Upgrading to 1.9.3](#upgrading-to-193)
   - [Upgrading to 1.9.2](#upgrading-to-192)
@@ -43,6 +42,24 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 6. **Test your application**: Verify that Sentry integration works as expected
 
 ## Upgrade Instructions by Version
+
+### Upgrading to 1.10.0
+
+**Release Date**: 2026-09-25
+
+#### What's New
+
+- `sentry/sentry-symfony` **5.10 or newer** is now required (`^5.10 || ^6.0`). 5.10 isolates the Sentry scope per HTTP request in long-running workers (FrankenPHP, RoadRunner), which the bundle relies on for user/session/tag attribution.
+- `SentryErrorReporter::captureException()` / `captureMessage()` / `captureError()` now attach their `$context` (and `$message`) only to the captured event, using a temporary scope (`HubInterface::withScope()`). Use `setContext()` if you want extras on every later event of the request.
+- `ReportedSqlExceptionRegistry` uses a `WeakMap` so SQL de-duplication stays correct even when FrankenPHP does **not** run `kernel.reset` between requests.
+
+#### Migration Steps
+
+1. If Composer refuses the update, upgrade Sentry first: `composer require sentry/sentry-symfony:^5.10`.
+2. Custom `HubInterface` test doubles used with `SentryErrorReporter` must implement `withScope()` by invoking the callback with a `Sentry\State\Scope` and returning its result when context is passed.
+3. Clear cache: `php bin/console cache:clear`.
+
+See [`docs/FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ### Upgrading to 1.9.7
 
@@ -317,7 +334,7 @@ nowo_sentry:
 
 4. **Behaviour:** failed `query` / `exec` / prepared `execute` report to Sentry with SQL, connection name, and SQLSTATE, then rethrow. Uncaught SQL errors are deduplicated via `before_send_handler` (the registry is marked only after a successful capture so the middleware event itself is not dropped).
 
-5. **FrankenPHP / worker mode:** no extra setup; registry resets via `kernel.reset`.
+5. **FrankenPHP / worker mode:** registry keeps a `kernel.reset` tag; since **1.10.0** it also uses a `WeakMap` so it stays correct when reset does not run.
 
 6. **Disable** if not needed: `dbal_exception_reporter: { enabled: false }`.
 

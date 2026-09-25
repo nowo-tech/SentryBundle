@@ -61,7 +61,7 @@ return [
 
 - PHP >= 8.2, < 8.6
 - Symfony >= 7.0 || >= 8.0
-- Sentry Symfony Bundle >= 5.0 || >= 6.0
+- Sentry Symfony Bundle >= 5.10 || >= 6.0 (5.10 isolates the Sentry scope per request in long-running workers)
 
 ## Configuration
 
@@ -272,7 +272,7 @@ The bundle includes a demo project demonstrating usage with Symfony:
 
 The demo is independent and includes:
 - FrankenPHP (Caddy + PHP) Docker setup — see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)
-- FrankenPHP worker mode: supported and documented (production uses worker mode; dev uses request/classic mode)
+- FrankenPHP worker mode: supported without relying on `kernel.reset` (WeakMap registry + `sentry/sentry-symfony` ≥ 5.10). See [docs/FRANKENPHP-WORKER-AUDIT.md](docs/FRANKENPHP-WORKER-AUDIT.md). Production demo uses worker mode; dev uses request/classic mode.
 - Comprehensive test suite
 - Port configuration via `.env` file
 - Symfony Web Profiler for debugging (dev and test environments)
@@ -383,6 +383,7 @@ See `.github/workflows/ci.yml` for details.
 ### Additional documentation
 
 - [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
+- [FrankenPHP worker mode audit (kernel not reset)](docs/FRANKENPHP-WORKER-AUDIT.md)
 
 ## Testing
 

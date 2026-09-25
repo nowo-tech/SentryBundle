@@ -11,8 +11,10 @@ use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Sentry\Event;
 use Sentry\EventId;
 use Sentry\State\HubInterface;
+use Sentry\State\Scope;
 
 /**
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
@@ -34,6 +36,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())
             ->method('captureException')
             ->with($exception)
@@ -63,6 +66,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->never())->method('captureException');
 
         $reporter = new SqlExceptionReporter(
@@ -88,6 +92,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 
         $registry = new ReportedSqlExceptionRegistry();
@@ -117,6 +122,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())->method('captureException')->willReturn(null);
 
         $registry = new ReportedSqlExceptionRegistry();
@@ -146,6 +152,7 @@ final class SqlExceptionReporterTest extends TestCase
 
         $registry = new ReportedSqlExceptionRegistry();
         $hub      = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())
             ->method('captureException')
             ->with($exception)
@@ -203,6 +210,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->never())->method('captureException');
 
         $reporter = new SqlExceptionReporter(
@@ -217,6 +225,7 @@ final class SqlExceptionReporterTest extends TestCase
     public function testSkipsNonSqlException(): void
     {
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->never())->method('captureException');
 
         $reporter = new SqlExceptionReporter(
@@ -242,6 +251,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 
         $reporter = new SqlExceptionReporter(
@@ -267,6 +277,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->never())->method('captureException');
 
         $reporter = new SqlExceptionReporter(
@@ -292,6 +303,7 @@ final class SqlExceptionReporterTest extends TestCase
         };
 
         $hub = $this->createMock(HubInterface::class);
+        $hub->method('withScope')->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->never())->method('captureException');
 
         $reporter = new SqlExceptionReporter(
@@ -319,19 +331,13 @@ final class SqlExceptionReporterTest extends TestCase
         $capturedSql = null;
         $hub         = $this->createMock(HubInterface::class);
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->willReturnCallback(static function (callable $callback) use (&$capturedSql): void {
-                $scope = new class {
-                    /** @var array<string, mixed> */
-                    public array $extras = [];
+            ->method('withScope')
+            ->willReturnCallback(static function (callable $callback) use (&$capturedSql): mixed {
+                $scope       = new Scope();
+                $result      = $callback($scope);
+                $capturedSql = $scope->applyToEvent(Event::createEvent())?->getExtra()['sql'] ?? null;
 
-                    public function setExtra(string $key, mixed $value): void
-                    {
-                        $this->extras[$key] = $value;
-                    }
-                };
-                $callback($scope);
-                $capturedSql = $scope->extras['sql'] ?? null;
+                return $result;
             });
         $hub->expects($this->once())->method('captureException')->willReturn(EventId::generate());
 

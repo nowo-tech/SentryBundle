@@ -20,7 +20,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Sentry/BeforeSendHandler.php` | Pre-send filtering (403 + SQL dedup) | FR-SENTRY-001, FR-SENTRY-003 |
 | `Sentry/AccessDeniedExceptionHelper.php` | Access-denied detection helpers | FR-SENTRY-002 |
 | `Doctrine/DBAL/SqlExceptionHelper.php` | SQL exception detection | FR-DBAL-001 |
-| `Doctrine/DBAL/ReportedSqlExceptionRegistry.php` | Per-request reported-exception registry | FR-DBAL-002 |
+| `Doctrine/DBAL/ReportedSqlExceptionRegistry.php` | WeakMap-backed reported-exception registry (safe without `kernel.reset`) | FR-DBAL-002 |
 | `Doctrine/DBAL/SqlExceptionReporter.php` | SQL → Sentry capture orchestration | FR-DBAL-003 |
 | `Doctrine/DBAL/Middleware/SentryDbalExceptionMiddleware.php` | DBAL middleware entry point | FR-DBAL-004 |
 | `Doctrine/DBAL/Middleware/SentryDbalExceptionDriver.php` | Driver wrapper | FR-DBAL-004 |

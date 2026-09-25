@@ -9,6 +9,7 @@ use Sentry\Breadcrumb;
 use Sentry\EventId;
 use Sentry\Severity;
 use Sentry\State\HubInterface;
+use Sentry\State\Scope;
 use Throwable;
 
 /**
@@ -64,10 +65,14 @@ final class SentryErrorReporter
             return false;
         }
 
+        $hub = $this->sentryHub;
+
         try {
-            // Add context and message before capturing exception
-            if ($context !== [] || $message !== null) {
-                $this->sentryHub->configureScope(static function ($scope) use ($context, $message): void {
+            if ($context === [] && $message === null) {
+                $eventId = $hub->captureException($exception);
+            } else {
+                // Per-call data lives in a temporary scope so it is not attached to later events
+                $eventId = $hub->withScope(static function (Scope $scope) use ($hub, $exception, $context, $message): ?EventId {
                     foreach ($context as $key => $value) {
                         $scope->setExtra((string) $key, $value);
                     }
@@ -75,10 +80,10 @@ final class SentryErrorReporter
                     if ($message !== null) {
                         $scope->setExtra('custom_message', $message);
                     }
+
+                    return $hub->captureException($exception);
                 });
             }
-
-            $eventId = $this->sentryHub->captureException($exception);
 
             return $eventId instanceof EventId;
         } catch (Throwable $e) {
@@ -114,19 +119,23 @@ final class SentryErrorReporter
             return false;
         }
 
+        $hub = $this->sentryHub;
+
         try {
             $sentryLevel = $this->mapLogLevelToSentryLevel($level);
 
-            // Add context before capturing message
-            if ($context !== []) {
-                $this->sentryHub->configureScope(static function ($scope) use ($context): void {
+            if ($context === []) {
+                $eventId = $hub->captureMessage($message, $sentryLevel);
+            } else {
+                // Per-call data lives in a temporary scope so it is not attached to later events
+                $eventId = $hub->withScope(static function (Scope $scope) use ($hub, $message, $sentryLevel, $context): ?EventId {
                     foreach ($context as $key => $value) {
                         $scope->setExtra((string) $key, $value);
                     }
+
+                    return $hub->captureMessage($message, $sentryLevel);
                 });
             }
-
-            $eventId = $this->sentryHub->captureMessage($message, $sentryLevel);
 
             return $eventId instanceof EventId;
         } catch (Throwable $e) {

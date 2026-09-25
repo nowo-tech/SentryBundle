@@ -5,18 +5,27 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle\Doctrine\DBAL;
 
 use Throwable;
+use WeakMap;
 
 /**
  * Tracks SQL exceptions already reported to Sentry within the current request / worker cycle.
+ *
+ * Entries are weak: they disappear with the exception object, so the registry cannot grow nor
+ * match a recycled object id in long-running workers even when kernel.reset never runs.
  */
 final class ReportedSqlExceptionRegistry
 {
-    /** @var array<int, true> */
-    private array $reported = [];
+    /** @var WeakMap<Throwable, true> */
+    private WeakMap $reported;
+
+    public function __construct()
+    {
+        $this->reported = new WeakMap();
+    }
 
     public function markReported(Throwable $exception): void
     {
-        $this->reported[spl_object_id($exception)] = true;
+        $this->reported[$exception] = true;
     }
 
     public function isReported(Throwable $exception): bool
@@ -24,7 +33,7 @@ final class ReportedSqlExceptionRegistry
         $current = $exception;
 
         while ($current instanceof Throwable) {
-            if (isset($this->reported[spl_object_id($current)])) {
+            if (isset($this->reported[$current])) {
                 return true;
             }
 
@@ -36,6 +45,6 @@ final class ReportedSqlExceptionRegistry
 
     public function reset(): void
     {
-        $this->reported = [];
+        $this->reported = new WeakMap();
     }
 }

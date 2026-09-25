@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.10.0] - 2026-09-25](#1100---2026-09-25)
+- [[1.9.8] - 2026-08-24](#198---2026-08-24)
+- [[1.9.7] - 2026-08-20](#197---2026-08-20)
+- [[1.9.6] - 2026-08-19](#196---2026-08-19)
+- [[1.9.5] - 2026-08-19](#195---2026-08-19)
 - [[1.9.4] - 2026-08-18](#194---2026-08-18)
 - [[1.9.3] - 2026-08-03](#193---2026-08-03)
 - [[1.9.2] - 2026-07-29](#192---2026-07-29)
@@ -43,6 +48,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-09-25
+
+### Changed
+
+- **Requirements:** `sentry/sentry-symfony` constraint raised to `^5.10 || ^6.0` (5.10 isolates the Sentry scope per request in long-running workers such as FrankenPHP).
+- **`SentryErrorReporter`:** per-call `$context` / `$message` of `captureException()`, `captureMessage()` and `captureError()` are applied in a temporary scope (`withScope()`), so they no longer stick to later events.
+
+### Fixed
+
+- **`ReportedSqlExceptionRegistry`:** stores reported exceptions in a `WeakMap` instead of `spl_object_id()` integers. Entries disappear with the exception, so the registry cannot grow nor drop an unrelated SQL error whose object id was recycled when `kernel.reset` does not run (FrankenPHP worker without reset). See [`docs/FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md).
+
+### Notes
+
+- Bundle is viable under FrankenPHP worker mode **without** `kernel.reset` / services resetter (scenario B). Keep `nowo_sentry.request_listener.priority` below `512` (default `0`).
 
 ## [1.9.8] - 2026-08-24
 
@@ -55,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **No API or configuration changes** for integrators unless noted above.
 
+[1.10.0]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.10.0
 [1.9.8]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.9.8
 
 ## [1.9.7] - 2026-08-20

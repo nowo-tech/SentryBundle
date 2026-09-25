@@ -34,16 +34,15 @@ class SentryErrorReporterTest extends TestCase
         $exception = new RuntimeException('Test exception');
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->once())
                     ->method('setExtra')
                     ->with('custom_message', 'Custom message');
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $eventId = EventId::generate();
         $hub->expects($this->once())
@@ -181,16 +180,15 @@ class SentryErrorReporterTest extends TestCase
         $context   = ['key1' => 'value1', 'key2' => 'value2'];
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->exactly(2))
                     ->method('setExtra')
                     ->willReturnSelf();
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $eventId = EventId::generate();
         $hub->expects($this->once())
@@ -260,16 +258,15 @@ class SentryErrorReporterTest extends TestCase
         $context = ['key1' => 'value1'];
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->once())
                     ->method('setExtra')
                     ->willReturnSelf();
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $hub->expects($this->once())
             ->method('captureMessage')
@@ -289,6 +286,9 @@ class SentryErrorReporterTest extends TestCase
         $hub    = $this->createMock(HubInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
+        $hub->expects($this->once())
+            ->method('withScope')
+            ->willReturnCallback(static fn (callable $callback): mixed => $callback(new Scope()));
         $hub->expects($this->once())
             ->method('captureMessage')
             ->willReturn(EventId::generate());
@@ -550,7 +550,7 @@ class SentryErrorReporterTest extends TestCase
         $exception = new RuntimeException('Test exception');
 
         $hub->expects($this->never())
-            ->method('configureScope');
+            ->method('withScope');
 
         $eventId = EventId::generate();
         $hub->expects($this->once())
@@ -574,7 +574,7 @@ class SentryErrorReporterTest extends TestCase
         $exception = new RuntimeException('Test exception');
 
         $hub->expects($this->once())
-            ->method('configureScope')
+            ->method('withScope')
             ->willThrowException(new RuntimeException('Scope error'));
 
         $logger->expects($this->once())
@@ -613,7 +613,7 @@ class SentryErrorReporterTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
 
         $hub->expects($this->never())
-            ->method('configureScope');
+            ->method('withScope');
 
         $hub->expects($this->once())
             ->method('captureMessage')
@@ -634,7 +634,7 @@ class SentryErrorReporterTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
 
         $hub->expects($this->once())
-            ->method('configureScope')
+            ->method('withScope')
             ->willThrowException(new RuntimeException('Scope error'));
 
         $logger->expects($this->once())
@@ -826,7 +826,7 @@ class SentryErrorReporterTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
 
         $hub->expects($this->once())
-            ->method('configureScope')
+            ->method('withScope')
             ->willThrowException(new RuntimeException('Scope error'));
 
         $hub->expects($this->never())
@@ -871,16 +871,15 @@ class SentryErrorReporterTest extends TestCase
         $exception = new RuntimeException('Test exception');
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->once())
                     ->method('setExtra')
                     ->with('custom_message', 'Only message');
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $eventId = EventId::generate();
         $hub->expects($this->once())
@@ -904,16 +903,15 @@ class SentryErrorReporterTest extends TestCase
         $context   = ['key' => 'value'];
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->once())
                     ->method('setExtra')
                     ->with('key', 'value');
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $eventId = EventId::generate();
         $hub->expects($this->once())
@@ -937,16 +935,15 @@ class SentryErrorReporterTest extends TestCase
         $context   = ['key1' => 'value1', 'key2' => 'value2'];
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->exactly(3))
                     ->method('setExtra')
                     ->willReturnSelf();
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $eventId = EventId::generate();
         $hub->expects($this->once())
@@ -1134,7 +1131,7 @@ class SentryErrorReporterTest extends TestCase
         $exception = new RuntimeException('Test exception');
 
         $hub->expects($this->once())
-            ->method('configureScope')
+            ->method('withScope')
             ->willThrowException(new RuntimeException('Scope error'));
 
         $hub->expects($this->never())
@@ -1235,16 +1232,15 @@ class SentryErrorReporterTest extends TestCase
         $context = ['key1' => 'value1', 'key2' => 'value2'];
 
         $hub->expects($this->once())
-            ->method('configureScope')
-            ->with($this->callback(function ($callback) {
+            ->method('withScope')
+            ->willReturnCallback(function (callable $callback) {
                 $scope = $this->createMock(Scope::class);
                 $scope->expects($this->exactly(2))
                     ->method('setExtra')
                     ->willReturnSelf();
-                $callback($scope);
 
-                return true;
-            }));
+                return $callback($scope);
+            });
 
         $hub->expects($this->once())
             ->method('captureMessage')

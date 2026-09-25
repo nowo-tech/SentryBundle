@@ -13,7 +13,7 @@
 
 - PHP >= 8.2, < 8.6
 - Symfony >= 7.0 || >= 8.0
-- [sentry/sentry-symfony](https://github.com/getsentry/sentry-symfony) >= 5.0 || >= 6.0
+- [sentry/sentry-symfony](https://github.com/getsentry/sentry-symfony) >= 5.10 || >= 6.0
 
 ## Install via Composer
 

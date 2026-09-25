@@ -594,7 +594,7 @@ class MyController extends AbstractController
 - The `uptime_bot_listener` returns a simple `200 OK` response for matching requests, preventing them from going through the full application stack.
 - The `error_reporter` service is **always safe to use** - it never throws exceptions, even if Sentry is completely broken.
 - **`dbal_exception_reporter`** is a no-op when Doctrine DBAL/Bundle is not installed; disable with `enabled: false` if you do not want SQL reporting.
-- SQL deduplication uses `ReportedSqlExceptionRegistry` with **`kernel.reset`** — safe for FrankenPHP worker mode.
+- SQL deduplication uses `ReportedSqlExceptionRegistry` with a **`WeakMap`** (entries disappear with the exception). The service keeps a `kernel.reset` tag when the resetter runs, and stays correct when it does not (FrankenPHP worker without reset). Requires `sentry/sentry-symfony` ≥ 5.10 for per-request Sentry scope isolation. See [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md).
 
 ### Privacy (PII) sent to Sentry
 
