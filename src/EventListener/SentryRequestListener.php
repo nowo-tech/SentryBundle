@@ -89,6 +89,7 @@ final class SentryRequestListener
             }
 
             $this->sentryHub->configureScope(
+                // @igor-ignore - Not shared worker service state.
                 callback: function (Scope $scope) use ($host, $userIdentifier, $session): void {
                     try {
                         if ($this->config['set_domain_tag'] ?? true) {

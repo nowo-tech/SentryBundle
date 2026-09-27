@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\SentryBundle\Doctrine\DBAL;
 
+use Symfony\Contracts\Service\ResetInterface;
 use Throwable;
 use WeakMap;
 
@@ -13,7 +14,7 @@ use WeakMap;
  * Entries are weak: they disappear with the exception object, so the registry cannot grow nor
  * match a recycled object id in long-running workers even when kernel.reset never runs.
  */
-final class ReportedSqlExceptionRegistry
+final class ReportedSqlExceptionRegistry implements ResetInterface
 {
     /** @var WeakMap<Throwable, true> */
     private WeakMap $reported;

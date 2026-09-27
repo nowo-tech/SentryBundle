@@ -8,7 +8,7 @@ COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP  := php
 
 .PHONY: help up down down-dev build shell install assets test test-coverage coverage-php-percent coverage-check check-no-cursor-coauthor strip-cursor-coauthor-from-history
-.PHONY: cs-check cs-fix rector rector-dry phpstan qa
+.PHONY: cs-check cs-fix rector rector-dry phpstan igor qa
 .PHONY: release-check composer-sync clean update validate setup-hooks ensure-up
 .PHONY: release-check-demos demo-smoke up-symfony8 demo-down
 
@@ -33,6 +33,7 @@ help:
 	@echo "  rector          Apply Rector refactoring"
 	@echo "  rector-dry      Run Rector in dry-run mode"
 	@echo "  phpstan         Run PHPStan static analysis"
+	@echo "  igor          Run Igor worker-state audit (REQ-CS-008)"
 	@echo "  qa              Run all QA checks (cs-check + test)"
 	@echo "  release-check   Pre-release checks (composer-sync, cs, rector-dry, phpstan, test-coverage, demos)"
 	@echo "  demo-smoke      REQ-TEST-011: boot demo + HTTP 200"
@@ -123,7 +124,11 @@ release-check-demos:
 demo-smoke:
 	@$(MAKE) -C demo demo-smoke
 
-release-check: check-no-cursor-coauthor ensure-up composer-sync cs-fix cs-check rector-dry phpstan coverage-check release-check-demos
+
+# Run Igor worker-state audit (REQ-CS-008)
+igor: ensure-up
+	$(COMPOSE) exec -T php composer igor
+release-check: check-no-cursor-coauthor ensure-up composer-sync cs-fix cs-check rector-dry phpstan igor coverage-check release-check-demos
 	@echo "✅ release-check passed"
 
 clean:

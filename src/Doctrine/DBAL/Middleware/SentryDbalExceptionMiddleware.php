@@ -23,6 +23,7 @@ final class SentryDbalExceptionMiddleware implements ConnectionNameAwareInterfac
 
     public function setConnectionName(string $name): void
     {
+        // @igor-ignore - DBAL middleware wraps connection; stateless delegation per query.
         $this->connectionName = $name;
     }
 

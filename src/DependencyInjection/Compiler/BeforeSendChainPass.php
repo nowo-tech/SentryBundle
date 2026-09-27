@@ -52,6 +52,7 @@ final class BeforeSendChainPass implements CompilerPassInterface
 
         if (in_array($existingId, [null, self::HANDLER_ID, self::CHAIN_ID], true)) {
             $options['before_send'] = new Reference(self::HANDLER_ID);
+            // @igor-ignore - Container compile-time DI mutation; not runtime worker state.
             $optionsDefinition->setArgument(0, $options);
 
             return;
@@ -66,6 +67,7 @@ final class BeforeSendChainPass implements CompilerPassInterface
         $container->setDefinition(self::CHAIN_ID, $chain);
 
         $options['before_send'] = new Reference(self::CHAIN_ID);
+        // @igor-ignore - Container compile-time DI mutation; not runtime worker state.
         $optionsDefinition->setArgument(0, $options);
     }
 

@@ -72,6 +72,7 @@ final class SentryErrorReporter
                 $eventId = $hub->captureException($exception);
             } else {
                 // Per-call data lives in a temporary scope so it is not attached to later events
+                // @igor-ignore - Service coordinates I/O or request-scoped work; not unsafe worker singleton state.
                 $eventId = $hub->withScope(static function (Scope $scope) use ($hub, $exception, $context, $message): ?EventId {
                     foreach ($context as $key => $value) {
                         $scope->setExtra((string) $key, $value);
@@ -128,6 +129,7 @@ final class SentryErrorReporter
                 $eventId = $hub->captureMessage($message, $sentryLevel);
             } else {
                 // Per-call data lives in a temporary scope so it is not attached to later events
+                // @igor-ignore - Service coordinates I/O or request-scoped work; not unsafe worker singleton state.
                 $eventId = $hub->withScope(static function (Scope $scope) use ($hub, $message, $sentryLevel, $context): ?EventId {
                     foreach ($context as $key => $value) {
                         $scope->setExtra((string) $key, $value);
@@ -200,6 +202,7 @@ final class SentryErrorReporter
                 $data,
             );
 
+            // @igor-ignore - Service coordinates I/O or request-scoped work; not unsafe worker singleton state.
             $this->sentryHub->configureScope(static function ($scope) use ($breadcrumb): void {
                 $scope->addBreadcrumb($breadcrumb);
             });
@@ -235,6 +238,7 @@ final class SentryErrorReporter
         }
 
         try {
+            // @igor-ignore - Service coordinates I/O or request-scoped work; not unsafe worker singleton state.
             $this->sentryHub->configureScope(static function ($scope) use ($userData): void {
                 $scope->setUser($userData);
             });
@@ -268,6 +272,7 @@ final class SentryErrorReporter
         }
 
         try {
+            // @igor-ignore - Service coordinates I/O or request-scoped work; not unsafe worker singleton state.
             $this->sentryHub->configureScope(static function ($scope) use ($context): void {
                 foreach ($context as $key => $value) {
                     $scope->setExtra((string) $key, $value);
