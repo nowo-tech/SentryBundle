@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.10.2] - 2026-10-09](#1102---2026-10-09)
 - [[1.10.1] - 2026-09-27](#1101---2026-09-27)
 - [[1.10.0] - 2026-09-25](#1100---2026-09-25)
 - [[1.9.8] - 2026-08-24](#198---2026-08-24)
@@ -48,6 +49,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.10.2] - 2026-10-09
+
+### Dependencies
+
+- Runtime lock: `sentry/sentry` 4.34.0, `sentry/sentry-symfony` 5.14.0 (adds the `sentry.options.data_collection` node upstream), Symfony 7.4 patch releases, `doctrine/dbal` 4.5.0.
+- Dev tooling: `igor-php/igor-php` ^0.10 (Dependabot #29), `phpstan/phpstan` 2.3.1, `phpstan/phpstan-phpunit` 2.1.1, `rector/rector` 2.7.0, `nowo-tech/phpstan-frankenphp` v1.2.3.
+- Demo (Symfony 8): Sentry SDK 4.34 / sentry-symfony 5.14, `doctrine/dbal` 4.5.0, `twig/twig` v3.30.0, `twig/extra-bundle` v3.29.0, `nowo-tech/hot-reload-bundle` v1.5.5, `nowo-tech/twig-inspector-bundle` v1.1.7.
+
+[1.10.2]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.10.2
 
 ## [1.10.1] - 2026-09-27
 

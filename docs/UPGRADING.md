@@ -3,6 +3,16 @@
 
 ## Unreleased
 
+## To 1.10.2
+
+From **1.10.1** — dependency updates.
+
+```bash
+composer update nowo-tech/sentry-bundle
+```
+
+No breaking changes. No application upgrade steps.
+
 ## To 1.10.1
 
 From **1.10.0** — REQ-CS-008 Igor FrankenPHP worker audit (igor-php require-dev, igor.json, make igor).
@@ -18,6 +28,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Table of contents
 
+- [To 1.10.2](#to-1102)
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)
   - [Upgrading to 1.10.0](#upgrading-to-1100)
