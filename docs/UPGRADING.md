@@ -1,7 +1,16 @@
 # Upgrade Guide
 
-
 ## Unreleased
+
+## To 1.10.3
+
+From **1.10.2** — dependency refresh and repository maintenance.
+
+```bash
+composer update nowo-tech/sentry-bundle
+```
+
+- No breaking changes. No application upgrade steps.
 
 ## To 1.10.2
 
@@ -28,6 +37,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Table of contents
 
+- [To 1.10.3](#to-1103)
 - [To 1.10.2](#to-1102)
 - [General Upgrade Process](#general-upgrade-process)
 - [Upgrade Instructions by Version](#upgrade-instructions-by-version)

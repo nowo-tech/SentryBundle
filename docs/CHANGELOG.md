@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
   - [Changed](#changed)
+- [[1.10.3] - 2026-10-13](#1103---2026-10-13)
 - [[1.10.2] - 2026-10-09](#1102---2026-10-09)
 - [[1.10.1] - 2026-09-27](#1101---2026-09-27)
 - [[1.10.0] - 2026-09-25](#1100---2026-09-25)
@@ -51,9 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.3] - 2026-10-13
+
 ### Changed
 
 - Development: `composer.json` pins `config.platform.php` to 8.2.0 so the committed lock stays installable on the minimum PHP; CI overrides the platform per matrix cell.
+
+[1.10.3]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.10.3
 
 ## [1.10.2] - 2026-10-09
 
