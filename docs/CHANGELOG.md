@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.11.1] - 2026-10-13](#1111---2026-10-13)
 - [[1.11.0] - 2026-10-13](#1110---2026-10-13)
 - [[1.10.3] - 2026-10-13](#1103---2026-10-13)
 - [[1.10.2] - 2026-10-09](#1102---2026-10-09)
@@ -43,10 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.1] - 2026-10-13
+
 ### Changed
 
 - `composer.json` branch alias `dev-main` moved from `1.10.x-dev` to `1.11.x-dev`.
 - `docs/SECURITY.md`: new sections on the uptime bot listener (spoofable User-Agent, segment-bounded path matching since 1.11.0) and on the keys-only failure logs of `SentryErrorReporter`.
+
+[1.11.1]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.11.1
 
 ## [1.11.0] - 2026-10-13
 

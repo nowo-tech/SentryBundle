@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.11.1](#to-1111)
 - [To 1.11.0](#to-1110)
 - [To 1.10.3](#to-1103)
 - [To 1.10.2](#to-1102)
@@ -39,6 +40,16 @@
 - [Need Help?](#need-help)
 
 ## Unreleased
+
+## To 1.11.1
+
+From **1.11.0** — SECURITY.md documents the 1.11.0 security fixes; branch alias updated.
+
+```bash
+composer update nowo-tech/sentry-bundle
+```
+
+- No breaking changes. No application upgrade steps.
 
 ## To 1.11.0
 
