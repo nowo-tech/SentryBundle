@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - [[Unreleased]](#unreleased)
   - [Security](#security)
   - [Fixed](#fixed)
+- [[1.11.0] - 2026-10-13](#1110---2026-10-13)
 - [[1.10.3] - 2026-10-13](#1103---2026-10-13)
 - [[1.10.2] - 2026-10-09](#1102---2026-10-09)
 - [[1.10.1] - 2026-09-27](#1101---2026-09-27)
@@ -52,6 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-10-13
+
 ### Security
 
 - `uptime_bot_listener.paths`: a configured path now matches only itself and its sub-paths on a `/` segment boundary (`/health` covers `/health/db`), no longer sibling paths sharing the prefix (`/healthz-admin`, `/health-admin`), which previously short-circuited to `200 OK` for any bot-like User-Agent.
@@ -60,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `BeforeSendHandler`: setting `ignore_pure_access_denied: false` no longer disables `deduplicate_sql_exceptions`; the flag now only gates the access-denied filter.
+
+[1.11.0]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.11.0
 
 ## [1.10.3] - 2026-10-13
 

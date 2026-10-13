@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## To 1.11.0
+
+From **1.10.3** — fixes - SQL dedup kept with ignore_pure_access_denied false, segment-bounded uptime paths, no PII in failure logs.
+
+```bash
+composer update nowo-tech/sentry-bundle
+```
+
+- `uptime_bot_listener.paths` no longer matches sibling paths sharing a prefix (`/health` does not cover `/healthz`); list each health path explicitly.
+- `deduplicate_sql_exceptions` now keeps working when `ignore_pure_access_denied: false`.
+- Failure logs from `setUser()`/`setContext()` contain only `user_data_keys`/`context_keys`.
+
 ## To 1.10.3
 
 From **1.10.2** — dependency refresh and repository maintenance.
@@ -37,6 +49,7 @@ This guide provides step-by-step instructions for upgrading the Sentry Bundle be
 
 ## Table of contents
 
+- [To 1.11.0](#to-1110)
 - [To 1.10.3](#to-1103)
 - [To 1.10.2](#to-1102)
 - [General Upgrade Process](#general-upgrade-process)
