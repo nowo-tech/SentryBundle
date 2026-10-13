@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
-  - [Security](#security)
-  - [Fixed](#fixed)
 - [[1.11.0] - 2026-10-13](#1110---2026-10-13)
 - [[1.10.3] - 2026-10-13](#1103---2026-10-13)
 - [[1.10.2] - 2026-10-09](#1102---2026-10-09)
@@ -33,23 +34,12 @@ All notable changes to this project will be documented in this file.
 - [[1.3.2] - 2026-04-15](#132---2026-04-15)
 - [[1.3.1] - 2026-04-14](#131---2026-04-14)
 - [[1.3.0] - 2026-03-30](#130---2026-03-30)
-- [[1.2.2] - 2025-03-04](#122-2025-03-04)
-- [[1.2.1] - 2026-03-13](#121-2026-03-13)
-- [[1.2.0] - 2025-03-06](#120-2025-03-06)
-  - [Changed](#changed)
-  - [Fixed](#fixed)
-- [[1.1.1] - 2025-03-06](#111-2025-03-06)
-  - [Added](#added)
-  - [Changed](#changed)
-  - [Fixed](#fixed)
-- [[1.1.0] - 2025-03-04](#110-2025-03-04)
-  - [Added](#added)
-  - [Changed](#changed)
-  - [Fixed](#fixed)
-- [[1.0.0] - Initial Release](#100-initial-release)
-  - [Added](#added)
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- [[1.2.2] - 2025-03-04](#122---2025-03-04)
+- [[1.2.1] - 2026-03-13](#121---2026-03-13)
+- [[1.2.0] - 2025-03-06](#120---2025-03-06)
+- [[1.1.1] - 2025-03-06](#111---2025-03-06)
+- [[1.1.0] - 2025-03-04](#110---2025-03-04)
+- [[1.0.0] - Initial Release](#100---initial-release)
 
 ## [Unreleased]
 

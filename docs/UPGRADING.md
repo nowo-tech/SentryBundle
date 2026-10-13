@@ -1,5 +1,43 @@
 # Upgrade Guide
 
+## Table of contents
+
+- [Unreleased](#unreleased)
+- [To 1.11.0](#to-1110)
+- [To 1.10.3](#to-1103)
+- [To 1.10.2](#to-1102)
+- [To 1.10.1](#to-1101)
+- [General Upgrade Process](#general-upgrade-process)
+- [Upgrade Instructions by Version](#upgrade-instructions-by-version)
+  - [Upgrading to 1.10.0](#upgrading-to-1100)
+  - [Upgrading to 1.9.7](#upgrading-to-197)
+  - [Upgrading to 1.9.6](#upgrading-to-196)
+  - [Upgrading to 1.9.5](#upgrading-to-195)
+  - [Upgrading to 1.9.4](#upgrading-to-194)
+  - [Upgrading to 1.9.3](#upgrading-to-193)
+  - [Upgrading to 1.9.2](#upgrading-to-192)
+  - [Upgrading to 1.9.1](#upgrading-to-191)
+  - [Upgrading to 1.9.0](#upgrading-to-190)
+  - [Upgrading to 1.8.0](#upgrading-to-180)
+  - [Upgrading to 1.7.0](#upgrading-to-170)
+  - [Upgrading to 1.6.2](#upgrading-to-162)
+  - [Upgrading to 1.6.1](#upgrading-to-161)
+  - [Upgrading to 1.6.0](#upgrading-to-160)
+  - [Upgrading to 1.5.0](#upgrading-to-150)
+  - [Upgrading to 1.4.1](#upgrading-to-141)
+  - [Upgrading to 1.4.0](#upgrading-to-140)
+  - [Upgrading to 1.3.3](#upgrading-to-133)
+  - [Upgrading to 1.3.2](#upgrading-to-132)
+  - [Upgrading to 1.3.1](#upgrading-to-131)
+  - [Upgrading to 1.3.0](#upgrading-to-130)
+  - [Upgrading to 1.2.2](#upgrading-to-122)
+  - [Upgrading to 1.2.1](#upgrading-to-121)
+  - [Upgrading to 1.2.0](#upgrading-to-120)
+  - [Upgrading to 1.1.1](#upgrading-to-111)
+  - [Upgrading to 1.1.0](#upgrading-to-110)
+- [Upgrade from Pre-1.0.0 Versions](#upgrade-from-pre-100-versions)
+- [Need Help?](#need-help)
+
 ## Unreleased
 
 ## To 1.11.0
@@ -46,39 +84,6 @@ php bin/console cache:clear
 - No application upgrade steps for require-dev Igor tooling (REQ-CS-008). Consumers do not pull `igor-php/igor-php` transitively.
 
 This guide provides step-by-step instructions for upgrading the Sentry Bundle between versions.
-
-## Table of contents
-
-- [To 1.11.0](#to-1110)
-- [To 1.10.3](#to-1103)
-- [To 1.10.2](#to-1102)
-- [General Upgrade Process](#general-upgrade-process)
-- [Upgrade Instructions by Version](#upgrade-instructions-by-version)
-  - [Upgrading to 1.10.0](#upgrading-to-1100)
-  - [Upgrading to 1.9.7](#upgrading-to-197)
-  - [Upgrading to 1.9.3](#upgrading-to-193)
-  - [Upgrading to 1.9.2](#upgrading-to-192)
-  - [Upgrading to 1.9.1](#upgrading-to-191)
-  - [Upgrading to 1.9.0](#upgrading-to-190)
-  - [Upgrading to 1.8.0](#upgrading-to-180)
-  - [Upgrading to 1.7.0](#upgrading-to-170)
-  - [Upgrading to 1.6.2](#upgrading-to-162)
-  - [Upgrading to 1.6.1](#upgrading-to-161)
-  - [Upgrading to 1.6.0](#upgrading-to-160)
-  - [Upgrading to 1.5.0](#upgrading-to-150)
-  - [Upgrading to 1.4.1](#upgrading-to-141)
-  - [Upgrading to 1.4.0](#upgrading-to-140)
-  - [Upgrading to 1.3.3](#upgrading-to-133)
-  - [Upgrading to 1.3.2](#upgrading-to-132)
-  - [Upgrading to 1.3.1](#upgrading-to-131)
-  - [Upgrading to 1.3.0](#upgrading-to-130)
-  - [Upgrading to 1.2.2](#upgrading-to-122)
-  - [Upgrading to 1.2.1](#upgrading-to-121)
-  - [Upgrading to 1.2.0](#upgrading-to-120)
-  - [Upgrading to 1.1.1](#upgrading-to-111)
-  - [Upgrading to 1.1.0](#upgrading-to-110)
-- [Upgrade from Pre-1.0.0 Versions](#upgrade-from-pre-100-versions)
-- [Need Help?](#need-help)
 
 ## General Upgrade Process
 
