@@ -77,6 +77,14 @@ final class SentryBeforeSendCallback
 
 Also configure server-side scrubbing rules in the Sentry project settings.
 
+## Uptime bot listener
+
+`uptime_bot_listener` answers `200 OK` without running the application for requests whose User-Agent starts with a configured bot prefix **and** whose path is listed in `paths`. User-Agents are trivially spoofable, so only list paths that are safe to short-circuit. Since **1.11.0** a configured path covers only itself and its sub-paths on a `/` segment boundary (`/health` matches `/health/db`, never `/healthz-admin` or `/health-admin`); earlier versions matched any path sharing the prefix.
+
+## Failure logs
+
+When Sentry itself fails, `SentryErrorReporter` logs the failure to the application logger. Since **1.11.0**, `setUser()` and `setContext()` failures log only the keys (`user_data_keys`, `context_keys`), never the user data or context values.
+
 ## Release security checklist (12.4.1)
 
 Before tagging a release, confirm:

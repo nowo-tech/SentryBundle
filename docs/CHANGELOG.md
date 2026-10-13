@@ -43,6 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/SECURITY.md`: new sections on the uptime bot listener (spoofable User-Agent, segment-bounded path matching since 1.11.0) and on the keys-only failure logs of `SentryErrorReporter`.
+
 ## [1.11.0] - 2026-10-13
 
 ### Security
