@@ -16,6 +16,10 @@ use Sentry\Severity;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
 
+use function array_key_exists;
+
+use const JSON_THROW_ON_ERROR;
+
 /**
  * Test case for SentryErrorReporter.
  *
@@ -415,14 +419,19 @@ class SentryErrorReporterTest extends TestCase
     {
         $hub      = $this->createMock(HubInterface::class);
         $logger   = $this->createMock(LoggerInterface::class);
-        $userData = ['id' => '123'];
+        $userData = ['id' => '123', 'email' => 'jane@example.com'];
 
         $hub->expects($this->once())
             ->method('configureScope')
             ->willThrowException(new RuntimeException('Sentry error'));
 
         $logger->expects($this->once())
-            ->method('error');
+            ->method('error')
+            ->with('Failed to set user context in Sentry', $this->callback(static function (array $context): bool {
+                return $context['user_data_keys'] === ['id', 'email']
+                    && !array_key_exists('user_data', $context)
+                    && !str_contains(json_encode($context, JSON_THROW_ON_ERROR), 'jane@example.com');
+            }));
 
         $reporter = new SentryErrorReporter($hub, $logger);
         $result   = $reporter->setUser($userData);
@@ -464,14 +473,19 @@ class SentryErrorReporterTest extends TestCase
     {
         $hub     = $this->createMock(HubInterface::class);
         $logger  = $this->createMock(LoggerInterface::class);
-        $context = ['key1' => 'value1'];
+        $context = ['key1' => 'value1', 'api_token' => 's3cr3t'];
 
         $hub->expects($this->once())
             ->method('configureScope')
             ->willThrowException(new RuntimeException('Sentry error'));
 
         $logger->expects($this->once())
-            ->method('error');
+            ->method('error')
+            ->with('Failed to set context in Sentry', $this->callback(static function (array $logContext): bool {
+                return $logContext['context_keys'] === ['key1', 'api_token']
+                    && !array_key_exists('context', $logContext)
+                    && !str_contains(json_encode($logContext, JSON_THROW_ON_ERROR), 's3cr3t');
+            }));
 
         $reporter = new SentryErrorReporter($hub, $logger);
         $result   = $reporter->setContext($context);

@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
-  - [Changed](#changed)
+  - [Security](#security)
+  - [Fixed](#fixed)
 - [[1.10.3] - 2026-10-13](#1103---2026-10-13)
 - [[1.10.2] - 2026-10-09](#1102---2026-10-09)
 - [[1.10.1] - 2026-09-27](#1101---2026-09-27)
@@ -50,6 +51,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Security
+
+- `uptime_bot_listener.paths`: a configured path now matches only itself and its sub-paths on a `/` segment boundary (`/health` covers `/health/db`), no longer sibling paths sharing the prefix (`/healthz-admin`, `/health-admin`), which previously short-circuited to `200 OK` for any bot-like User-Agent.
+- `SentryErrorReporter::setUser()` / `setContext()`: when Sentry fails, the error log now records only the keys (`user_data_keys`, `context_keys`) instead of the full user data / context values, so PII and secrets no longer leak into application logs.
+
+### Fixed
+
+- `BeforeSendHandler`: setting `ignore_pure_access_denied: false` no longer disables `deduplicate_sql_exceptions`; the flag now only gates the access-denied filter.
 
 ## [1.10.3] - 2026-10-13
 

@@ -246,8 +246,9 @@ final class SentryErrorReporter
             return true;
         } catch (Throwable $e) {
             $this->logError('Failed to set user context in Sentry', [
-                'user_data'    => $userData,
-                'sentry_error' => $e->getMessage(),
+                // Keys only: user data is PII and must not leak into application logs.
+                'user_data_keys' => array_keys($userData),
+                'sentry_error'   => $e->getMessage(),
             ]);
 
             return false;
@@ -282,7 +283,8 @@ final class SentryErrorReporter
             return true;
         } catch (Throwable $e) {
             $this->logError('Failed to set context in Sentry', [
-                'context'      => $context,
+                // Keys only: context values may carry PII or secrets.
+                'context_keys' => array_keys($context),
                 'sentry_error' => $e->getMessage(),
             ]);
 

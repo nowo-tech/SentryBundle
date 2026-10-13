@@ -39,13 +39,10 @@ final class BeforeSendHandler
             return $event;
         }
 
-        if (!($this->config['ignore_pure_access_denied'] ?? true)) {
-            return $event;
-        }
-
         $exception = $hint?->exception;
 
-        if ($exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException) {
+        if (($this->config['ignore_pure_access_denied'] ?? true)
+            && ($exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException)) {
             return null;
         }
 

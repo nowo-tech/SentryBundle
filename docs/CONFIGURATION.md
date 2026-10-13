@@ -313,7 +313,7 @@ nowo_sentry:
 - **`paths`** (array of strings, default: `['/health']`)
   - List of paths that should return OK for uptime bots.
   - Exact path match: `/health`
-  - Path prefix matches apply when the path is not `/`
+  - Sub-paths match on a segment boundary when the path is not `/`: `/health` matches `/health/db` but not `/healthz` or `/health-admin`
   - Default: `['/health']`
 
 - **`priority`** (integer, default: `255`)

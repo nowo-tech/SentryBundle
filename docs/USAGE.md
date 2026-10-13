@@ -30,7 +30,7 @@ When a sub-request access denied **breaks the parent page**, enriches Sentry wit
 
 ### SentryUptimeBotListener
 
-Handles requests from uptime monitoring bots (Sentry Uptime Bot, Uptime-Kuma, kube-probe) by returning a simple OK response for configured paths (e.g. `/dashboard`, `/`, `/login`).
+Handles requests from uptime monitoring bots (Sentry Uptime Bot, Uptime-Kuma, kube-probe) by returning a simple OK response for configured paths (default `/health`; a configured path also covers its sub-paths such as `/health/db`, never sibling paths such as `/healthz`).
 
 ### DBAL exception reporter (optional)
 

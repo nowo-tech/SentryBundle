@@ -147,4 +147,21 @@ class BeforeSendHandlerTest extends TestCase
 
         $this->assertSame($event, $handler($event, EventHint::fromArray(['exception' => $sqlError])));
     }
+
+    public function testStillDeduplicatesSqlExceptionsWhenAccessDeniedFilteringIsDisabled(): void
+    {
+        $registry = new ReportedSqlExceptionRegistry();
+        $sqlError = new RuntimeException('SQLSTATE[42S22]: Unknown column');
+        $registry->markReported($sqlError);
+
+        $handler = new BeforeSendHandler([
+            'enabled'                    => true,
+            'ignore_pure_access_denied'  => false,
+            'deduplicate_sql_exceptions' => true,
+        ], $registry);
+        $event = Event::createEvent();
+
+        $this->assertNull($handler($event, EventHint::fromArray(['exception' => $sqlError])));
+        $this->assertSame($event, $handler($event, EventHint::fromArray(['exception' => new AccessDeniedException()])));
+    }
 }

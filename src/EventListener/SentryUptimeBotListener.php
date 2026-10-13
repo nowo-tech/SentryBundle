@@ -11,8 +11,8 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * Listener that handles requests from uptime monitoring bots.
  *
  * This listener intercepts health check requests from configured monitoring
- * user agents (default: Sentry Uptime Bot) and returns a simple OK response
- * for configured paths (default: `/` and `/login`). This prevents these
+ * user agents (default: `SentryUptimeBot/1.0` prefix) and returns a simple OK response
+ * for configured paths (default: `/health`, plus sub-paths such as `/health/db`). This prevents these
  * monitoring requests from being processed by the full application stack.
  *
  * The listener runs with priority 255 to ensure it executes early in the request lifecycle.
@@ -74,7 +74,8 @@ final class SentryUptimeBotListener
                 $isMonitoredPath = true;
                 break;
             }
-            if ($path !== '/' && str_starts_with($pathInfo, $path)) {
+            // Sub-paths match only on a segment boundary: `/health` covers `/health/db`, not `/healthz-admin`.
+            if ($path !== '/' && str_starts_with($pathInfo, rtrim($path, '/') . '/')) {
                 $isMonitoredPath = true;
                 break;
             }
