@@ -9,6 +9,18 @@
 | **Verdict** | ✅ **Viable under scenario B** (after remediation) — `sentry/sentry-symfony` ≥ 5.10 (now required) isolates the Sentry scope per main request through kernel events, the SQL de-duplication registry uses a `WeakMap` and no longer needs `kernel.reset`, and per-call capture context is scoped to its event |
 | Remediation (2026-09-23) | W-01: constraint raised to `^5.10 \|\| ^6.0` (`composer.json`, lock hash, README/INSTALLATION). W-02: `ReportedSqlExceptionRegistry` uses `WeakMap<Throwable, true>`. W-03: `SentryErrorReporter::captureException()` / `captureMessage()` use `withScope()`. Regression tests: `tests/Unit/Doctrine/DBAL/ReportedSqlExceptionRegistryTest.php`, `tests/Unit/Service/SentryErrorReporterWorkerModeTest.php` |
 
+## Table of contents
+
+- [Execution model assumed](#execution-model-assumed)
+- [Summary](#summary)
+- [Services reviewed](#services-reviewed)
+- [Findings](#findings)
+  - [W-01 — Scope data (user, session id, SQL, tags) is only isolated per request by `sentry/sentry-symfony` ≥ 5.10 (Medium)](#w-01--scope-data-user-session-id-sql-tags-is-only-isolated-per-request-by-sentrysentry-symfony--510-medium)
+  - [W-02 — `ReportedSqlExceptionRegistry` keys on `spl_object_id()` without holding the object (Medium, scenario B)](#w-02--reportedsqlexceptionregistry-keys-on-spl_object_id-without-holding-the-object-medium-scenario-b)
+  - [W-03 — Per-call context of `captureException()` / `captureMessage()` stays on the scope (Low)](#w-03--per-call-context-of-captureexception--capturemessage-stays-on-the-scope-low)
+- [Usage recommendations in worker mode](#usage-recommendations-in-worker-mode)
+- [Re-audit triggers](#re-audit-triggers)
+
 ## Execution model assumed
 
 FrankenPHP worker mode boots the Symfony kernel once per worker and serves many requests with the same container. This audit assumes the **strict** variant: the kernel is **not** rebooted between requests, so every shared service, static property and PHP global survives from one request to the next. Two scenarios are evaluated:

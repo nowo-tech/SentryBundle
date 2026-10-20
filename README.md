@@ -1,6 +1,6 @@
 # Sentry Bundle
 
-[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/sentry-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/sentry-bundle.svg)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.0%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com)
+[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/sentry-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/sentry-bundle.svg)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.0%20%7C%207.4%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/sentry-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/SentryBundle) [![Coverage](https://img.shields.io/badge/Coverage-99.87%25-brightgreen)](#tests-and-coverage)
 
 > ⭐ **Found this useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
@@ -23,10 +23,6 @@ This bundle is **FrankenPHP worker mode friendly**.
 - ✅ Type-safe error handling
 - ✅ ≥99% code coverage with comprehensive tests
 - ✅ Demo project for Symfony 8.1
-
-## Version information
-
-Supported PHP and Symfony versions match `composer.json` constraints and the [CI workflow](.github/workflows/ci.yml) matrix.
 
 ## Installation
 
@@ -62,6 +58,10 @@ return [
 - PHP >= 8.2, < 8.6
 - Symfony >= 7.0 || >= 8.0
 - Sentry Symfony Bundle >= 5.10 || >= 6.0 (5.10 isolates the Sentry scope per request in long-running workers)
+
+## Version information
+
+Supported PHP and Symfony versions match `composer.json` constraints and the [CI workflow](.github/workflows/ci.yml) matrix.
 
 ## Configuration
 
@@ -365,10 +365,8 @@ See `.github/workflows/ci.yml` for details.
 
 ## Documentation
 
-- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [Installation](docs/INSTALLATION.md)
 - [Configuration](docs/CONFIGURATION.md)
-- [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [Usage](docs/USAGE.md)
 - [Contributing](docs/CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
@@ -382,6 +380,8 @@ See `.github/workflows/ci.yml` for details.
 
 ### Additional documentation
 
+- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
+- [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
 - [FrankenPHP worker mode audit (kernel not reset)](docs/FRANKENPHP-WORKER-AUDIT.md)
 

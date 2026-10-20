@@ -2,6 +2,18 @@
 
 This document summarizes test coverage for the `SentryErrorReporter` service.
 
+## Table of contents
+
+- [Summary](#summary)
+- [Method analysis](#method-analysis)
+  - [1. `__construct()`](#1-__construct)
+  - [2. `captureException()`](#2-captureexception)
+  - [3. `captureMessage()`](#3-capturemessage)
+  - [4. `addBreadcrumb()`](#4-addbreadcrumb)
+  - [5. `configureScope()`](#5-configurescope)
+  - [6. Private helpers](#6-private-helpers)
+- [How to regenerate](#how-to-regenerate)
+
 ## Summary
 
 - **Total methods**: 9 (7 public + 2 private)

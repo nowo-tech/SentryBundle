@@ -1,5 +1,17 @@
 # Security policy
 
+## Table of contents
+
+- [Supported versions](#supported-versions)
+- [Reporting a vulnerability](#reporting-a-vulnerability)
+- [Data sent to Sentry](#data-sent-to-sentry)
+  - [Production recommendation](#production-recommendation)
+- [Scrubbing sensitive data (`before_send`)](#scrubbing-sensitive-data-before_send)
+- [Uptime bot listener](#uptime-bot-listener)
+- [Failure logs](#failure-logs)
+- [Release security checklist (12.4.1)](#release-security-checklist-1241)
+- [AI security audit (REQ-SEC-004)](#ai-security-audit-req-sec-004)
+
 ## Supported versions
 
 We release security fixes for the versions currently under maintenance. Check the [releases](https://github.com/nowo-tech/SentryBundle/releases) and [CHANGELOG](CHANGELOG.md) for supported versions.

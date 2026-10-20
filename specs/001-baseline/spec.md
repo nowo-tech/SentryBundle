@@ -75,6 +75,8 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 - **FR-SENTRY-001**: `BeforeSendHandler` MUST drop pure access-denied exceptions when enabled; MUST keep parent-page failures whose outer exception is not access denied but whose chain contains one.
 - **FR-SENTRY-002**: `AccessDeniedExceptionHelper` MUST provide shared detection helpers for access-denied types and exception chains.
+- **FR-SENTRY-004**: When the application already defines `sentry.options.before_send` (or `before_send_transaction`), `BeforeSendChainPass` / `BeforeSendTransactionChainPass` MUST keep both callbacks: `BeforeSendChain` runs the bundle handler first, then the application callback (a `null` result stops the chain).
+- **FR-SENTRY-005**: `BeforeSendTransactionHandler` (config `before_send_transaction_handler`) MUST trim oversized transactions (span and breadcrumb caps, `EventPayloadTrimmer` for large arrays/strings) so Relay does not reject the envelope (~1 MiB per event item); `0` disables a cap.
 - **FR-LIST-004**: `SubRequestAccessDeniedContextListener` MUST enrich Sentry scope on main request when a sub-request access denied breaks the parent page; MUST NOT drop events.
 
 ### Doctrine DBAL SQL reporting
@@ -105,7 +107,7 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 ## Success Criteria
 
-- **SC-001**: **18/18** production artifacts under `src/` mapped in [`code-inventory.md`](code-inventory.md).
+- **SC-001**: **23/23** production artifacts under `src/` mapped in [`code-inventory.md`](code-inventory.md).
 - **SC-002**: 100% PHPUnit line coverage on `src/` (project standard).
 - **SC-003**: Per-listener and per-feature disable flags verified in unit/integration tests.
 - **SC-004**: Demo routes `/sentry/sql-caught` and `/sentry/sql-uncaught` demonstrate FR-DBAL-003/004 in all demo projects.

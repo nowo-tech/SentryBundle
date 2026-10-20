@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/sentry-bundle`  
-**Last audited**: 2026-07-14
+**Last audited**: 2026-10-20 (v1.10/1.11 before_send chaining and transaction trimming)
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. PHPUnit under `tests/` is out of scope unless promoted in the spec.
 
@@ -26,6 +26,11 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Doctrine/DBAL/Middleware/SentryDbalExceptionDriver.php` | Driver wrapper | FR-DBAL-004 |
 | `Doctrine/DBAL/Middleware/SentryDbalExceptionConnection.php` | Connection wrapper (`query`, `exec`, `prepare`) | FR-DBAL-004 |
 | `Doctrine/DBAL/Middleware/SentryDbalExceptionStatement.php` | Statement `execute` wrapper | FR-DBAL-004 |
+| `DependencyInjection/Compiler/BeforeSendChainPass.php` | Chains bundle + app `before_send` | FR-CFG-004, FR-SENTRY-004 |
+| `DependencyInjection/Compiler/BeforeSendTransactionChainPass.php` | Chains bundle + app `before_send_transaction` | FR-SENTRY-004, FR-SENTRY-005 |
+| `Sentry/BeforeSendChain.php` | Primary/next callable chain | FR-SENTRY-004 |
+| `Sentry/BeforeSendTransactionHandler.php` | Transaction trimming (spans, breadcrumbs) | FR-SENTRY-005 |
+| `Sentry/EventPayloadTrimmer.php` | Large array/string truncation | FR-SENTRY-005 |
 
 ## Symfony config (`src/Resources/config/`)
 
@@ -44,9 +49,9 @@ This file proves that **every production source artifact** under `src/` is refer
 
 | Category | Files | Mapped |
 | --- | ---: | ---: |
-| PHP classes | 16 | 16 |
-| YAML config | 2 | 2 |
-| **Total `src/` artifacts** | **18** | **18** |
+| PHP classes (`src/**/*.php`) | 21 | 21 |
+| Symfony config (`src/Resources/config/`) | 2 | 2 |
+| **Total production sources** | **23** | **23** |
 
 ## Demo traceability (illustrative, not Packagist contract)
 

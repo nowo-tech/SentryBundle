@@ -44,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Documentation: wave-1 REQ compliance — README badges (Symfony 7.0 | 7.4 | 8.0 | 8.1+, GitHub stars, Coverage), section order (Version information after Requirements) and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, demo `.env.example` comments, doc TOCs, Spec Kit inventory refresh (23/23, FR-SENTRY-004/005).
+
 ## [1.11.1] - 2026-10-13
 
 ### Changed

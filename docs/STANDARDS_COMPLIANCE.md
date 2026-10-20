@@ -7,15 +7,16 @@ Verification date: 2026-03. This document summarizes alignment with the Nowo bun
 
 - [§2 Docker](#2-docker)
 - [§3 License](#3-license)
-- [§4 PHP-CS-Fixer & tools](#4-php-cs-fixer-tools)
+- [§4 PHP-CS-Fixer & tools](#4-php-cs-fixer--tools)
 - [§5 Makefile (root)](#5-makefile-root)
 - [§5.5 Makefile demo/](#55-makefile-demo)
 - [§6 Documentation](#6-documentation)
 - [§7 Tests](#7-tests)
 - [§8 CI (GitHub Actions)](#8-ci-github-actions)
 - [§9 Recipe (Symfony Flex)](#9-recipe-symfony-flex)
-- [§10 Symfony versions & demos](#10-symfony-versions-demos)
+- [§10 Symfony versions & demos](#10-symfony-versions--demos)
 - [Summary](#summary)
+
 ---
 
 ## §2 Docker
