@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.11.2] - 2026-10-22](#1112---2026-10-22)
 - [[1.11.1] - 2026-10-13](#1111---2026-10-13)
 - [[1.11.0] - 2026-10-13](#1110---2026-10-13)
 - [[1.10.3] - 2026-10-13](#1103---2026-10-13)
@@ -44,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.2] - 2026-10-22
+
+Dependency refresh, MySQL demo database, CI static analysis and 99% coverage gate, open-PR release gate, security guide. See [UPGRADING](UPGRADING.md#to-1112).
+
 ### Changed
 
 - Demo: the DBAL exception reporter demo now runs against a MySQL 8.4 `db` service (no host port, `DATABASE_URL` in `.env.example`) instead of a SQLite file; the image installs `pdo_mysql`; the DNS override is commented (REQ-DEMO-011, REQ-DEMO-006, REQ-DEMO-009).
@@ -55,6 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies refreshed (Composer and pnpm/npm lock files of the bundle and its demos, campaign 2026-10-19).
 - `.php-cs-fixer.dist.php`: `new ParallelConfig(2)` (REQ-CS-001).
 - Documentation: wave-1 REQ compliance — README badges (Symfony 7.0 | 7.4 | 8.0 | 8.1+, GitHub stars, Coverage), section order (Version information after Requirements) and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, demo `.env.example` comments, doc TOCs, Spec Kit inventory refresh (23/23, FR-SENTRY-004/005).
+
+[1.11.2]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.11.2
 
 ## [1.11.1] - 2026-10-13
 

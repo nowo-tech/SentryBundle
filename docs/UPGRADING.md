@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.11.2](#to-1112)
 - [To 1.11.1](#to-1111)
 - [To 1.11.0](#to-1110)
 - [To 1.10.3](#to-1103)
@@ -40,6 +41,14 @@
 - [Need Help?](#need-help)
 
 ## Unreleased
+
+## To 1.11.2
+
+From **1.11.1**:
+
+```bash
+composer update nowo-tech/sentry-bundle
+```
 
 ## To 1.11.1
 
