@@ -119,6 +119,35 @@ jobs:
           fi
           echo "✅ coverage.xml generated"
 
+  static-analysis:
+    name: Static analysis (PHPStan, Rector, Igor)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      # REQ-CS-006: PHPStan errors fail the build (ignoreErrors: [], no baseline).
+      - name: PHPStan
+        run: composer phpstan
+
+      - name: Rector (dry run)
+        run: composer rector-dry
+
+      # REQ-CS-008: FrankenPHP worker-state audit.
+      - name: Igor
+        run: composer igor
+
   code-style:
     name: Code Style
     runs-on: ubuntu-latest
@@ -223,6 +252,10 @@ jobs:
             exit 1
           fi
           echo "✅ coverage.xml generated"
+
+      # REQ-TEST-003: fail under 99% (Clover elements)
+      - name: Enforce coverage gate
+        run: php .scripts/check-coverage.php 99
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7

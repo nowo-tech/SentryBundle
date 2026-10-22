@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle\Tests\Unit\EventListener;
 
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -204,9 +205,8 @@ class SentryUptimeBotListenerTest extends TestCase
 
     /**
      * Sibling paths sharing a prefix must not match: `/health` does not cover `/healthz-admin`.
-     *
-     * @dataProvider siblingPathProvider
      */
+    #[DataProvider('siblingPathProvider')]
     public function testOnKernelRequestDoesNotMatchSiblingPathSharingPrefix(string $pathInfo): void
     {
         $listener = new SentryUptimeBotListener([

@@ -46,6 +46,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Demo: the DBAL exception reporter demo now runs against a MySQL 8.4 `db` service (no host port, `DATABASE_URL` in `.env.example`) instead of a SQLite file; the image installs `pdo_mysql`; the DNS override is commented (REQ-DEMO-011, REQ-DEMO-006, REQ-DEMO-009).
+- CI: static-analysis job (PHPStan, Rector dry run, Igor) and a 99% coverage gate in the coverage job; `make coverage-check` gate raised from 95% to 99%; `release-check` starts with `ensure-up` and runs the new `check-open-prs` (REQ-CS-006, REQ-TEST-003, REQ-MAKE-002).
+- `docs/SECURITY.md` adds attack surface, threat model and dependency policy (REQ-SEC-001); last docblock `@dataProvider` converted to `#[DataProvider]` (REQ-TEST-010); the co-author check accepts git worktrees.
+
+### Changed
+
 - Dependencies refreshed (Composer and pnpm/npm lock files of the bundle and its demos, campaign 2026-10-19).
 - `.php-cs-fixer.dist.php`: `new ParallelConfig(2)` (REQ-CS-001).
 - Documentation: wave-1 REQ compliance — README badges (Symfony 7.0 | 7.4 | 8.0 | 8.1+, GitHub stars, Coverage), section order (Version information after Requirements) and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, demo `.env.example` comments, doc TOCs, Spec Kit inventory refresh (23/23, FR-SENTRY-004/005).

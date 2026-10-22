@@ -1,4 +1,4 @@
 doctrine:
   dbal:
-    url: 'sqlite:///%kernel.project_dir%/var/demo.db'
+    url: '%env(resolve:DATABASE_URL)%'
     profiling_collect_backtrace: false

@@ -7,7 +7,7 @@ COMPOSE_BIN := $(shell docker compose version >/dev/null 2>&1 && echo "docker co
 COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP  := php
 
-.PHONY: help up down down-dev build shell install assets test test-coverage coverage-php-percent coverage-check check-no-cursor-coauthor strip-cursor-coauthor-from-history
+.PHONY: check-open-prs help up down down-dev build shell install assets test test-coverage coverage-php-percent coverage-check check-no-cursor-coauthor strip-cursor-coauthor-from-history
 .PHONY: cs-check cs-fix rector rector-dry phpstan igor qa
 .PHONY: release-check composer-sync clean update validate setup-hooks ensure-up
 .PHONY: release-check-demos demo-smoke up-symfony8 demo-down
@@ -27,7 +27,7 @@ help:
 	@echo "  assets          Build frontend assets (no-op: no frontend)"
 	@echo "  test            Run PHPUnit tests"
 	@echo "  test-coverage   Run tests with code coverage (PCOV)"
-	@echo "  coverage-check  Run test-coverage and fail if line coverage < 95%"
+	@echo "  coverage-check  Run test-coverage and fail if coverage < 99% (REQ-TEST-003)"
 	@echo "  cs-check        Check code style"
 	@echo "  cs-fix          Fix code style"
 	@echo "  rector          Apply Rector refactoring"
@@ -91,10 +91,10 @@ test-coverage: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
 	./.scripts/php-coverage-percent.sh coverage-php.txt
 
-# Run test-coverage (with global Lines % script) then validate minimum 95% Clover elements
+# Run test-coverage (with global Lines % script) then validate minimum 99% Clover elements (REQ-TEST-003)
 coverage-check: ensure-up
 	@$(MAKE) test-coverage
-	$(COMPOSE) exec -T $(SERVICE_PHP) php .scripts/check-coverage.php 95
+	$(COMPOSE) exec -T $(SERVICE_PHP) php .scripts/check-coverage.php 99
 
 cs-check: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer cs-check
@@ -128,7 +128,7 @@ demo-smoke:
 # Run Igor worker-state audit (REQ-CS-008)
 igor: ensure-up
 	$(COMPOSE) exec -T php composer igor
-release-check: check-no-cursor-coauthor ensure-up composer-sync cs-fix cs-check rector-dry phpstan igor coverage-check release-check-demos
+release-check: ensure-up check-no-cursor-coauthor check-open-prs composer-sync cs-fix cs-check rector-dry phpstan igor coverage-check release-check-demos
 	@echo "✅ release-check passed"
 
 clean:
@@ -163,3 +163,9 @@ include $(BUNDLE_ROOT)/.scripts/Makefile.update-deps.mk
 strip-cursor-coauthor-from-history:
 	@chmod +x .scripts/strip-cursor-coauthor-from-history.sh
 	@./.scripts/strip-cursor-coauthor-from-history.sh main
+
+# REQ-REL-003 — no unresolved open GitHub PRs before release
+check-open-prs:
+	@chmod +x .scripts/check-open-prs.sh
+	@bash .scripts/check-open-prs.sh
+

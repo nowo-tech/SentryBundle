@@ -2,6 +2,9 @@
 
 ## Table of contents
 
+- [Attack surface](#attack-surface)
+- [Threat model](#threat-model)
+- [Dependencies](#dependencies)
 - [Supported versions](#supported-versions)
 - [Reporting a vulnerability](#reporting-a-vulnerability)
 - [Data sent to Sentry](#data-sent-to-sentry)
@@ -11,6 +14,31 @@
 - [Failure logs](#failure-logs)
 - [Release security checklist (12.4.1)](#release-security-checklist-1241)
 - [AI security audit (REQ-SEC-004)](#ai-security-audit-req-sec-004)
+
+## Attack surface
+
+| Input / output | Where | Notes |
+| --- | --- | --- |
+| Exceptions, request context, SQL extras | Sent to the Sentry DSN you configure (outbound HTTPS via the Sentry SDK) | Controlled by `set_user_info`, `set_session_id`, SQL extras and `before_send` (see below) |
+| `SENTRY_DSN` / options | Application configuration | Secret: keep the DSN in env vars / secrets, never in the repository |
+| HTTP requests from uptime bots | `uptime_bot_listener` (optional) | Short-circuits listed paths for listed User-Agent prefixes |
+| DBAL exceptions | `dbal_exception_reporter` (optional) | Reports the failing SQL statement text (truncated to `max_sql_length`, default 2000) and SQLSTATE; bound parameter values are not sent |
+
+The bundle exposes **no HTTP routes or admin UI**.
+
+## Threat model
+
+| Threat | Mitigation |
+| --- | --- |
+| PII leaking to a third party (Sentry) | `set_user_info` / `set_session_id` off in the prod recipe; `before_send` scrubbing hook; see [Data sent to Sentry](#data-sent-to-sentry) |
+| DSN exposure | Configured through env vars; the DSN is never logged |
+| Spoofed uptime bot User-Agent reaching the app | Only the configured paths are short-circuited (segment-boundary match since 1.11.0); nothing else is skipped |
+| Sentry failures breaking requests | `SentryErrorReporter` catches every SDK failure and logs it instead of rethrowing into the request |
+| Sensitive data in failure logs | Only keys are logged for `setUser()` / `setContext()` failures (since 1.11.0) |
+
+## Dependencies
+
+Runtime dependency on the official `sentry/sentry-symfony` / `sentry/sentry` SDK. `composer audit` runs in CI; Dependabot proposes updates; security fixes ship as patch releases of the supported minor.
 
 ## Supported versions
 

@@ -32,7 +32,7 @@ Open <code>/sentry</code> in the running demo to browse all use cases. Highlight
 | <code>/sentry/access-denied</code> | Pure 403 filtered by <code>before_send_handler</code> |
 | <code>/sentry/trigger-error</code> | Uncaught exception captured by the Sentry SDK |
 
-The demo uses SQLite (<code>var/demo.db</code>) via Doctrine DBAL. Rebuild Docker images after pulling so <code>pdo_sqlite</code> is available.
+The demo uses a MySQL 8.4 service (<code>db</code>, no host port) via Doctrine DBAL (<code>DATABASE_URL</code> in <code>.env.example</code>). Rebuild Docker images after pulling so <code>pdo_mysql</code> is available.
 
 ## Quick Start with Docker
 

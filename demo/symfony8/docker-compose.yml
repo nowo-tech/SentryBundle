@@ -22,14 +22,40 @@ services:
       - APP_SECRET=${APP_SECRET:-demo-secret}
       - FRANKENPHP_MODE=${FRANKENPHP_MODE:-worker}
       - SENTRY_DSN=${SENTRY_DSN:-}
+      - DATABASE_URL=${DATABASE_URL:-mysql://sentry:sentry@db:3306/sentry_demo?serverVersion=8.4&charset=utf8mb4}
+    # REQ-DEMO-009: public resolvers so Composer reaches Packagist even when the host/WSL resolver fails inside Docker.
     dns:
       - 8.8.8.8
       - 8.8.4.4
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sentry-demo-network
+
+  # REQ-DEMO-011: MySQL for the DBAL exception reporter demo (no host port, REQ-DEMO-006).
+  db:
+    image: mysql:8.4
+    container_name: sentry-demo-symfony8-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sentry_demo
+      MYSQL_USER: sentry
+      MYSQL_PASSWORD: sentry
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-usentry", "-psentry"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     networks:
       - sentry-demo-network
 
 volumes:
   composer-cache:
+    driver: local
+  mysql_data:
     driver: local
 
 networks:
