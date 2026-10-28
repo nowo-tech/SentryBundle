@@ -8,6 +8,8 @@ use Exception;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Sentry\Event;
+use Sentry\State\Hub;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -357,5 +359,36 @@ class SentryRequestListenerTest extends TestCase
         $listener->onKernelRequest($event);
 
         $this->addToAssertionCount(1);
+    }
+
+    public function testAnonymousRequestClearsUserAndSessionLeftByPreviousRequestOnSharedHub(): void
+    {
+        $hub  = new Hub();
+        $user = $this->createMock(UserInterface::class);
+        $user->method('getUserIdentifier')->willReturn('alice@example.com');
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturnOnConsecutiveCalls($user, null);
+
+        $session = $this->createMock(SessionInterface::class);
+        $session->method('isStarted')->willReturn(true);
+        $session->method('getId')->willReturn('sess-1');
+        $authenticated = Request::create('https://example.com/');
+        $authenticated->setSession($session);
+
+        $listener = new SentryRequestListener($hub, ['set_user_info' => true, 'set_session_id' => true], 'prod', $security);
+        $kernel   = $this->createMock(HttpKernelInterface::class);
+
+        $listener->onKernelRequest(new RequestEvent($kernel, $authenticated, HttpKernelInterface::MAIN_REQUEST));
+        $hub->configureScope(function (Scope $scope): void {
+            $this->assertSame('alice@example.com', $scope->getUser()?->getId());
+        });
+
+        // Next request on the same worker: anonymous, no session.
+        $listener->onKernelRequest(new RequestEvent($kernel, Request::create('https://example.com/'), HttpKernelInterface::MAIN_REQUEST));
+        $hub->configureScope(function (Scope $scope): void {
+            $this->assertNull($scope->getUser());
+            $event = $scope->applyToEvent(Event::createEvent());
+            $this->assertNull($event?->getExtra()['session_id'] ?? null);
+        });
     }
 }

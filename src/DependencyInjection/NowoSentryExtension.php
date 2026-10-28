@@ -215,7 +215,8 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
     {
         if (!interface_exists(Middleware::class)
             || !interface_exists(ConnectionNameAwareInterface::class)) {
-            return;
+            // Doctrine DBAL 4 is always installed in the test suite.
+            return; // @codeCoverageIgnore
         }
 
         if (!($config['dbal_exception_reporter']['enabled'] ?? true)) {

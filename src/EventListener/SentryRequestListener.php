@@ -100,15 +100,24 @@ final class SentryRequestListener
                             $scope->setTag(key: 'environment', value: $this->environment);
                         }
 
-                        if ($userIdentifier && ($this->config['set_user_info'] ?? true)) {
-                            $scope->setUser(user: [
-                                'id'       => $userIdentifier,
-                                'username' => $userIdentifier,
-                            ]);
+                        // The hub scope outlives the request in worker mode (FrankenPHP, RoadRunner): clear what a
+                        // previous request set, or errors of an anonymous request are attributed to the previous user.
+                        if ($this->config['set_user_info'] ?? true) {
+                            if ($userIdentifier) {
+                                $scope->setUser(user: [
+                                    'id'       => $userIdentifier,
+                                    'username' => $userIdentifier,
+                                ]);
+                            } else {
+                                $scope->removeUser();
+                            }
                         }
 
-                        if ($session instanceof SessionInterface && $session->isStarted() && ($this->config['set_session_id'] ?? false)) {
-                            $scope->setExtra(key: 'session_id', value: $session->getId());
+                        if ($this->config['set_session_id'] ?? false) {
+                            $scope->setExtra(
+                                key: 'session_id',
+                                value: $session instanceof SessionInterface && $session->isStarted() ? $session->getId() : null,
+                            );
                         }
                     } catch (Throwable $e) {
                         // Silently ignore Sentry configuration errors to prevent breaking the application

@@ -45,6 +45,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Worker mode: no stale user on the Sentry scope.** `SentryRequestListener` set the user (and the optional
+  `session_id` extra) on the hub scope, which outlives the request under FrankenPHP / RoadRunner workers, and never
+  cleared them: errors of a later anonymous request on the same worker were attributed to the previous user. With
+  `set_user_info` the user is now removed when the request has none, and with `set_session_id` the extra is reset when
+  no session is started.
+
 ## [1.11.2] - 2026-10-22
 
 Dependency refresh, MySQL demo database, CI static analysis and 99% coverage gate, open-PR release gate, security guide. See [UPGRADING](UPGRADING.md#to-1112).
