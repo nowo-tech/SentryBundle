@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.11.3] - 2026-10-28](#1113---2026-10-28)
 - [[1.11.2] - 2026-10-22](#1112---2026-10-22)
 - [[1.11.1] - 2026-10-13](#1111---2026-10-13)
 - [[1.11.0] - 2026-10-13](#1110---2026-10-13)
@@ -45,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.3] - 2026-10-28
+
+Sentry: anonymous requests on a worker no longer inherit the previous user on the scope. See [UPGRADING](UPGRADING.md#to-1113).
+
 ### Fixed
 
 - **Worker mode: no stale user on the Sentry scope.** `SentryRequestListener` set the user (and the optional
@@ -52,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cleared them: errors of a later anonymous request on the same worker were attributed to the previous user. With
   `set_user_info` the user is now removed when the request has none, and with `set_session_id` the extra is reset when
   no session is started.
+
+[1.11.3]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.11.3
 
 ## [1.11.2] - 2026-10-22
 
