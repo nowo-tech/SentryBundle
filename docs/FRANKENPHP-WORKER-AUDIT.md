@@ -54,6 +54,7 @@ A worker demo exists: `demo/symfony8/docker/frankenphp/Caddyfile:15` declares a 
 | Service | Shared | Mutable state | Scenario A | Scenario B |
 |---------|--------|---------------|------------|------------|
 | `Nowo\SentryBundle\EventListener\SentryRequestListener` | yes | none in the service (`readonly` config); writes tags, user and session id into the Sentry scope | ✅ (W-01 resolved) | ✅ (W-01 resolved) |
+| `Nowo\SentryBundle\User\DefaultSentryUserContextProvider` (1.12+, alias `SentryUserContextProviderInterface`) | yes | none (`readonly` options and hub); computes the user data per call, no cache | ✅ | ✅ (`tests/Integration/WorkerUserContextTest.php`: user A, user B, anonymous × 3,000 in one kernel, no leak, flat memory) |
 | `Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener` | yes | none; writes `access_denied.*` tags/extras into the Sentry scope | ✅ | ✅ |
 | `Nowo\SentryBundle\EventListener\SentryUptimeBotListener` | yes | none (`readonly` config) | ✅ | ✅ |
 | `nowo_sentry.before_send_handler` (`BeforeSendHandler`) | yes | none; reads the registry | ✅ | ✅ (W-02 resolved) |

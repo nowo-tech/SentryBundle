@@ -10,6 +10,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Yaml\Yaml;
 
 use function dirname;
+use function is_string;
 
 /**
  * Configuration class for the bundle.
@@ -55,6 +56,22 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('set_user_info')
                             ->defaultTrue()
                             ->info('Whether to set user information in Sentry scope')
+                        ->end()
+                        ->booleanNode('send_user_identifier')
+                            ->defaultNull()
+                            ->info('Send getUserIdentifier() (often an e-mail) as the Sentry user id/username. null = follow the Sentry option send_default_pii (false by default); false = never. Default provider only (1.12+)')
+                        ->end()
+                        ->scalarNode('user_id_hash_key')
+                            ->defaultNull()
+                            ->info('HMAC key for the hashed user id the default provider sends when the user has no getId() (null = a key derived from kernel.secret; rotating APP_SECRET then changes the ids). Use a stable secret, e.g. "%env(SENTRY_USER_ID_KEY)%" (1.12+)')
+                            ->validate()
+                                ->ifTrue(static fn (mixed $v): bool => $v !== null && !is_string($v))
+                                ->thenInvalid('user_id_hash_key must be a string or null, got %s.')
+                            ->end()
+                        ->end()
+                        ->scalarNode('user_context_provider')
+                            ->defaultNull()
+                            ->info('Service id of a Nowo\\SentryBundle\\User\\SentryUserContextProviderInterface that builds the Sentry user data (null = the default provider) (1.12+)')
                         ->end()
                         ->booleanNode('set_session_id')
                             ->defaultFalse()

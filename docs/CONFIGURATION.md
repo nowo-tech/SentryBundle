@@ -68,6 +68,7 @@ nowo_sentry:
         set_domain_tag: true            # Set domain tag in Sentry scope
         set_environment_tag: true       # Set environment tag in Sentry scope
         set_user_info: true             # Set user information in Sentry scope
+        send_user_identifier: null  # 1.12+: null = follow sentry send_default_pii; the e-mail is not sent by default
         set_session_id: true            # Set session ID in Sentry scope extra data
         priority: 0                      # Event listener priority
 ```
@@ -94,8 +95,26 @@ nowo_sentry:
 - **`set_user_info`** (boolean, default: `true`)
   - Whether to set user information in Sentry scope.
   - Requires Symfony Security Bundle to be installed.
-  - Sets user ID and username if a user is authenticated.
+  - Sets the Sentry user of the authenticated user through the user context provider (see below; 1.12+).
   - Default: `true`
+
+- **`send_user_identifier`** (boolean or `null`, default: `null`; 1.12+)
+  - `true`: the default provider sends `getUserIdentifier()` (often an e-mail) as `id` and `username` (pre-1.12).
+  - `false`: never sends the identifier.
+  - `null`: follows the Sentry client's user-info policy: `data_collection.user_info` (sentry-php 4.34+), else
+    `send_default_pii` (`false` unless you enabled it).
+  - Otherwise the default provider sends only `id`: the user's `getId()`, or an HMAC of the identifier. If `getId()`
+    is itself personal data (e-mail, national id), implement `user_context_provider`.
+
+- **`user_id_hash_key`** (string or `null`, default: `null`; 1.12+)
+  - HMAC key for the hashed id (users without `getId()`). `null` = a key derived from `kernel.secret`
+    (`hash_hmac('sha256', 'nowo_sentry.user_id.v1', APP_SECRET)`): rotating `APP_SECRET` then changes every hashed id.
+    Set a stable, dedicated secret (`'%env(SENTRY_USER_ID_KEY)%'`) to pin them. Plain SHA-256 only when no secret exists.
+
+- **`user_context_provider`** (service id or `null`, default: `null`; 1.12+)
+  - A service implementing `Nowo\SentryBundle\User\SentryUserContextProviderInterface`
+    (`getUserContext(UserInterface $user): ?array`). Return the Sentry user data, or `null` to send no user. Must be
+    stateless (worker mode). `null` = `DefaultSentryUserContextProvider`.
 
 - **`set_session_id`** (boolean, default: `false`)
   - Whether to set session ID in Sentry scope extra data.

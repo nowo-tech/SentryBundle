@@ -46,6 +46,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Target 1.12.0 (minor: the default Sentry user id changes). See [UPGRADING](UPGRADING.md#to-1120).
+
+### Security
+
+- **The request listener no longer sends `getUserIdentifier()` (often an e-mail) as the Sentry user by default.** Since
+  0.0.1 (affected `>= 0.0.1, < 1.12.0`) it set `id` and `username` to the identifier for every logged-in user. The new
+  default (`DefaultSentryUserContextProvider`) sends only `id`: the user's `getId()` when it has one, otherwise an
+  HMAC-SHA-256 of the identifier keyed with `request_listener.user_id_hash_key`, or by default with a key derived from
+  `kernel.secret` (`hash_hmac('sha256', 'nowo_sentry.user_id.v1', secret)`, domain-separated; rotating `APP_SECRET`
+  changes these ids). The identifier is sent only when the host opts in with `request_listener.send_user_identifier:
+  true`, or leaves it `null` and the Sentry client collects user info (`data_collection.user_info: true` on sentry-php
+  4.34+, which wins over `send_default_pii`; else `send_default_pii: true`).
+- **No user data carries over between requests on a worker.** `Scope::setUser()` merges into the existing user, so the
+  listener now clears the user before setting the current one: custom keys of the previous user and sentry-symfony's
+  `impersonator_username` no longer reach the next user's events (FrankenPHP worker mode without kernel reset).
+
+### Added
+
+- `User\SentryUserContextProviderInterface` (port) and `request_listener.user_context_provider` (service id): build the
+  Sentry user data yourself, e.g. an opaque domain id from a DDD host. Returning `null` clears the user; a provider that
+  throws is treated as `null`.
+- `request_listener.send_user_identifier` (`null` = follow `send_default_pii`) and `request_listener.user_id_hash_key`.
+- Worker tests: one kernel serves user A, user B and an anonymous request 3,000 times (the scope user is always the
+  current one, memory stays flat), and user A with custom keys / impersonation metadata followed by user B 500 times
+  (nothing of A reaches B).
+- `request_listener.user_id_hash_key` must be a string or null (validated).
+
 ## [1.11.3] - 2026-10-28
 
 Sentry: anonymous requests on a worker no longer inherit the previous user on the scope. See [UPGRADING](UPGRADING.md#to-1113).

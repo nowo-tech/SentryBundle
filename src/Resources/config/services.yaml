@@ -11,7 +11,19 @@ services:
       $sentryHub: '@?Sentry\State\HubInterface'
       $config: '%nowo_sentry.request_listener%'
       $environment: '%kernel.environment%'
+      $userContextProvider: '@Nowo\SentryBundle\User\SentryUserContextProviderInterface'
     # Tags are added conditionally in NowoSentryExtension based on configuration
+
+  # 1.12+: Sentry user data of the logged-in user (arguments set in NowoSentryExtension from request_listener.*).
+  Nowo\SentryBundle\User\DefaultSentryUserContextProvider:
+    class: Nowo\SentryBundle\User\DefaultSentryUserContextProvider
+    arguments:
+      $sentryHub: '@?Sentry\State\HubInterface'
+      # kernel.secret is read lazily per call (a missing APP_SECRET must not break the container).
+      $parameters: '@?parameter_bag'
+
+  Nowo\SentryBundle\User\SentryUserContextProviderInterface:
+    alias: Nowo\SentryBundle\User\DefaultSentryUserContextProvider
 
   Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener:
     class: Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener

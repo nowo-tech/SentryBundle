@@ -11,7 +11,25 @@ The bundle registers these components by default (each can be enabled/disabled i
 Enriches Sentry reports with request context:
 
 - Sets domain and environment tags
-- Configures user information when available
+- Configures user information when available, through `SentryUserContextProviderInterface` (1.12+): by default the
+  user's `getId()` or a hash of the identifier, never the e-mail unless `send_user_identifier` / `send_default_pii`
+  opts in. A DDD host can send an opaque domain id:
+
+```php
+final class MemberIdSentryUserContextProvider implements SentryUserContextProviderInterface
+{
+    public function getUserContext(UserInterface $user): ?array
+    {
+        return $user instanceof SecurityMember ? ['id' => $user->memberId()->toString()] : null;
+    }
+}
+```
+
+```yaml
+nowo_sentry:
+  request_listener:
+    user_context_provider: App\Infrastructure\Sentry\MemberIdSentryUserContextProvider
+```
 - Adds session ID to extra data (when enabled)
 
 ### BeforeSendHandler
