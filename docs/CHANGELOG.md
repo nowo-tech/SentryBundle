@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.12.0] - 2026-11-10](#1120---2026-11-10)
 - [[1.11.3] - 2026-10-28](#1113---2026-10-28)
 - [[1.11.2] - 2026-10-22](#1112---2026-10-22)
 - [[1.11.1] - 2026-10-13](#1111---2026-10-13)
@@ -46,7 +47,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Target 1.12.0 (minor: the default Sentry user id changes). See [UPGRADING](UPGRADING.md#to-1120).
+## [1.12.0] - 2026-11-10
+
+Privacy: the Sentry user id defaults to getId() or an HMAC of the identifier; the e-mail is sent only when you opt in; no user data carries over between requests. See [UPGRADING](https://github.com/nowo-tech/SentryBundle/blob/v1.12.0/docs/UPGRADING.md#to-1120).
+
 
 ### Security
 
@@ -72,6 +76,8 @@ Target 1.12.0 (minor: the default Sentry user id changes). See [UPGRADING](UPGRA
   current one, memory stays flat), and user A with custom keys / impersonation metadata followed by user B 500 times
   (nothing of A reaches B).
 - `request_listener.user_id_hash_key` must be a string or null (validated).
+
+[1.12.0]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.12.0
 
 ## [1.11.3] - 2026-10-28
 

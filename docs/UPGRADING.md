@@ -3,8 +3,8 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
-  - [To 1.12.0](#to-1120)
-- [To 1.11.3](#to-1113)
+- [To 1.12.0](#to-1120)
+  - [To 1.11.3](#to-1113)
 - [To 1.11.2](#to-1112)
 - [To 1.11.1](#to-1111)
 - [To 1.11.0](#to-1110)
