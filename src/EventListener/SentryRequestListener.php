@@ -116,10 +116,11 @@ final class SentryRequestListener
                         // The hub scope outlives the request in worker mode (FrankenPHP, RoadRunner): clear what a
                         // previous request set, or errors of an anonymous request are attributed to the previous user.
                         if ($this->config['set_user_info'] ?? true) {
+                            // Scope::setUser() MERGES into the existing user: clear first, or metadata of the previous
+                            // request's user (custom keys, sentry-symfony's impersonator_username) stays on this one.
+                            $scope->removeUser();
                             if ($userContext !== null && $userContext !== []) {
                                 $scope->setUser(user: $userContext);
-                            } else {
-                                $scope->removeUser();
                             }
                         }
 

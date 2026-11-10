@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle\Tests\Unit\User;
 
 use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use RuntimeException;
 use Sentry\ClientBuilder;
 use Sentry\State\Hub;
@@ -13,7 +14,9 @@ use Sentry\State\HubInterface;
 use Stringable;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Throwable;
 
+use function array_key_exists;
 use function hash;
 use function hash_hmac;
 
@@ -50,6 +53,45 @@ final class DefaultSentryUserContextProviderTest extends TestCase
         $provider = new DefaultSentryUserContextProvider(null, null, 'k3y');
 
         self::assertSame(['id' => hash_hmac('sha256', 'alice@example.com', 'k3y')], $provider->getUserContext(new InMemoryUser('alice@example.com', null)));
+    }
+
+    public function testDefaultHashIsAnHmacKeyedFromADerivedKernelSecretKey(): void
+    {
+        $derived  = hash_hmac('sha256', 'nowo_sentry.user_id.v1', 'kernel-s3cret', true);
+        $provider = new DefaultSentryUserContextProvider(null, null, null, new ParameterContainer(['kernel.secret' => 'kernel-s3cret']));
+        $context  = $provider->getUserContext(new InMemoryUser('admin', null));
+
+        self::assertSame(['id' => hash_hmac('sha256', 'admin', $derived)], $context);
+        // Not reversible from a plain hash, and the secret itself is never the HMAC key.
+        self::assertNotSame(hash('sha256', 'admin'), $context['id'] ?? null);
+        self::assertNotSame(hash_hmac('sha256', 'admin', 'kernel-s3cret'), $context['id'] ?? null);
+        self::assertSame('nowo_sentry.user_id.v1', DefaultSentryUserContextProvider::KEY_DERIVATION_LABEL);
+    }
+
+    public function testExplicitHashKeyOverridesTheKernelSecret(): void
+    {
+        $provider = new DefaultSentryUserContextProvider(null, null, 'k3y', new ParameterContainer(['kernel.secret' => 'kernel-s3cret']));
+
+        self::assertSame(['id' => hash_hmac('sha256', 'admin', 'k3y')], $provider->getUserContext(new InMemoryUser('admin', null)));
+    }
+
+    public function testMissingOrUnreadableKernelSecretFallsBackToPlainSha256(): void
+    {
+        $user = new InMemoryUser('admin', null);
+
+        self::assertSame(['id' => hash('sha256', 'admin')], (new DefaultSentryUserContextProvider(null, null, null, new ParameterContainer([])))->getUserContext($user));
+        self::assertSame(['id' => hash('sha256', 'admin')], (new DefaultSentryUserContextProvider(null, null, null, new ParameterContainer(['kernel.secret' => ''])))->getUserContext($user));
+        self::assertSame(['id' => hash('sha256', 'admin')], (new DefaultSentryUserContextProvider(null, null, null, new ParameterContainer(['kernel.secret' => new RuntimeException('env not found')])))->getUserContext($user));
+    }
+
+    public function testDataCollectionUserInfoFalseWinsOverSendDefaultPii(): void
+    {
+        $user = new IdUser(42, 'alice@example.com');
+        $hub  = new Hub(ClientBuilder::create(['send_default_pii' => true, 'data_collection' => ['user_info' => false]])->getClient());
+        self::assertSame(['id' => '42'], (new DefaultSentryUserContextProvider($hub))->getUserContext($user));
+
+        $hub = new Hub(ClientBuilder::create(['data_collection' => ['user_info' => true]])->getClient());
+        self::assertSame(['id' => 'alice@example.com', 'username' => 'alice@example.com'], (new DefaultSentryUserContextProvider($hub))->getUserContext($user));
     }
 
     public function testEmptyIdentifierWithoutIdSendsNoUser(): void
@@ -147,5 +189,33 @@ final class StringId implements Stringable
     public function __toString(): string
     {
         return $this->value;
+    }
+}
+
+/**
+ * Minimal parameter bag: a value that is a Throwable is thrown by get() (unresolvable env placeholder).
+ */
+final class ParameterContainer implements ContainerInterface
+{
+    /**
+     * @param array<string, mixed> $values
+     */
+    public function __construct(private readonly array $values)
+    {
+    }
+
+    public function get(string $id): mixed
+    {
+        $value = $this->values[$id] ?? null;
+        if ($value instanceof Throwable) {
+            throw $value;
+        }
+
+        return $value;
+    }
+
+    public function has(string $id): bool
+    {
+        return array_key_exists($id, $this->values);
     }
 }

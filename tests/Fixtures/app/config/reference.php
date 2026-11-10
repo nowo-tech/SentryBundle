@@ -817,7 +817,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         set_environment_tag?: bool|Param, // Whether to set the environment tag in Sentry scope // Default: true
  *         set_user_info?: bool|Param, // Whether to set user information in Sentry scope // Default: true
  *         send_user_identifier?: bool|Param|null, // Send getUserIdentifier() (often an e-mail) as the Sentry user id/username. null = follow the Sentry option send_default_pii (false by default); false = never. Default provider only (1.12+) // Default: null
- *         user_id_hash_key?: scalar|Param|null, // HMAC key for the hashed user id the default provider sends when the user has no getId() (null = plain SHA-256). Use a stable secret, e.g. "%env(SENTRY_USER_ID_KEY)%" (1.12+) // Default: null
+ *         user_id_hash_key?: scalar|Param|null, // HMAC key for the hashed user id the default provider sends when the user has no getId() (null = a key derived from kernel.secret; rotating APP_SECRET then changes the ids). Use a stable secret, e.g. "%env(SENTRY_USER_ID_KEY)%" (1.12+) // Default: null
  *         user_context_provider?: scalar|Param|null, // Service id of a Nowo\SentryBundle\User\SentryUserContextProviderInterface that builds the Sentry user data (null = the default provider) (1.12+) // Default: null
  *         set_session_id?: bool|Param, // Whether to set session ID in Sentry scope extra data // Default: false
  *         priority?: int|Param, // Event listener priority // Default: 0

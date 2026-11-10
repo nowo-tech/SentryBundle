@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use function gc_collect_cycles;
-use function hash;
+use function hash_hmac;
 use function memory_get_usage;
 
 /**
@@ -58,7 +58,9 @@ final class WorkerUserContextTest extends KernelTestCase
 
         $alice = new IdUser(41, 'alice@example.com');
         $bob   = new InMemoryUser('bob@example.com', null);
-        $users = [[$alice, '41'], [$bob, hash('sha256', 'bob@example.com')], [null, null]];
+        // The kernel's provider reads kernel.secret (framework.secret of the fixture app): HMAC with the derived key.
+        $key   = hash_hmac('sha256', DefaultSentryUserContextProvider::KEY_DERIVATION_LABEL, 'test-secret-for-integration-tests', true);
+        $users = [[$alice, '41'], [$bob, hash_hmac('sha256', 'bob@example.com', $key)], [null, null]];
 
         // The test kernel has no SecurityBundle: a real Security over a real token storage plays the firewall (one
         // token per request, none for the anonymous one), while the hub and the provider are the kernel's shared
@@ -91,5 +93,49 @@ final class WorkerUserContextTest extends KernelTestCase
         gc_collect_cycles();
         // Flat memory: no per-request state accumulates in the listener, provider or hub scope.
         self::assertLessThan(256 * 1024, memory_get_usage() - $baseline);
+    }
+
+    public function testCustomKeysAndImpersonatorOfUserADoNotCarryOverToUserB(): void
+    {
+        self::bootKernel();
+        $hub = self::getContainer()->get(HubInterface::class);
+        self::assertInstanceOf(HubInterface::class, $hub);
+
+        // A stateless host provider that adds custom keys for some users only (audit KZ-S-M1).
+        $provider = new class implements SentryUserContextProviderInterface {
+            public function getUserContext(UserInterface $user): ?array
+            {
+                return $user->getUserIdentifier() === 'alice'
+                    ? ['id' => 'A', 'tenant' => 'tenant-A', 'plan' => 'gold', 'segment' => 'vip']
+                    : ['id' => 'B'];
+            }
+        };
+        $tokenStorage = new TokenStorage();
+        $security     = new Security(new ServiceLocator(['security.token_storage' => static fn (): TokenStorage => $tokenStorage]));
+        $listener     = new SentryRequestListener($hub, ['set_user_info' => true, 'set_session_id' => false], 'prod', $security, $provider);
+        $kernel       = $this->createStub(HttpKernelInterface::class);
+
+        for ($i = 0; $i < 500; ++$i) {
+            $tokenStorage->setToken(new UsernamePasswordToken(new InMemoryUser('alice', null), 'main'));
+            // sentry-symfony's LoginListener adds impersonation metadata to the scope user of request A.
+            $hub->configureScope(static function (Scope $scope): void {
+                $scope->setUser(['impersonator_username' => 'root-admin']);
+            });
+            $listener->onKernelRequest(new RequestEvent($kernel, Request::create('https://example.com/'), HttpKernelInterface::MAIN_REQUEST));
+            $hub->configureScope(function (Scope $scope): void {
+                $this->assertSame('A', $scope->getUser()?->getId());
+                $this->assertSame('vip', $scope->getUser()?->getSegment());
+                $this->assertSame(['tenant' => 'tenant-A', 'plan' => 'gold'], $scope->getUser()?->getMetadata());
+            });
+
+            $tokenStorage->setToken(new UsernamePasswordToken(new InMemoryUser('bob', null), 'main'));
+            $listener->onKernelRequest(new RequestEvent($kernel, Request::create('https://example.com/'), HttpKernelInterface::MAIN_REQUEST));
+            $hub->configureScope(function (Scope $scope): void {
+                $user = $scope->getUser();
+                $this->assertSame('B', $user?->getId());
+                $this->assertNull($user?->getSegment());
+                $this->assertSame([], $user?->getMetadata(), 'metadata of user A leaked to user B');
+            });
+        }
     }
 }

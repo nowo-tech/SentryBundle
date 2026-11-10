@@ -101,12 +101,15 @@ nowo_sentry:
 - **`send_user_identifier`** (boolean or `null`, default: `null`; 1.12+)
   - `true`: the default provider sends `getUserIdentifier()` (often an e-mail) as `id` and `username` (pre-1.12).
   - `false`: never sends the identifier.
-  - `null`: follows the Sentry client option `send_default_pii` (`false` unless you enabled it).
-  - Otherwise the default provider sends only `id`: the user's `getId()`, or a SHA-256 of the identifier.
+  - `null`: follows the Sentry client's user-info policy: `data_collection.user_info` (sentry-php 4.34+), else
+    `send_default_pii` (`false` unless you enabled it).
+  - Otherwise the default provider sends only `id`: the user's `getId()`, or an HMAC of the identifier. If `getId()`
+    is itself personal data (e-mail, national id), implement `user_context_provider`.
 
 - **`user_id_hash_key`** (string or `null`, default: `null`; 1.12+)
-  - HMAC key for the hashed id (users without `getId()`). `null` = plain SHA-256. Use a stable secret
-    (`'%env(SENTRY_USER_ID_KEY)%'`): changing it changes every hashed id.
+  - HMAC key for the hashed id (users without `getId()`). `null` = a key derived from `kernel.secret`
+    (`hash_hmac('sha256', 'nowo_sentry.user_id.v1', APP_SECRET)`): rotating `APP_SECRET` then changes every hashed id.
+    Set a stable, dedicated secret (`'%env(SENTRY_USER_ID_KEY)%'`) to pin them. Plain SHA-256 only when no secret exists.
 
 - **`user_context_provider`** (service id or `null`, default: `null`; 1.12+)
   - A service implementing `Nowo\SentryBundle\User\SentryUserContextProviderInterface`

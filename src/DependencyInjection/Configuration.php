@@ -10,6 +10,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Yaml\Yaml;
 
 use function dirname;
+use function is_string;
 
 /**
  * Configuration class for the bundle.
@@ -62,7 +63,11 @@ class Configuration implements ConfigurationInterface
                         ->end()
                         ->scalarNode('user_id_hash_key')
                             ->defaultNull()
-                            ->info('HMAC key for the hashed user id the default provider sends when the user has no getId() (null = plain SHA-256). Use a stable secret, e.g. "%env(SENTRY_USER_ID_KEY)%" (1.12+)')
+                            ->info('HMAC key for the hashed user id the default provider sends when the user has no getId() (null = a key derived from kernel.secret; rotating APP_SECRET then changes the ids). Use a stable secret, e.g. "%env(SENTRY_USER_ID_KEY)%" (1.12+)')
+                            ->validate()
+                                ->ifTrue(static fn (mixed $v): bool => $v !== null && !is_string($v))
+                                ->thenInvalid('user_id_hash_key must be a string or null, got %s.')
+                            ->end()
                         ->end()
                         ->scalarNode('user_context_provider')
                             ->defaultNull()

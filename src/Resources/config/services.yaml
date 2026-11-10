@@ -19,6 +19,8 @@ services:
     class: Nowo\SentryBundle\User\DefaultSentryUserContextProvider
     arguments:
       $sentryHub: '@?Sentry\State\HubInterface'
+      # kernel.secret is read lazily per call (a missing APP_SECRET must not break the container).
+      $parameters: '@?parameter_bag'
 
   Nowo\SentryBundle\User\SentryUserContextProviderInterface:
     alias: Nowo\SentryBundle\User\DefaultSentryUserContextProvider

@@ -8,6 +8,7 @@ use Nowo\SentryBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 use function array_filter;
@@ -114,6 +115,17 @@ class ConfigurationTest extends TestCase
     /**
      * Test that generateConfigFile creates a YAML file with the expected structure.
      */
+    public function testUserIdHashKeyMustBeAStringOrNull(): void
+    {
+        $processor = new Processor();
+        $config    = $processor->processConfiguration(new Configuration(), [['request_listener' => ['user_id_hash_key' => 'k3y']]]);
+        $this->assertSame('k3y', $config['request_listener']['user_id_hash_key']);
+        $this->assertNull($processor->processConfiguration(new Configuration(), [[]])['request_listener']['user_id_hash_key']);
+
+        $this->expectException(InvalidConfigurationException::class);
+        $processor->processConfiguration(new Configuration(), [['request_listener' => ['user_id_hash_key' => 123]]]);
+    }
+
     public function testGenerateConfigFile(): void
     {
         $configDir  = sys_get_temp_dir() . '/sentry-bundle-test-' . uniqid('', true);

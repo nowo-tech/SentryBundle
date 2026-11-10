@@ -49,28 +49,52 @@
 From **1.11.3**: `composer update nowo-tech/sentry-bundle`.
 
 **Behaviour change (privacy): the Sentry user id is no longer the user identifier by default.** Until 1.11 the request
-listener sent `getUserIdentifier()` (usually the e-mail) as both `id` and `username`. From 1.12 it sends only `id`:
+listener sent `getUserIdentifier()` (usually the e-mail) as both `id` and `username` (affected: every release
+`>= 0.0.1, < 1.12.0`). From 1.12 it sends only `id`:
 
-- the user's `getId()` when the user class has one (int, string or Stringable, non-empty), else
-- a SHA-256 hex of the identifier (`hash_hmac('sha256', …, key)` when `request_listener.user_id_hash_key` is set; use a
-  stable secret such as `'%env(SENTRY_USER_ID_KEY)%'`, since changing it changes every hashed id).
+- the user's `getId()` when the user class has one (int, string or Stringable, non-empty). If your `getId()` is itself
+  personal data (an e-mail, a national id), implement the provider (below);
+- else an HMAC-SHA-256 of the identifier. The key is `request_listener.user_id_hash_key` when set, otherwise a key
+  derived from `kernel.secret` (`hash_hmac('sha256', 'nowo_sentry.user_id.v1', APP_SECRET)`; the secret itself never
+  feeds an outgoing value). **Rotating `APP_SECRET` changes every hashed id**; set
+  `user_id_hash_key: '%env(SENTRY_USER_ID_KEY)%'` (a stable, dedicated secret) to pin them. Without any secret, a plain
+  SHA-256 is used.
 
 Consequences: issues already in Sentry are attributed to the old ids (e-mails); new events use the new ids, so the
-"users affected" count of an issue that spans the upgrade counts each user twice. Search Sentry by the new id
-(`getId()` or the hash) instead of the e-mail.
+"users affected" count of an issue that spans the upgrade counts each user twice. Search Sentry by the new id instead of
+the e-mail.
+
+The listener also clears the scope user before setting the current one (`Scope::setUser()` merges): keys of the
+previous request's user, and the `impersonator_username` that sentry-symfony adds, no longer carry over on a worker.
+When sentry-symfony itself collects user info, its impersonation metadata is therefore replaced by your provider's data.
 
 To keep the old behaviour, opt in explicitly:
 
 ```yaml
 nowo_sentry:
   request_listener:
-    send_user_identifier: true   # or leave null and set sentry.options.send_default_pii: true
+    send_user_identifier: true   # or leave null and let Sentry collect user info:
+                                 # data_collection.user_info: true (sentry-php 4.34+) or send_default_pii: true
 ```
+
+`send_user_identifier: null` follows Sentry's own policy: with sentry-php 4.34+ `data_collection.user_info` wins over the
+legacy `send_default_pii`. `send_user_identifier: false` only governs this bundle: when Sentry collects user info,
+sentry-symfony's own listeners may still put the identifier on the scope (this bundle overwrites it on the same request).
 
 To send something else (an opaque domain id, no user at all for some roles), implement
 `Nowo\SentryBundle\User\SentryUserContextProviderInterface` and set `request_listener.user_context_provider` to its
 service id. It must be stateless: under FrankenPHP worker mode the same instance serves every request.
 `set_user_info: false` still sends no user at all.
+
+**What 1.12 does not cover.** The e-mail can still reach Sentry through other routes, outside this bundle's user context:
+
+- request bodies: in sentry-php's legacy mode the body of a failing request is sent whatever `send_default_pii` says
+  (a login form posts `_username`); set `max_request_body_size: none` or scrub it in `before_send`;
+- exception messages (e.g. a unique-constraint violation quoting the e-mail) and the DBAL reporter's `sql` extra when
+  the SQL has inline literals;
+- `access_denied.uri` / `parent_uri` extras and Sentry's `query_string` (an e-mail or token in the query string);
+- sentry-symfony's own `LoginListener` / `RequestListener` when user info collection is on, and breadcrumbs from
+  Monolog if you forward security logs.
 
 ## To 1.11.3
 
