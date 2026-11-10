@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Nowo\SentryBundle\EventListener;
 
 use Exception;
+use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
+use Nowo\SentryBundle\User\SentryUserContextProviderInterface;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -25,6 +27,8 @@ use Throwable;
  */
 final class SentryRequestListener
 {
+    private readonly SentryUserContextProviderInterface $userContextProvider;
+
     /**
      * Constructs the Sentry request listener.
      *
@@ -32,13 +36,17 @@ final class SentryRequestListener
      * @param array<string, mixed> $config The listener configuration
      * @param string $environment The current application environment (prod, dev, staging, etc.)
      * @param Security|null $security The security service for accessing authenticated user information
+     * @param SentryUserContextProviderInterface|null $userContextProvider User data sent for the logged-in user (1.12+);
+     *                                                                     null = {@see DefaultSentryUserContextProvider}
      */
     public function __construct(
         private readonly ?HubInterface $sentryHub,
         private readonly array $config,
         private readonly string $environment,
-        private readonly ?Security $security = null
+        private readonly ?Security $security = null,
+        ?SentryUserContextProviderInterface $userContextProvider = null,
     ) {
+        $this->userContextProvider = $userContextProvider ?? new DefaultSentryUserContextProvider($sentryHub);
     }
 
     /**
@@ -71,14 +79,19 @@ final class SentryRequestListener
             $session = null;
         }
 
-        $user           = null;
-        $userIdentifier = null;
+        // 1.12+: what is sent comes from the user context provider (by default a stable id or a hash, never the
+        // identifier, often an e-mail, unless the host opts in).
+        $userContext = null;
 
         if ($this->security instanceof Security && ($this->config['set_user_info'] ?? true)) {
             $user = $this->security->getUser();
 
             if ($user instanceof UserInterface) {
-                $userIdentifier = $user->getUserIdentifier();
+                try {
+                    $userContext = $this->userContextProvider->getUserContext($user);
+                } catch (Throwable) {
+                    $userContext = null;
+                }
             }
         }
 
@@ -90,7 +103,7 @@ final class SentryRequestListener
 
             $this->sentryHub->configureScope(
                 // @igor-ignore - Not shared worker service state.
-                callback: function (Scope $scope) use ($host, $userIdentifier, $session): void {
+                callback: function (Scope $scope) use ($host, $userContext, $session): void {
                     try {
                         if ($this->config['set_domain_tag'] ?? true) {
                             $scope->setTag(key: 'domain', value: $host);
@@ -103,11 +116,8 @@ final class SentryRequestListener
                         // The hub scope outlives the request in worker mode (FrankenPHP, RoadRunner): clear what a
                         // previous request set, or errors of an anonymous request are attributed to the previous user.
                         if ($this->config['set_user_info'] ?? true) {
-                            if ($userIdentifier) {
-                                $scope->setUser(user: [
-                                    'id'       => $userIdentifier,
-                                    'username' => $userIdentifier,
-                                ]);
+                            if ($userContext !== null && $userContext !== []) {
+                                $scope->setUser(user: $userContext);
                             } else {
                                 $scope->removeUser();
                             }

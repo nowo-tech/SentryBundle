@@ -14,11 +14,13 @@ use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
 use Nowo\SentryBundle\Sentry\EventPayloadTrimmer;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
+use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 use function is_array;
 use function is_string;
@@ -123,9 +125,19 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
     private function registerListeners(ContainerBuilder $container, array $config): void
     {
         // Register request listener if enabled
+        if ($container->hasDefinition(DefaultSentryUserContextProvider::class)) {
+            $container->getDefinition(DefaultSentryUserContextProvider::class)
+                ->setArgument('$sendUserIdentifier', $config['request_listener']['send_user_identifier'] ?? null)
+                ->setArgument('$userIdHashKey', $config['request_listener']['user_id_hash_key'] ?? null);
+        }
+
         if ($config['request_listener']['enabled'] ?? true) {
             if ($container->hasDefinition(SentryRequestListener::class)) {
                 $definition = $container->getDefinition(SentryRequestListener::class);
+                $provider   = $config['request_listener']['user_context_provider'] ?? null;
+                if (is_string($provider) && $provider !== '') {
+                    $definition->setArgument('$userContextProvider', new Reference($provider));
+                }
                 $definition->clearTags();
                 $definition->addTag('kernel.event_listener', [
                     'event'    => 'kernel.request',

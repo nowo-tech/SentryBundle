@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+  - [To 1.12.0](#to-1120)
 - [To 1.11.3](#to-1113)
 - [To 1.11.2](#to-1112)
 - [To 1.11.1](#to-1111)
@@ -42,6 +43,34 @@
 - [Need Help?](#need-help)
 
 ## Unreleased
+
+### To 1.12.0
+
+From **1.11.3**: `composer update nowo-tech/sentry-bundle`.
+
+**Behaviour change (privacy): the Sentry user id is no longer the user identifier by default.** Until 1.11 the request
+listener sent `getUserIdentifier()` (usually the e-mail) as both `id` and `username`. From 1.12 it sends only `id`:
+
+- the user's `getId()` when the user class has one (int, string or Stringable, non-empty), else
+- a SHA-256 hex of the identifier (`hash_hmac('sha256', …, key)` when `request_listener.user_id_hash_key` is set; use a
+  stable secret such as `'%env(SENTRY_USER_ID_KEY)%'`, since changing it changes every hashed id).
+
+Consequences: issues already in Sentry are attributed to the old ids (e-mails); new events use the new ids, so the
+"users affected" count of an issue that spans the upgrade counts each user twice. Search Sentry by the new id
+(`getId()` or the hash) instead of the e-mail.
+
+To keep the old behaviour, opt in explicitly:
+
+```yaml
+nowo_sentry:
+  request_listener:
+    send_user_identifier: true   # or leave null and set sentry.options.send_default_pii: true
+```
+
+To send something else (an opaque domain id, no user at all for some roles), implement
+`Nowo\SentryBundle\User\SentryUserContextProviderInterface` and set `request_listener.user_context_provider` to its
+service id. It must be stateless: under FrankenPHP worker mode the same instance serves every request.
+`set_user_info: false` still sends no user at all.
 
 ## To 1.11.3
 

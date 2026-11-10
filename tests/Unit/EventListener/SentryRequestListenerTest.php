@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle\Tests\Unit\EventListener;
 
 use Exception;
 use Nowo\SentryBundle\EventListener\SentryRequestListener;
+use Nowo\SentryBundle\User\SentryUserContextProviderInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Sentry\Event;
@@ -19,6 +20,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+
+use function hash;
 
 /**
  * Test case for SentryRequestListener.
@@ -113,7 +116,8 @@ class SentryRequestListenerTest extends TestCase
         $scope->expects($this->once())
             ->method('setUser')
             ->with($this->callback(static function ($userData) {
-                return isset($userData['id']) && $userData['id'] === 'user123';
+                // 1.12+: the default provider never sends the identifier (no getId() here: a SHA-256 of it).
+                return $userData === ['id' => hash('sha256', 'user123')];
             }))
             ->willReturnSelf();
 
@@ -380,7 +384,8 @@ class SentryRequestListenerTest extends TestCase
 
         $listener->onKernelRequest(new RequestEvent($kernel, $authenticated, HttpKernelInterface::MAIN_REQUEST));
         $hub->configureScope(function (Scope $scope): void {
-            $this->assertSame('alice@example.com', $scope->getUser()?->getId());
+            $this->assertSame(hash('sha256', 'alice@example.com'), $scope->getUser()?->getId());
+            $this->assertNull($scope->getUser()?->getUsername());
         });
 
         // Next request on the same worker: anonymous, no session.
@@ -390,5 +395,45 @@ class SentryRequestListenerTest extends TestCase
             $event = $scope->applyToEvent(Event::createEvent());
             $this->assertNull($event?->getExtra()['session_id'] ?? null);
         });
+    }
+
+    public function testCustomUserContextProviderIsUsed(): void
+    {
+        $hub      = new Hub();
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturn($this->createMock(UserInterface::class));
+        $provider = $this->createMock(SentryUserContextProviderInterface::class);
+        $provider->expects($this->once())->method('getUserContext')->willReturn(['id' => 'member-9f2']);
+
+        $listener = new SentryRequestListener($hub, ['set_user_info' => true], 'prod', $security, $provider);
+        $listener->onKernelRequest(new RequestEvent($this->createMock(HttpKernelInterface::class), Request::create('https://example.com/'), HttpKernelInterface::MAIN_REQUEST));
+
+        $hub->configureScope(function (Scope $scope): void {
+            $this->assertSame('member-9f2', $scope->getUser()?->getId());
+        });
+    }
+
+    public function testProviderReturningNullOrThrowingClearsTheUser(): void
+    {
+        $hub = new Hub();
+        $hub->configureScope(static function (Scope $scope): void {
+            $scope->setUser(['id' => 'previous']);
+        });
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturn($this->createMock(UserInterface::class));
+        $provider = $this->createMock(SentryUserContextProviderInterface::class);
+        $provider->method('getUserContext')->willReturnOnConsecutiveCalls(null, $this->throwException(new RuntimeException('boom')));
+        $listener = new SentryRequestListener($hub, ['set_user_info' => true], 'prod', $security, $provider);
+        $kernel   = $this->createMock(HttpKernelInterface::class);
+
+        foreach ([1, 2] as $_) {
+            $listener->onKernelRequest(new RequestEvent($kernel, Request::create('https://example.com/'), HttpKernelInterface::MAIN_REQUEST));
+            $hub->configureScope(function (Scope $scope): void {
+                $this->assertNull($scope->getUser());
+            });
+            $hub->configureScope(static function (Scope $scope): void {
+                $scope->setUser(['id' => 'previous']);
+            });
+        }
     }
 }

@@ -84,6 +84,7 @@ nowo_sentry:
     set_domain_tag: true      # Set domain tag in Sentry scope
     set_environment_tag: true    # Set environment tag in Sentry scope
     set_user_info: true       # Set user information in Sentry scope
+    send_user_identifier: null  # 1.12+: null = follow sentry send_default_pii; the e-mail is not sent by default
     set_session_id: false     # Disabled by default; enable only when needed for correlation
     priority: 0           # Event listener priority
   

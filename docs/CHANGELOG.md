@@ -46,6 +46,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Target 1.12.0 (minor: the default Sentry user id changes). See [UPGRADING](UPGRADING.md#to-1120).
+
+### Security
+
+- **The request listener no longer sends `getUserIdentifier()` (often an e-mail) as the Sentry user by default.** Since
+  1.0.0 it set `id` and `username` to the identifier for every logged-in user. The new default
+  (`DefaultSentryUserContextProvider`) sends only `id`: the user's `getId()` when it has one, otherwise a SHA-256 of the
+  identifier (HMAC with `request_listener.user_id_hash_key`). The identifier is sent only when the host opts in with
+  `request_listener.send_user_identifier: true`, or leaves it `null` and sets the Sentry option `send_default_pii: true`.
+
+### Added
+
+- `User\SentryUserContextProviderInterface` (port) and `request_listener.user_context_provider` (service id): build the
+  Sentry user data yourself, e.g. an opaque domain id from a DDD host. Returning `null` clears the user; a provider that
+  throws is treated as `null`.
+- `request_listener.send_user_identifier` (`null` = follow `send_default_pii`) and `request_listener.user_id_hash_key`.
+- Worker test: one kernel serves user A, user B and an anonymous request 3,000 times; the scope user is always the
+  current one and memory stays flat (FrankenPHP worker mode without kernel reset).
+
 ## [1.11.3] - 2026-10-28
 
 Sentry: anonymous requests on a worker no longer inherit the previous user on the scope. See [UPGRADING](UPGRADING.md#to-1113).
