@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Package | `nowo-tech/sentry-bundle` (`symfony-bundle`) |
-| Audited revision | `v1.10.0` (remediation on top of `v1.9.8` / `c2e0178`) |
-| Audit date | 2026-09-23 (docs finalized 2026-09-25) |
+| Audited revision | `v1.13.0` (first audit `v1.10.0`, remediation on top of `v1.9.8` / `c2e0178`; user context re-audited for 1.11.3, 1.12.0 and 1.13.0) |
+| Audit date | 2026-09-23 (docs finalized 2026-09-25); header refreshed for 1.13.0 on 2026-11-12 (REQ-RUNTIME-002 re-audit) |
 | Method | Manual review of every file under `src/` (listeners, services, DBAL middleware, DI extension, compiler passes, `Resources/config/*.yaml`); cross-check of the Sentry scope lifecycle in the installed `sentry/sentry-symfony` 5.13.0 (dev dependency) |
 | **Verdict** | ✅ **Viable under scenario B** (after remediation) — `sentry/sentry-symfony` ≥ 5.10 (now required) isolates the Sentry scope per main request through kernel events, the SQL de-duplication registry uses a `WeakMap` and no longer needs `kernel.reset`, and per-call capture context is scoped to its event |
 | Remediation (2026-09-23) | W-01: constraint raised to `^5.10 \|\| ^6.0` (`composer.json`, lock hash, README/INSTALLATION). W-02: `ReportedSqlExceptionRegistry` uses `WeakMap<Throwable, true>`. W-03: `SentryErrorReporter::captureException()` / `captureMessage()` use `withScope()`. Regression tests: `tests/Unit/Doctrine/DBAL/ReportedSqlExceptionRegistryTest.php`, `tests/Unit/Service/SentryErrorReporterWorkerModeTest.php` |
@@ -54,7 +54,7 @@ A worker demo exists: `demo/symfony8/docker/frankenphp/Caddyfile:15` declares a 
 | Service | Shared | Mutable state | Scenario A | Scenario B |
 |---------|--------|---------------|------------|------------|
 | `Nowo\SentryBundle\EventListener\SentryRequestListener` | yes | none in the service (`readonly` config); writes tags, user and session id into the Sentry scope | ✅ (W-01 resolved) | ✅ (W-01 resolved) |
-| `Nowo\SentryBundle\User\DefaultSentryUserContextProvider` (1.12+, alias `SentryUserContextProviderInterface`) | yes | none (`readonly` options and hub); computes the user data per call, no cache | ✅ | ✅ (`tests/Integration/WorkerUserContextTest.php`: user A, user B, anonymous × 3,000 in one kernel, no leak, flat memory) |
+| `Nowo\SentryBundle\User\DefaultSentryUserContextProvider` (1.12+; aliases `SentryUserContextProviderInterface`, deprecated, and since 1.13.0 the framework-free `UserContextProviderInterface`, both chosen by `UserContextProvidersPass`) | yes | none (`readonly` options and hub); computes the user data per call, no cache. The 1.13.0 `UserRef` VO keeps the identifier and the user object in `Internal\HiddenValues`, a static `WeakMap` keyed by the per-request VO, so each entry is collected with its VO | ✅ | ✅ (`tests/Integration/WorkerUserContextTest.php`: user A, user B, anonymous × 3,000 in one kernel, no leak, flat memory) |
 | `Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener` | yes | none; writes `access_denied.*` tags/extras into the Sentry scope | ✅ | ✅ |
 | `Nowo\SentryBundle\EventListener\SentryUptimeBotListener` | yes | none (`readonly` config) | ✅ | ✅ |
 | `nowo_sentry.before_send_handler` (`BeforeSendHandler`) | yes | none; reads the registry | ✅ | ✅ (W-02 resolved) |
