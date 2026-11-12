@@ -47,6 +47,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+REQ-ARCH-001 (rules 1 and 3): a reporter port and a framework-free user context port. The Sentry user data sent is
+unchanged (equivalence matrix against the 1.12.0 provider). See [UPGRADING](UPGRADING.md#unreleased).
+
+### Added
+
+- `Service\ErrorReporterInterface` (rule 1): the port of `SentryErrorReporter` (`captureException`, `captureMessage`,
+  `captureError`, `addBreadcrumb`, `setUser`, `setContext`); autowirable alias to the reporter, removed with it when
+  `error_reporter.enabled: false`.
+- `User\UserContextProviderInterface::contextFor(UserRef $user): ?array` (rule 3): the user context provider without
+  Symfony's `UserInterface`. `UserRef` carries the stable id (`getId()`, same rule as the default provider) and the role
+  names; the identifier (`identifier()`, often an e-mail) and the user object (`user()`) are kept in an internal
+  `WeakMap`, never shown by a dump, `var_export()`, `(array)`, `json_encode()` or `serialize()`.
+- `DefaultSentryUserContextProvider` implements both ports with the same answer.
+- `UserContextProvidersPass`: the request listener uses the provider the host chose: `request_listener.user_context_provider`,
+  else the interface alias the host changed (new or deprecated; both changed to different services fails the build);
+  a provider on neither port fails the build. Each alias is kept only when its service implements it, so
+  `lint:container` passes for new-only, deprecated-only, dual, configured and new-port decorator setups (kernel test).
+- Tests: provider equivalence matrix (5 hubs × 3 opt-in values × 3 keys × 5 parameter bags × 12 users = 2,700
+  cases, 1.12.0 vs deprecated port vs new port), listener equivalence across ports, a DDD-host kernel test on the new
+  ports only (2,000 alternating requests in one kernel).
+
+### Deprecated
+
+- `User\SentryUserContextProviderInterface` (use `UserContextProviderInterface`), removed in 2.0. A provider
+  implementing only it triggers a build-time deprecation and keeps working as in 1.12; a service implementing both is
+  called through the new interface.
+
 ## [1.12.0] - 2026-11-10
 
 Privacy: the Sentry user id defaults to getId() or an HMAC of the identifier; the e-mail is sent only when you opt in; no user data carries over between requests. See [UPGRADING](https://github.com/nowo-tech/SentryBundle/blob/v1.12.0/docs/UPGRADING.md#to-1120).

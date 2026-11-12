@@ -111,6 +111,9 @@ class MyController extends AbstractController
 }
 ```
 
+Type-hint `Nowo\SentryBundle\Service\ErrorReporterInterface` (1.13) instead of the final class; the alias resolves to
+the same service.
+
 ### API summary
 
 - `captureException(\Throwable $e, array $context = [], ?string $message = null): bool`
@@ -121,3 +124,64 @@ class MyController extends AbstractController
 - `setContext(array $context): bool`
 
 See the demo project (`demo/symfony8`) for full examples and routes.
+
+## Standard Symfony and DDD / hexagonal hosts
+
+Both paths are supported (REQ-ARCH-001); the standard one is the zero-config default.
+
+### Standard host
+
+Install, keep the defaults: the request listener sets the domain / environment tags and a privacy-safe user (stable
+`getId()` or an HMAC of the identifier), and you inject `ErrorReporterInterface` (or `SentryErrorReporter`) where you
+report by hand. A 1.12 `SentryUserContextProviderInterface` provider keeps working until 2.0 (a build-time deprecation
+names it).
+
+### DDD host
+
+Keep the domain free of Sentry and Symfony types:
+
+- Report through your own domain port, implemented by an adapter over `ErrorReporterInterface`:
+
+  ```php
+  final readonly class SentryIncidentReporter implements IncidentReporter      // your domain port
+  {
+      public function __construct(private ErrorReporterInterface $reporter) {}
+
+      public function incident(\Throwable $failure, string $boundedContext): void
+      {
+          $this->reporter->captureException($failure, ['bounded_context' => $boundedContext]);
+      }
+  }
+  ```
+
+- Send an opaque domain id instead of the e-mail with a framework-free provider (no `UserInterface` in your code):
+
+  ```php
+  use Nowo\SentryBundle\User\UserContextProviderInterface;
+  use Nowo\SentryBundle\User\UserRef;
+
+  final readonly class MemberIdProvider implements UserContextProviderInterface
+  {
+      public function __construct(private MemberDirectory $members) {}
+
+      public function contextFor(UserRef $user): ?array
+      {
+          $member = $this->members->idOf($user->identifier());
+
+          return $member === null ? null : ['id' => $member];
+      }
+  }
+  ```
+
+  ```yaml
+  # config/services.yaml (or request_listener.user_context_provider: App\Infrastructure\MemberIdProvider)
+  Nowo\SentryBundle\User\UserContextProviderInterface: '@App\Infrastructure\MemberIdProvider'
+  ```
+
+  `UserRef` exposes `id` (stable `getId()` or null), `roles`, `identifier()` and `user()`; the identifier and the user
+  object are not properties (internal `WeakMap`), so a dump or a serialized `UserRef` never shows them. Send only what
+  your privacy policy allows: the bundle sends exactly what your provider returns. Or switch user data off with
+  `request_listener.set_user_info: false`.
+
+`tests/Integration/Ddd/DddHostPortsKernelTest` is such a host (only the new ports, 2,000 alternating requests on one
+kept-alive kernel).

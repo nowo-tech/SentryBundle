@@ -22,7 +22,12 @@ services:
       # kernel.secret is read lazily per call (a missing APP_SECRET must not break the container).
       $parameters: '@?parameter_bag'
 
+  # Deprecated port (removed in 2.0). UserContextProvidersPass picks the provider the host aliased or decorated.
   Nowo\SentryBundle\User\SentryUserContextProviderInterface:
+    alias: Nowo\SentryBundle\User\DefaultSentryUserContextProvider
+
+  # 1.13: framework-free port (UserRef).
+  Nowo\SentryBundle\User\UserContextProviderInterface:
     alias: Nowo\SentryBundle\User\DefaultSentryUserContextProvider
 
   Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener:
@@ -57,6 +62,11 @@ services:
     public: true
 
   nowo_sentry.error_reporter:
+    alias: Nowo\SentryBundle\Service\SentryErrorReporter
+    public: true
+
+  # 1.13: port of the reporter (REQ-ARCH-001 rule 1).
+  Nowo\SentryBundle\Service\ErrorReporterInterface:
     alias: Nowo\SentryBundle\Service\SentryErrorReporter
     public: true
 

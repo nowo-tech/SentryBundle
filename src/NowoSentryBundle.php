@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle;
 
 use Nowo\SentryBundle\DependencyInjection\NowoSentryExtension;
 use Sentry\SentryBundle\SentryBundle;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -40,6 +41,8 @@ final class NowoSentryBundle extends Bundle
 
         $container->addCompilerPass(new DependencyInjection\Compiler\BeforeSendChainPass());
         $container->addCompilerPass(new DependencyInjection\Compiler\BeforeSendTransactionChainPass());
+        // 1.13: the request listener uses the user context provider the host chose (deprecated or framework-free port).
+        $container->addCompilerPass(new DependencyInjection\Compiler\UserContextProvidersPass(), PassConfig::TYPE_BEFORE_REMOVING);
     }
 
     /**

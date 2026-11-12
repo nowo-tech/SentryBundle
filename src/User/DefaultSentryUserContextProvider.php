@@ -8,19 +8,17 @@ use Psr\Container\ContainerInterface;
 use SensitiveParameter;
 use Sentry\DataCollection\DataCollectionPolicy;
 use Sentry\State\HubInterface;
-use Stringable;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Throwable;
 
 use function class_exists;
 use function hash;
 use function hash_hmac;
-use function is_int;
 use function is_string;
-use function method_exists;
 
 /**
- * Default {@see SentryUserContextProviderInterface} (1.12+).
+ * Default {@see UserContextProviderInterface} (1.13; and, until 2.0, the deprecated {@see SentryUserContextProviderInterface},
+ * which gives the same answer).
  *
  * - Identifier opt-in (`request_listener.send_user_identifier: true`, or `null` while the Sentry client collects user
  *   info: `data_collection.user_info: true` with sentry-php's data collection policy, else `send_default_pii: true`):
@@ -36,7 +34,7 @@ use function method_exists;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final class DefaultSentryUserContextProvider implements SentryUserContextProviderInterface
+final class DefaultSentryUserContextProvider implements SentryUserContextProviderInterface, UserContextProviderInterface
 {
     /** Domain separation label of the key derived from `kernel.secret`. */
     public const KEY_DERIVATION_LABEL = 'nowo_sentry.user_id.v1';
@@ -56,17 +54,27 @@ final class DefaultSentryUserContextProvider implements SentryUserContextProvide
     ) {
     }
 
+    /**
+     * Deprecated port (kept until 2.0): the same answer as {@see contextFor()} for the user's {@see UserRef}.
+     */
     public function getUserContext(UserInterface $user): ?array
     {
-        $identifier = $user->getUserIdentifier();
+        return $this->contextFor(UserRefFactory::fromUser($user));
+    }
+
+    /**
+     * The Sentry user data described in the class comment (since 1.13).
+     */
+    public function contextFor(UserRef $user): ?array
+    {
+        $identifier = $user->identifier();
 
         if ($this->shouldSendIdentifier()) {
             return $identifier !== '' ? ['id' => $identifier, 'username' => $identifier] : null;
         }
 
-        $id = $this->stableId($user);
-        if ($id !== null) {
-            return ['id' => $id];
+        if ($user->id !== null) {
+            return ['id' => $user->id];
         }
 
         if ($identifier === '') {
@@ -116,27 +124,5 @@ final class DefaultSentryUserContextProvider implements SentryUserContextProvide
         } catch (Throwable) {
             return false;
         }
-    }
-
-    private function stableId(UserInterface $user): ?string
-    {
-        if (!method_exists($user, 'getId')) {
-            return null;
-        }
-
-        try {
-            $id = $user->getId();
-        } catch (Throwable) {
-            return null;
-        }
-
-        if (is_int($id)) {
-            return (string) $id;
-        }
-        if ($id instanceof Stringable) {
-            $id = (string) $id;
-        }
-
-        return is_string($id) && $id !== '' ? $id : null;
     }
 }

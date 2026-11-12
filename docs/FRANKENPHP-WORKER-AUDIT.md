@@ -35,7 +35,7 @@ A bundle that is safe under **B** is safe under **A** and under classic mode / P
 | Area | Status | Notes |
 |------|--------|-------|
 | Mutable state in shared services | ✅ | `ReportedSqlExceptionRegistry` holds a `WeakMap` whose entries die with the exception; every other service only has `readonly` config |
-| Static properties / `static` locals | ✅ | None; `AccessDeniedExceptionHelper` and `SqlExceptionHelper` only have pure static methods |
+| Static properties / `static` locals | ✅ | One since 1.13: `Internal\HiddenValues::$values`, a `WeakMap` keyed by the per-request `UserRef` (entries are collected with it; proven by `DddHostPortsKernelTest`, 2,000 alternating requests, flat memory). `AccessDeniedExceptionHelper` and `SqlExceptionHelper` only have pure static methods |
 | `ResetInterface` / `kernel.reset` coverage | ✅ | `ReportedSqlExceptionRegistry` keeps its `kernel.reset` tag (A) but is correct without it (B) thanks to the `WeakMap` |
 | Request / user / locale captured in services | ✅ | Nothing is stored in bundle properties; user id, session id and tags go to the Sentry scope, isolated per main request by `sentry/sentry-symfony` ≥ 5.10 (now required); SQL extras of `captureException()` live in a temporary scope |
 | Superglobals, `$_ENV`, `putenv`, `ini_set`, `setlocale`, timezone | ✅ | None used at runtime |

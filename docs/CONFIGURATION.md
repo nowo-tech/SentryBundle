@@ -112,9 +112,11 @@ nowo_sentry:
     Set a stable, dedicated secret (`'%env(SENTRY_USER_ID_KEY)%'`) to pin them. Plain SHA-256 only when no secret exists.
 
 - **`user_context_provider`** (service id or `null`, default: `null`; 1.12+)
-  - A service implementing `Nowo\SentryBundle\User\SentryUserContextProviderInterface`
+  - A service implementing `Nowo\SentryBundle\User\UserContextProviderInterface` (1.13,
+    `contextFor(UserRef $user): ?array`) or the deprecated `SentryUserContextProviderInterface`
     (`getUserContext(UserInterface $user): ?array`). Return the Sentry user data, or `null` to send no user. Must be
-    stateless (worker mode). `null` = `DefaultSentryUserContextProvider`.
+    stateless (worker mode). `null` = the service behind the interface aliases (`DefaultSentryUserContextProvider`
+    unless you alias or decorate one of them). A service on neither interface fails the container build.
 
 - **`set_session_id`** (boolean, default: `false`)
   - Whether to set session ID in Sentry scope extra data.

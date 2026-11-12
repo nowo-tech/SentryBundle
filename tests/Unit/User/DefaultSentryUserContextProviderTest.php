@@ -6,17 +6,12 @@ namespace Nowo\SentryBundle\Tests\Unit\User;
 
 use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use RuntimeException;
 use Sentry\ClientBuilder;
 use Sentry\State\Hub;
 use Sentry\State\HubInterface;
-use Stringable;
 use Symfony\Component\Security\Core\User\InMemoryUser;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Throwable;
 
-use function array_key_exists;
 use function hash;
 use function hash_hmac;
 
@@ -125,97 +120,5 @@ final class DefaultSentryUserContextProviderTest extends TestCase
         $broken = $this->createMock(HubInterface::class);
         $broken->method('getClient')->willThrowException(new RuntimeException('boom'));
         self::assertSame(['id' => '42'], (new DefaultSentryUserContextProvider($broken))->getUserContext($user));
-    }
-}
-
-final class IdUser implements UserInterface
-{
-    public function __construct(private readonly int|string|Stringable|null $id, private readonly string $identifier)
-    {
-    }
-
-    public function getId(): int|string|Stringable|null
-    {
-        return $this->id;
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return $this->identifier;
-    }
-
-    public function getRoles(): array
-    {
-        return ['ROLE_USER'];
-    }
-
-    public function eraseCredentials(): void
-    {
-    }
-}
-
-final class ThrowingIdUser implements UserInterface
-{
-    public function __construct(private readonly string $identifier)
-    {
-    }
-
-    public function getId(): int
-    {
-        throw new RuntimeException('not loaded');
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return $this->identifier;
-    }
-
-    public function getRoles(): array
-    {
-        return ['ROLE_USER'];
-    }
-
-    public function eraseCredentials(): void
-    {
-    }
-}
-
-final class StringId implements Stringable
-{
-    public function __construct(private readonly string $value)
-    {
-    }
-
-    public function __toString(): string
-    {
-        return $this->value;
-    }
-}
-
-/**
- * Minimal parameter bag: a value that is a Throwable is thrown by get() (unresolvable env placeholder).
- */
-final class ParameterContainer implements ContainerInterface
-{
-    /**
-     * @param array<string, mixed> $values
-     */
-    public function __construct(private readonly array $values)
-    {
-    }
-
-    public function get(string $id): mixed
-    {
-        $value = $this->values[$id] ?? null;
-        if ($value instanceof Throwable) {
-            throw $value;
-        }
-
-        return $value;
-    }
-
-    public function has(string $id): bool
-    {
-        return array_key_exists($id, $this->values);
     }
 }

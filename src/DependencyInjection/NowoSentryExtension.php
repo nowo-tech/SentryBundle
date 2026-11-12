@@ -6,6 +6,7 @@ namespace Nowo\SentryBundle\DependencyInjection;
 
 use Doctrine\Bundle\DoctrineBundle\Middleware\ConnectionNameAwareInterface;
 use Doctrine\DBAL\Driver\Middleware;
+use Nowo\SentryBundle\DependencyInjection\Compiler\UserContextProvidersPass;
 use Nowo\SentryBundle\Doctrine\DBAL\Middleware\SentryDbalExceptionMiddleware;
 use Nowo\SentryBundle\Doctrine\DBAL\ReportedSqlExceptionRegistry;
 use Nowo\SentryBundle\Doctrine\DBAL\SqlExceptionReporter;
@@ -13,6 +14,7 @@ use Nowo\SentryBundle\EventListener\SentryRequestListener;
 use Nowo\SentryBundle\EventListener\SentryUptimeBotListener;
 use Nowo\SentryBundle\EventListener\SubRequestAccessDeniedContextListener;
 use Nowo\SentryBundle\Sentry\EventPayloadTrimmer;
+use Nowo\SentryBundle\Service\ErrorReporterInterface;
 use Nowo\SentryBundle\Service\SentryErrorReporter;
 use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
 use Symfony\Component\Config\FileLocator;
@@ -137,6 +139,8 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
                 $provider   = $config['request_listener']['user_context_provider'] ?? null;
                 if (is_string($provider) && $provider !== '') {
                     $definition->setArgument('$userContextProvider', new Reference($provider));
+                    // 1.13: the configured provider wins over the interface aliases (UserContextProvidersPass).
+                    $container->setParameter(UserContextProvidersPass::CONFIGURED_PARAMETER, $provider);
                 }
                 $definition->clearTags();
                 $definition->addTag('kernel.event_listener', [
@@ -201,8 +205,10 @@ final class NowoSentryExtension extends Extension implements PrependExtensionInt
             return;
         }
 
-        if ($container->hasAlias('nowo_sentry.error_reporter')) {
-            $container->removeAlias('nowo_sentry.error_reporter');
+        foreach (['nowo_sentry.error_reporter', ErrorReporterInterface::class] as $alias) {
+            if ($container->hasAlias($alias)) {
+                $container->removeAlias($alias);
+            }
         }
 
         // DBAL SqlExceptionReporter depends on SentryErrorReporter; keep it private if still needed
