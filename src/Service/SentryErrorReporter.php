@@ -25,10 +25,12 @@ use Throwable;
  * - Automatic error logging if Sentry fails
  * - Configurable error levels
  *
+ * Type-hint {@see ErrorReporterInterface} (since 1.13) instead of this final class.
+ *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final class SentryErrorReporter
+final class SentryErrorReporter implements ErrorReporterInterface
 {
     /**
      * Constructs the Sentry error reporter service.

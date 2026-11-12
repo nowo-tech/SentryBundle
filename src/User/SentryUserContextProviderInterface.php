@@ -16,6 +16,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * Default: {@see DefaultSentryUserContextProvider} (stable id or hash; never the identifier unless the host opts in).
  *
+ * @deprecated since 1.13, implement {@see UserContextProviderInterface} (framework-free {@see UserRef}); removed in
+ *             2.0. A service implementing both is called through the new interface.
+ *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */

@@ -167,6 +167,10 @@ php bin/console config:dump nowo_sentry
 ```
 
 ## Usage
+
+Both host kinds are supported: [Standard host](docs/USAGE.md#standard-host) (zero config) and
+[DDD host](docs/USAGE.md#ddd-host) (`ErrorReporterInterface`, framework-free `UserContextProviderInterface`, opt-in).
+
 ### Basic Setup
 
 The bundle works out of the box with your existing Sentry configuration. No additional configuration is required.

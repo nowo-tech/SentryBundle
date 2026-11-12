@@ -44,6 +44,27 @@
 
 ## Unreleased
 
+Target: 1.13.0. **No configuration change; the Sentry user data sent is unchanged.**
+
+| Deprecated (removed in 2.0) | Replacement |
+|---|---|
+| `User\SentryUserContextProviderInterface::getUserContext(UserInterface $user): ?array` | `User\UserContextProviderInterface::contextFor(UserRef $user): ?array` |
+
+New port (no deprecation): type-hint `Service\ErrorReporterInterface` instead of the final `SentryErrorReporter`.
+
+Migration of a custom user context provider:
+
+1. Implement `UserContextProviderInterface`. `$user->getUserIdentifier()` → `$user->identifier()`, `$user->getId()`
+   → `$user->id` (already normalised to a non-empty string or null), `$user->getRoles()` → `$user->roles`, your own
+   user class → `$user->user()` (`instanceof` check).
+2. Keep `request_listener.user_context_provider: <service id>`, or alias / decorate `UserContextProviderInterface`
+   instead of the deprecated interface. Aliasing **both** interfaces to two different services fails the build: alias
+   one service to both, or only the new interface.
+3. During the transition a class may implement both interfaces; the listener then calls only `contextFor()`.
+4. Never keep the `UserRef` in a property (worker mode).
+
+`symfony/deprecation-contracts` is now a direct requirement (it was already installed through Symfony).
+
 ## To 1.12.0
 
 From **1.11.3**: `composer update nowo-tech/sentry-bundle`.

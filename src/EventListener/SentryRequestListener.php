@@ -7,6 +7,8 @@ namespace Nowo\SentryBundle\EventListener;
 use Exception;
 use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
 use Nowo\SentryBundle\User\SentryUserContextProviderInterface;
+use Nowo\SentryBundle\User\UserContextProviderInterface;
+use Nowo\SentryBundle\User\UserRefFactory;
 use Sentry\State\HubInterface;
 use Sentry\State\Scope;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -27,7 +29,7 @@ use Throwable;
  */
 final class SentryRequestListener
 {
-    private readonly SentryUserContextProviderInterface $userContextProvider;
+    private readonly SentryUserContextProviderInterface|UserContextProviderInterface $userContextProvider;
 
     /**
      * Constructs the Sentry request listener.
@@ -36,15 +38,17 @@ final class SentryRequestListener
      * @param array<string, mixed> $config The listener configuration
      * @param string $environment The current application environment (prod, dev, staging, etc.)
      * @param Security|null $security The security service for accessing authenticated user information
-     * @param SentryUserContextProviderInterface|null $userContextProvider User data sent for the logged-in user (1.12+);
-     *                                                                     null = {@see DefaultSentryUserContextProvider}
+     * @param SentryUserContextProviderInterface|UserContextProviderInterface|null $userContextProvider User data sent for
+     *                                                                                                  the logged-in user (1.12+; the framework-free port
+     *                                                                                                  since 1.13, called first when the service implements
+     *                                                                                                  both); null = {@see DefaultSentryUserContextProvider}
      */
     public function __construct(
         private readonly ?HubInterface $sentryHub,
         private readonly array $config,
         private readonly string $environment,
         private readonly ?Security $security = null,
-        ?SentryUserContextProviderInterface $userContextProvider = null,
+        SentryUserContextProviderInterface|UserContextProviderInterface|null $userContextProvider = null,
     ) {
         $this->userContextProvider = $userContextProvider ?? new DefaultSentryUserContextProvider($sentryHub);
     }
@@ -88,7 +92,9 @@ final class SentryRequestListener
 
             if ($user instanceof UserInterface) {
                 try {
-                    $userContext = $this->userContextProvider->getUserContext($user);
+                    $userContext = $this->userContextProvider instanceof UserContextProviderInterface
+                        ? $this->userContextProvider->contextFor(UserRefFactory::fromUser($user))
+                        : $this->userContextProvider->getUserContext($user);
                 } catch (Throwable) {
                     $userContext = null;
                 }
