@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.13.0](#to-1130)
 - [To 1.12.0](#to-1120)
 - [To 1.11.3](#to-1113)
 - [To 1.11.2](#to-1112)
@@ -43,6 +44,14 @@
 - [Need Help?](#need-help)
 
 ## Unreleased
+
+## To 1.13.0
+
+From **1.12.0**:
+
+```bash
+composer update nowo-tech/sentry-bundle
+```
 
 Target: 1.13.0. **No configuration change; the Sentry user data sent is unchanged.**
 

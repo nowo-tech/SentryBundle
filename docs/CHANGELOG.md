@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.13.0] - 2026-11-12](#1130---2026-11-12)
 - [[1.12.0] - 2026-11-10](#1120---2026-11-10)
 - [[1.11.3] - 2026-10-28](#1113---2026-10-28)
 - [[1.11.2] - 2026-10-22](#1112---2026-10-22)
@@ -47,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-11-12
+
 REQ-ARCH-001 (rules 1 and 3): a reporter port and a framework-free user context port. The Sentry user data sent is
 unchanged (equivalence matrix against the 1.12.0 provider). See [UPGRADING](UPGRADING.md#unreleased).
 
@@ -77,10 +80,11 @@ unchanged (equivalence matrix against the 1.12.0 provider). See [UPGRADING](UPGR
   implementing only it triggers a build-time deprecation and keeps working as in 1.12; a service implementing both is
   called through the new interface.
 
+[1.13.0]: https://github.com/nowo-tech/SentryBundle/releases/tag/v1.13.0
+
 ## [1.12.0] - 2026-11-10
 
 Privacy: the Sentry user id defaults to getId() or an HMAC of the identifier; the e-mail is sent only when you opt in; no user data carries over between requests. See [UPGRADING](https://github.com/nowo-tech/SentryBundle/blob/v1.12.0/docs/UPGRADING.md#to-1120).
-
 
 ### Security
 
