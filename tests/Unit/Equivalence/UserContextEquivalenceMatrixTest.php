@@ -10,6 +10,7 @@ use Nowo\SentryBundle\Tests\Unit\User\IdUser;
 use Nowo\SentryBundle\Tests\Unit\User\ParameterContainer;
 use Nowo\SentryBundle\Tests\Unit\User\StringId;
 use Nowo\SentryBundle\Tests\Unit\User\ThrowingIdUser;
+use Nowo\SentryBundle\Tests\Unit\User\ThrowingStringId;
 use Nowo\SentryBundle\User\DefaultSentryUserContextProvider;
 use Nowo\SentryBundle\User\SentryUserContextProviderInterface;
 use Nowo\SentryBundle\User\UserContextProviderInterface;
@@ -58,6 +59,7 @@ final class UserContextEquivalenceMatrixTest extends TestCase
     public function theDefaultProviderSendsTheSameThroughBothPortsAndAs1120(): void
     {
         $compared    = 0;
+        $thrown      = 0;
         $differences = [];
         $shapes      = [];
         foreach (self::hubs() as $hubName => $hub) {
@@ -67,8 +69,14 @@ final class UserContextEquivalenceMatrixTest extends TestCase
                         $reference = new DefaultSentryUserContextProviderV1120($hub, $send, $key, $parameters);
                         $provider  = new DefaultSentryUserContextProvider($hub, $send, $key, $parameters);
                         foreach (self::users() as $userName => $user) {
-                            $expected = $reference->getUserContext($user);
-                            $answers  = ['deprecated port' => $provider->getUserContext($user), 'new port' => $provider->contextFor(UserRefFactory::fromUser($user))];
+                            // 1.12 threw for a Stringable id whose __toString() throws: the listener then sent no user (null).
+                            try {
+                                $expected = $reference->getUserContext($user);
+                            } catch (RuntimeException) {
+                                $expected = null;
+                                ++$thrown;
+                            }
+                            $answers = ['deprecated port' => $provider->getUserContext($user), 'new port' => $provider->contextFor(UserRefFactory::fromUser($user))];
                             ++$compared;
                             $shapes[(string) json_encode($expected === null ? null : array_keys($expected))] = true;
                             foreach ($answers as $port => $answer) {
@@ -87,6 +95,7 @@ final class UserContextEquivalenceMatrixTest extends TestCase
         self::assertArrayHasKey('["id","username"]', $shapes, 'the opt-in identifier case occurs');
         self::assertArrayHasKey('["id"]', $shapes, 'the id / hash case occurs');
         self::assertArrayHasKey('null', $shapes, 'the no-user case occurs');
+        self::assertGreaterThan(0, $thrown, 'MX-S-1: the throwing Stringable id is in the matrix');
     }
 
     #[Test]
@@ -137,11 +146,18 @@ final class UserContextEquivalenceMatrixTest extends TestCase
             }
         }
 
-        $default = new DefaultSentryUserContextProvider(null, null, 'k3y-for-tests');
-        $v1120   = new DefaultSentryUserContextProviderV1120(null, null, 'k3y-for-tests');
-        foreach ($users as $user) {
-            self::assertSame($this->scopeUser($v1120, $user), $this->scopeUser($default, $user), 'the default provider as in 1.12.0');
+        // MX-S-1: both modes (identifier sent / not sent), the throwing Stringable id included.
+        $users[] = new IdUser(new ThrowingStringId(), 'erin@example.com');
+        foreach ([true, false, null] as $send) {
+            $default = new DefaultSentryUserContextProvider(null, $send, 'k3y-for-tests');
+            $v1120   = new DefaultSentryUserContextProviderV1120(null, $send, 'k3y-for-tests');
+            foreach ($users as $user) {
+                self::assertSame($this->scopeUser($v1120, $user), $this->scopeUser($default, $user), 'the default provider as in 1.12.0, send=' . json_encode($send));
+            }
         }
+        $erin = new IdUser(new ThrowingStringId(), 'erin@example.com');
+        self::assertSame(['id' => 'erin@example.com', 'username' => 'erin@example.com', 'segment' => null, 'metadata' => []], $this->scopeUser(new DefaultSentryUserContextProvider(null, true), $erin), 'identifier sent: still sent');
+        self::assertNull($this->scopeUser(new DefaultSentryUserContextProvider(null, false), $erin), 'identifier not sent: no user (never a hash)');
         self::assertSame(['id' => 'opaque-alice', 'username' => null, 'segment' => 'staff', 'metadata' => []], $this->scopeUser($new, new InMemoryUser('alice', null)));
         self::assertNull($this->scopeUser($throwingNew, new InMemoryUser('alice', null)), 'a failing provider sends no user');
     }
@@ -222,6 +238,7 @@ final class UserContextEquivalenceMatrixTest extends TestCase
             'empty identifier'       => new IdUser(null, ''),
             'empty identifier, id 5' => new IdUser(5, ''),
             'throwing roles'         => new RolesThrowingUser('dave@example.com'),
+            'throwing Stringable id' => new IdUser(new ThrowingStringId(), 'erin@example.com'),
         ];
     }
 }

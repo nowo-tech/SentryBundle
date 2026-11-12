@@ -59,12 +59,15 @@ unchanged (equivalence matrix against the 1.12.0 provider). See [UPGRADING](UPGR
   Symfony's `UserInterface`. `UserRef` carries the stable id (`getId()`, same rule as the default provider) and the role
   names; the identifier (`identifier()`, often an e-mail) and the user object (`user()`) are kept in an internal
   `WeakMap`, never shown by a dump, `var_export()`, `(array)`, `json_encode()` or `serialize()`.
-- `DefaultSentryUserContextProvider` implements both ports with the same answer.
+- `DefaultSentryUserContextProvider` implements both ports with the same answer. When `getId()` returns a
+  Stringable whose `__toString()` throws, it sends the identifier when the identifier is sent and no user otherwise,
+  as 1.12 did (where the exception reached the listener), never a hashed id; the deprecated port now returns `null`
+  instead of throwing in that case.
 - `UserContextProvidersPass`: the request listener uses the provider the host chose: `request_listener.user_context_provider`,
   else the interface alias the host changed (new or deprecated; both changed to different services fails the build);
   a provider on neither port fails the build. Each alias is kept only when its service implements it, so
   `lint:container` passes for new-only, deprecated-only, dual, configured and new-port decorator setups (kernel test).
-- Tests: provider equivalence matrix (5 hubs × 3 opt-in values × 3 keys × 5 parameter bags × 12 users = 2,700
+- Tests: provider equivalence matrix (5 hubs × 3 opt-in values × 3 keys × 5 parameter bags × 13 users = 2,925
   cases, 1.12.0 vs deprecated port vs new port), listener equivalence across ports, a DDD-host kernel test on the new
   ports only (2,000 alternating requests in one kernel).
 

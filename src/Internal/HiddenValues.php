@@ -36,6 +36,17 @@ final class HiddenValues
         self::$values[$owner] = $values; // @phpstan-ignore frankenphp.worker.noMutableStaticProperty
     }
 
+    /** Adds or replaces one hidden value of a VO that already has hidden values (no-op otherwise). */
+    public static function set(object $owner, string $name, mixed $value): void
+    {
+        if (isset(self::$values[$owner])) {
+            $values        = self::$values[$owner];
+            $values[$name] = $value;
+            // @igor-ignore - WeakMap keyed by the per-request VO; entries are collected with it.
+            self::$values[$owner] = $values; // @phpstan-ignore frankenphp.worker.noMutableStaticProperty
+        }
+    }
+
     /** One hidden value, or null when it is absent (or after `clone` / `unserialize()`). */
     public static function get(object $owner, string $name): mixed
     {

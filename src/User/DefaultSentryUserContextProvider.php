@@ -77,6 +77,12 @@ final class DefaultSentryUserContextProvider implements SentryUserContextProvide
             return ['id' => $user->id];
         }
 
+        // 1.12 parity (audit MX-S-1): an id whose __toString() threw dropped the user (the exception reached the
+        // listener) instead of falling back to the hash.
+        if (UserRefFactory::idFailed($user)) {
+            return null;
+        }
+
         if ($identifier === '') {
             return null;
         }

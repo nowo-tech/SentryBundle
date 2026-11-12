@@ -37,6 +37,12 @@ final class UserRefTest extends TestCase
         self::assertNull(UserRefFactory::fromUser(new ThrowingIdUser('carol@example.com'))->id);
         self::assertSame('uuid-1', UserRefFactory::fromUser(new IdUser(new StringId('uuid-1'), 'x'))->id);
         self::assertSame([], UserRefFactory::fromUser(new RolesThrowingUser('dave@example.com'))->roles, 'roles that throw are dropped, the user stays');
+
+        $failed = UserRefFactory::fromUser(new IdUser(new ThrowingStringId(), 'erin@example.com'));
+        self::assertNull($failed->id, 'MX-S-1: no exception, no id');
+        self::assertTrue(UserRefFactory::idFailed($failed));
+        self::assertFalse(UserRefFactory::idFailed($ref));
+        self::assertFalse(UserRefFactory::idFailed(clone $failed), 'a copy carries no hidden value');
     }
 
     public function testNoDumpExportCastOrSerializationShowsTheIdentifierOrTheUser(): void
