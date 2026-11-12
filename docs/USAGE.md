@@ -175,7 +175,8 @@ Keep the domain free of Sentry and Symfony types:
 
   ```yaml
   # config/services.yaml (or request_listener.user_context_provider: App\Infrastructure\MemberIdProvider)
-  Nowo\SentryBundle\User\UserContextProviderInterface: '@App\Infrastructure\MemberIdProvider'
+  services:
+      Nowo\SentryBundle\User\UserContextProviderInterface: '@App\Infrastructure\MemberIdProvider'
   ```
 
   `UserRef` exposes `id` (stable `getId()` or null), `roles`, `identifier()` and `user()`; the identifier and the user
