@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/sentry-bundle`  
-**Last audited**: 2026-10-20 (v1.10/1.11 before_send chaining and transaction trimming)
+**Last audited**: 2026-11-16 (v1.12/1.13 user context ports, `UserRef`, `ErrorReporterInterface`)
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. PHPUnit under `tests/` is out of scope unless promoted in the spec.
 
@@ -31,6 +31,14 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Sentry/BeforeSendChain.php` | Primary/next callable chain | FR-SENTRY-004 |
 | `Sentry/BeforeSendTransactionHandler.php` | Transaction trimming (spans, breadcrumbs) | FR-SENTRY-005 |
 | `Sentry/EventPayloadTrimmer.php` | Large array/string truncation | FR-SENTRY-005 |
+| `Service/ErrorReporterInterface.php` | Port of the safe error reporter (1.13) | FR-SVC-001 |
+| `DependencyInjection/Compiler/UserContextProvidersPass.php` | Wires the request listener to the user context provider the host chose | FR-USER-001, FR-DI-001 |
+| `User/UserContextProviderInterface.php` | Framework-free user context port (1.13) | FR-USER-001 |
+| `User/SentryUserContextProviderInterface.php` | Deprecated 1.12 user context port (removed in 2.0) | FR-USER-001 |
+| `User/DefaultSentryUserContextProvider.php` | Default provider: `getId()` or HMAC of the identifier unless identifier opt-in | FR-USER-001 |
+| `User/UserRef.php` | Framework-free reference to the authenticated user (1.13) | FR-USER-001 |
+| `User/UserRefFactory.php` | Builds `UserRef` from a security user | FR-USER-001 |
+| `Internal/HiddenValues.php` | Keeps the user identifier / object of `UserRef` out of dumps | FR-USER-001 |
 
 ## Symfony config (`src/Resources/config/`)
 
@@ -49,9 +57,9 @@ This file proves that **every production source artifact** under `src/` is refer
 
 | Category | Files | Mapped |
 | --- | ---: | ---: |
-| PHP classes (`src/**/*.php`) | 21 | 21 |
+| PHP classes (`src/**/*.php`) | 29 | 29 |
 | Symfony config (`src/Resources/config/`) | 2 | 2 |
-| **Total production sources** | **23** | **23** |
+| **Total production sources** | **31** | **31** |
 
 ## Demo traceability (illustrative, not Packagist contract)
 

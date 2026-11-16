@@ -70,6 +70,7 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 - **FR-LIST-001**: `SentryRequestListener` MUST run on main request only; respect `enabled` and per-flag toggles; swallow Sentry/Redis/session errors silently.
 - **FR-LIST-003**: `SentryUptimeBotListener` MUST match configurable user-agent prefixes and paths; return early OK for probes when enabled.
+- **FR-USER-001**: The user context of a main request MUST come from a `UserContextProviderInterface` (1.13, framework-free `UserRef` built by `UserRefFactory`; the 1.12 `SentryUserContextProviderInterface` stays until 2.0). The default provider sends `getId()` or an HMAC-SHA-256 of the identifier (key `request_listener.user_id_hash_key`, else derived from `kernel.secret`) and sends the identifier only on opt-in; `UserContextProvidersPass` wires the provider the host chose; `HiddenValues` keeps identifier and user object out of dumps.
 
 ### Access denied handling
 
@@ -107,7 +108,7 @@ See user stories US-01…US-07 in [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](../../docs
 
 ## Success Criteria
 
-- **SC-001**: **23/23** production artifacts under `src/` mapped in [`code-inventory.md`](code-inventory.md).
+- **SC-001**: **31/31** production artifacts under `src/` mapped in [`code-inventory.md`](code-inventory.md).
 - **SC-002**: 100% PHPUnit line coverage on `src/` (project standard).
 - **SC-003**: Per-listener and per-feature disable flags verified in unit/integration tests.
 - **SC-004**: Demo routes `/sentry/sql-caught` and `/sentry/sql-uncaught` demonstrate FR-DBAL-003/004 in all demo projects.
