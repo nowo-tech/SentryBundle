@@ -1,6 +1,6 @@
 # Sentry Bundle
 
-[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/sentry-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/sentry-bundle.svg)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.0%20%7C%207.4%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/SentryBundle.svg?style=social&label=Star)](https://github.com/nowo-tech/SentryBundle) [![Coverage](https://img.shields.io/badge/Coverage-99.87%25-brightgreen)](#tests-and-coverage)
+[![CI](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/SentryBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/sentry-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/sentry-bundle.svg)](https://packagist.org/packages/nowo-tech/sentry-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.0%20%7C%207.4%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/SentryBundle.svg?style=social&label=Star)](https://github.com/nowo-tech/SentryBundle) [![Coverage](https://img.shields.io/badge/Coverage-99.78%25-brightgreen)](#tests-and-coverage)
 
 > ⭐ **Found this useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
@@ -413,12 +413,12 @@ open coverage/index.html
 - `tests/Integration/` — bundle wiring (e.g. `BundleIntegrationTest.php`)
 - `tests/Fixtures/` / `tests/Kernel/` — test kernel and config
 
-Line coverage is **≥99%** (currently **99.87%**). The only intentional uncovered statement is the Doctrine-DBAL interface guard in `NowoSentryExtension::registerDbalExceptionReporter()` when DBAL is not installed (unreachable when `doctrine/dbal` is present).
+Line coverage is **≥99%** (currently **99.78%**, 909/911 lines in CI on PHP 8.2–8.5). The two uncovered lines are one method each in `UserContextProvidersPass` and `DefaultSentryUserContextProvider` (1.12/1.13 user context wiring).
 
 ## Tests and coverage
 
 - Tests: PHPUnit (PHP)
-- PHP: 99.87% (≥99% required; see note above)
+- PHP: 99.78% (≥99% required; see note above)
 
 ## License
 

@@ -48,6 +48,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- README: PHP coverage figure is 99.78% (909/911, CI) and names the two uncovered lines (REQ-TEST-007); the private-recipes example in the Flex recipe README uses a `<your-org>` placeholder instead of a non-existent `nowo-tech/recipes` repository (REQ-DOCS-014).
+- Spec Kit baseline: `code-inventory.md` maps all 31 `src/` files again (the 1.12–1.13 user context ports, `UserRef`, `HiddenValues` and `ErrorReporterInterface` were missing) and `spec.md` gains `FR-USER-001` (REQ-SPECKIT-001/003).
+
 ## [1.13.0] - 2026-11-12
 
 REQ-ARCH-001 (rules 1 and 3): a reporter port and a framework-free user context port. The Sentry user data sent is

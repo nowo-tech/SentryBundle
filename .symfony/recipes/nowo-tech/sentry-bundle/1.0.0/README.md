@@ -33,13 +33,13 @@ For private bundles, set up your own recipe repository:
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "nowo-tech/recipes"
+            "require": "<your-org>/recipes"
         }
     },
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/nowo-tech/recipes"
+            "url": "https://github.com/<your-org>/recipes"
         }
     ]
 }
