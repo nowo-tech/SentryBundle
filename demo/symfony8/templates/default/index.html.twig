@@ -2,17 +2,18 @@
 
 {% block title %}Inicio{% endblock %}
 
-{% block body %}
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="card-title h3">{{ message }}</h1>
-                    <p class="card-text">Si ves esta página, el demo está funcionando correctamente.</p>
-                    <p class="card-text">La barra del Web Profiler aparece abajo cuando <code>APP_DEBUG=1</code>.</p>
-                    <a href="{{ path('sentry_demo_index') }}" class="btn btn-primary">Ver rutas de demo del Sentry Bundle</a>
-                </div>
-            </div>
-        </div>
+{% block nowo_ui_page_header %}
+    <div class="nowo-ui-page-header">
+        <h1 class="nowo-ui-page-header__title">{{ message }}</h1>
     </div>
+{% endblock %}
+
+{% block body %}
+    <section class="nowo-ui-card">
+        <div class="nowo-ui-card__body">
+            <p>Si ves esta página, el demo está funcionando correctamente.</p>
+            <p>La barra del Web Profiler aparece abajo cuando <code class="nowo-ui-code">APP_DEBUG=1</code>.</p>
+            <a href="{{ path('sentry_demo_index') }}" class="nowo-ui-btn nowo-ui-btn--primary">Ver rutas de demo del Sentry Bundle</a>
+        </div>
+    </section>
 {% endblock %}

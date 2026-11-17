@@ -5,6 +5,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Nowo\HotReloadBundle\NowoHotReloadBundle;
 use Nowo\SentryBundle\NowoSentryBundle;
 use Nowo\TwigInspectorBundle\NowoTwigInspectorBundle;
+use Nowo\UiKitBundle\NowoUiKitBundle;
 use Sentry\SentryBundle\SentryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -18,6 +19,7 @@ return [
     DoctrineBundle::class          => ['all' => true],
     SentryBundle::class            => ['all' => true],
     NowoSentryBundle::class        => ['all' => true],
+    NowoUiKitBundle::class         => ['all' => true],
     TwigBundle::class              => ['all' => true],
     WebProfilerBundle::class       => ['dev' => true, 'test' => true],
     NowoHotReloadBundle::class     => ['dev' => true, 'test' => true],
