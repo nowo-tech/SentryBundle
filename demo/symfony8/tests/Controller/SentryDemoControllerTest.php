@@ -28,7 +28,7 @@ final class SentryDemoControllerTest extends WebTestCase
         $client->request('GET', '/sentry/sql-caught');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('.card-text', 'DBAL middleware reported this SQL error');
+        self::assertSelectorTextContains('.nowo-ui-card__body p', 'DBAL middleware reported this SQL error');
     }
 
     public function testSqlUncaughtRouteReturnsServerError(): void

@@ -2,23 +2,21 @@
 
 {% block title %}{{ use_case }}{% endblock %}
 
-{% block body %}
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <span class="badge bg-info me-2">Caso de uso</span>
-                <strong>{{ use_case }}</strong>
-            </div>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="card-title h4">{{ title }}</h1>
-                    <p class="card-text">{{ message }}</p>
-                    <div class="alert alert-secondary small mb-0" role="status">
-                        <strong>Dónde ver el resultado:</strong> revisa los <strong>logs</strong> de la aplicación (<code>var/log/</code> o <code>docker-compose logs -f php</code>) y, si tienes <code>SENTRY_DSN</code> configurado, el proyecto en <strong>Sentry</strong>.
-                    </div>
-                    <a href="{{ path('sentry_demo_index') }}" class="btn btn-outline-primary mt-3">← Volver al índice de rutas</a>
-                </div>
-            </div>
-        </div>
+{% block nowo_ui_page_header %}
+    <div class="nowo-ui-page-header">
+        <h1 class="nowo-ui-page-header__title">{{ title }}</h1>
+        <span class="nowo-ui-badge nowo-ui-badge--info" data-testid="demo-use-case">{{ use_case }}</span>
     </div>
+{% endblock %}
+
+{% block body %}
+    <section class="nowo-ui-card">
+        <div class="nowo-ui-card__body">
+            <p>{{ message }}</p>
+            <div class="nowo-ui-flash nowo-ui-flash--info" role="status">
+                <strong>Dónde ver el resultado:</strong> revisa los <strong>logs</strong> de la aplicación (<code class="nowo-ui-code">var/log/</code> o <code class="nowo-ui-code">docker-compose logs -f php</code>) y, si tienes <code class="nowo-ui-code">SENTRY_DSN</code> configurado, el proyecto en <strong>Sentry</strong>.
+            </div>
+            <a href="{{ path('sentry_demo_index') }}" class="nowo-ui-btn nowo-ui-btn--outline">← Volver al índice de rutas</a>
+        </div>
+    </section>
 {% endblock %}

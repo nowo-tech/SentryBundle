@@ -48,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Demo
+
+- The demo is built on UiKit (REQ-DEMO-014): `templates/base.html.twig` is UiKit's admin layout with its default theme and masthead instead of the Bootstrap CDN navbar, the pages use UiKit cards, badges, flashes and buttons, and no Bootstrap CSS/JS is loaded from a CDN. The demo requires `nowo-tech/ui-kit-bundle` `^2.53`. No bundle runtime change.
+
 ### Documentation
 
 - README: PHP coverage figure is 99.78% (909/911, CI) and names the two uncovered lines (REQ-TEST-007); the private-recipes example in the Flex recipe README uses a `<your-org>` placeholder instead of a non-existent `nowo-tech/recipes` repository (REQ-DOCS-014).
