@@ -1,5 +1,9 @@
-# REQ-DEMO-014: UiKit's default theme, unchanged (no CSS framework, no CDN, no token override); the demo shell is
-# templates/base.html.twig. Icons are inline SVG.
+# REQ-DEMO-014: the demo runs in UiKit's demo platform shell (templates/base.html.twig); UiKit's own theme only (no CSS
+# framework, no CDN, no token override). The bundle's own scaffold pages use the same shell through layouts.
 nowo_ui_kit:
     css_framework: custom
+    base_stylesheet: true
     icon_set: svg_inline
+    layouts:
+        admin: 'base.html.twig'
+        guest: 'base.html.twig'

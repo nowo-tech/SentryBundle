@@ -1,21 +1,15 @@
-{#- REQ-DEMO-014: the demo shell is UiKit's admin layout with UiKit's default theme (nowo-ui.css from the bundle's own
-    asset package, no CSS framework, no CDN, inline SVG icons). -#}
-{% extends '@NowoUiKit/layout/admin.html.twig' %}
-
+{#- REQ-DEMO-014: the demo runs inside UiKit's shared demo platform shell. This file only declares the demo. -#}
+{% extends '@NowoUiKit/demo_platform/layout.html.twig' %}
+{% set nowo_ui_demo_platform = {
+    bundle: 'Sentry',
+    home_route: 'app_home',
+    repository: 'https://github.com/nowo-tech/SentryBundle',
+    translation_domain: false,
+    nav: [
+        {label: 'Inicio', route: 'app_home', section: 'Sentry'},
+        {label: 'Sentry – Casos de uso', route: 'sentry_demo_index', section: 'Sentry'},
+    ],
+} %}
 {% block nowo_ui_document_title %}{% block title %}Welcome!{% endblock %} – Sentry Bundle Demo{% endblock %}
-
-{% block nowo_ui_navigation %}
-    {% set _route = app.request.attributes.get('_route')|default('') %}
-    <header class="nowo-ui-header" data-testid="demo-masthead">
-        <a class="nowo-ui-brand" href="{{ path('app_home') }}">Sentry Bundle Demo</a>
-        <nav class="nowo-ui-menu" aria-label="Sentry Bundle Demo">
-            <a class="nowo-ui-link" href="{{ path('app_home') }}"{% if _route == 'app_home' %} aria-current="page"{% endif %}>Inicio</a>
-            <a class="nowo-ui-link" href="{{ path('sentry_demo_index') }}"{% if _route == 'sentry_demo_index' %} aria-current="page"{% endif %}>Sentry – Casos de uso</a>
-        </nav>
-        <div class="nowo-ui-header__end">
-            {{ include('@NowoUiKitBundle/partials/_theme_toggle.html.twig', { compact: true }, false) }}
-        </div>
-    </header>
-{% endblock %}
 
 {% block nowo_ui_content %}{% block body %}{% endblock %}{% endblock %}

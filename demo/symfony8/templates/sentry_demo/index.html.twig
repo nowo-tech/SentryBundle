@@ -3,111 +3,112 @@
 {% block title %}Sentry – Casos de uso{% endblock %}
 
 {% block nowo_ui_page_header %}
-    <div class="nowo-ui-page-header">
-        <h1 class="nowo-ui-page-header__title">Rutas de demo del Sentry Bundle</h1>
-        <a href="{{ path('app_home') }}" class="nowo-ui-btn nowo-ui-btn--outline">← Inicio</a>
-    </div>
+    {{ include(nowo_ui_partial('page_header'), {
+        title: 'Rutas de demo del Sentry Bundle',
+        intro: 'Cada ruta prueba un caso de uso distinto. Usa el menú o los enlaces de abajo.',
+    }) }}
 {% endblock %}
 
 {% block body %}
-    <p class="nowo-ui-muted">Cada ruta prueba un caso de uso distinto. Usa el menú o los enlaces de abajo.</p>
-    <div class="nowo-ui-flash nowo-ui-flash--info" role="status">
-        <strong>Dónde ver el resultado de cada caso de uso:</strong> en cada página de resultado se indica; en general, revisa los <strong>logs</strong> (<code class="nowo-ui-code">var/log/</code> o <code class="nowo-ui-code">make logs</code> / <code class="nowo-ui-code">docker-compose logs -f php</code>) y el proyecto en <strong>Sentry</strong> si tienes <code class="nowo-ui-code">SENTRY_DSN</code> configurado.
-    </div>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Dónde ver el resultado de cada caso de uso', kind: 'detail'} %}
+        {% block section_body %}
+            <p>En cada página de resultado se indica; en general, revisa los <strong>logs</strong> (<code class="nowo-ui-code">var/log/</code> o <code class="nowo-ui-code">make logs</code> / <code class="nowo-ui-code">docker-compose logs -f php</code>) y el proyecto en <strong>Sentry</strong> si tienes <code class="nowo-ui-code">SENTRY_DSN</code> configurado.</p>
+        {% endblock %}
+    {% endembed %}
 
-    <h2>SentryErrorReporter (servicio)</h2>
-    <div class="nowo-ui-cards">
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">captureException</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Excepción + contexto + mensaje personalizado. No rompe el flujo de la app.</p>
-                <a href="{{ routes.capture_exception }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">captureMessage</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Mensaje con nivel (debug, info, warning, error). Opción: <code class="nowo-ui-code">?level=warning</code>.</p>
-                <a href="{{ routes.capture_message }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">captureError</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Atajo para mensaje de error con contexto.</p>
-                <a href="{{ routes.capture_error }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">addBreadcrumb</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Añade breadcrumbs que se verán en el siguiente evento en Sentry.</p>
-                <a href="{{ routes.add_breadcrumb }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">setUser</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Establece el contexto de usuario (id, email, username) para los siguientes eventos.</p>
-                <a href="{{ routes.set_user }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">setContext</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Añade datos extra al scope para el siguiente evento.</p>
-                <a href="{{ routes.set_context }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">completeExample</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Combina setUser, addBreadcrumb y captureMessage en un flujo completo.</p>
-                <a href="{{ routes.complete_example }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">safeOperation</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Demuestra que el servicio nunca lanza; la aplicación sigue aunque falle Sentry.</p>
-                <a href="{{ routes.safe_operation }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-    </div>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'SentryErrorReporter (servicio)', kind: 'table', routes: routes} %}
+        {% block section_body %}
+            <table class="nowo-ui-data-table">
+                <thead>
+                    <tr><th scope="col">Caso</th><th scope="col" class="nowo-ui-cell--wrap">Descripción</th><th scope="col">Acción</th></tr>
+                </thead>
+                <tbody>
+                    <tr data-testid="demo-case">
+                        <td><strong>captureException</strong></td>
+                        <td class="nowo-ui-cell--wrap">Excepción + contexto + mensaje personalizado. No rompe el flujo de la app.</td>
+                        <td><a href="{{ routes.capture_exception }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>captureMessage</strong></td>
+                        <td class="nowo-ui-cell--wrap">Mensaje con nivel (debug, info, warning, error). Opción: <code class="nowo-ui-code">?level=warning</code>.</td>
+                        <td><a href="{{ routes.capture_message }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>captureError</strong></td>
+                        <td class="nowo-ui-cell--wrap">Atajo para mensaje de error con contexto.</td>
+                        <td><a href="{{ routes.capture_error }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>addBreadcrumb</strong></td>
+                        <td class="nowo-ui-cell--wrap">Añade breadcrumbs que se verán en el siguiente evento en Sentry.</td>
+                        <td><a href="{{ routes.add_breadcrumb }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>setUser</strong></td>
+                        <td class="nowo-ui-cell--wrap">Establece el contexto de usuario (id, email, username) para los siguientes eventos.</td>
+                        <td><a href="{{ routes.set_user }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>setContext</strong></td>
+                        <td class="nowo-ui-cell--wrap">Añade datos extra al scope para el siguiente evento.</td>
+                        <td><a href="{{ routes.set_context }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>completeExample</strong></td>
+                        <td class="nowo-ui-cell--wrap">Combina setUser, addBreadcrumb y captureMessage en un flujo completo.</td>
+                        <td><a href="{{ routes.complete_example }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>safeOperation</strong></td>
+                        <td class="nowo-ui-cell--wrap">Demuestra que el servicio nunca lanza; la aplicación sigue aunque falle Sentry.</td>
+                        <td><a href="{{ routes.safe_operation }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endblock %}
+    {% endembed %}
 
-    <h2>Doctrine DBAL – excepciones SQL</h2>
-    <div class="nowo-ui-cards">
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">sql-caught (dbal_exception_reporter)</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Ejecuta SQL inválido (columna inexistente) y lo captura en un <code class="nowo-ui-code">catch</code>. El middleware DBAL envía el error a Sentry aunque la app lo trague.</p>
-                <a href="{{ routes.sql_caught }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">sql-uncaught (dbal_exception_reporter + deduplicate)</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>SQL inválido sin capturar: el middleware reporta y el listener de Sentry deduplica el evento duplicado vía <code class="nowo-ui-code">before_send_handler</code>.</p>
-                <a href="{{ routes.sql_uncaught }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-    </div>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Doctrine DBAL – excepciones SQL', kind: 'table', routes: routes} %}
+        {% block section_body %}
+            <table class="nowo-ui-data-table">
+                <thead>
+                    <tr><th scope="col">Caso</th><th scope="col" class="nowo-ui-cell--wrap">Descripción</th><th scope="col">Acción</th></tr>
+                </thead>
+                <tbody>
+                    <tr data-testid="demo-case">
+                        <td><strong>sql-caught (dbal_exception_reporter)</strong></td>
+                        <td class="nowo-ui-cell--wrap">Ejecuta SQL inválido (columna inexistente) y lo captura en un <code class="nowo-ui-code">catch</code>. El middleware DBAL envía el error a Sentry aunque la app lo trague.</td>
+                        <td><a href="{{ routes.sql_caught }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>sql-uncaught (dbal_exception_reporter + deduplicate)</strong></td>
+                        <td class="nowo-ui-cell--wrap">SQL inválido sin capturar: el middleware reporta y el listener de Sentry deduplica el evento duplicado vía <code class="nowo-ui-code">before_send_handler</code>.</td>
+                        <td><a href="{{ routes.sql_uncaught }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endblock %}
+    {% endembed %}
 
-    <h2>Event listeners</h2>
-    <div class="nowo-ui-cards">
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">access-denied (before_send_handler)</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Lanza <code class="nowo-ui-code">AccessDeniedException</code>. No debe enviarse a Sentry por diseño (403 puro filtrado).</p>
-                <a href="{{ routes.access_denied }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-        <section class="nowo-ui-card" data-testid="demo-case">
-            <div class="nowo-ui-card__header"><h3 class="nowo-ui-card__title">trigger-error (SDK automático)</h3></div>
-            <div class="nowo-ui-card__body">
-                <p>Excepción no capturada; el SDK de Sentry la registra automáticamente.</p>
-                <a href="{{ routes.trigger_error }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a>
-            </div>
-        </section>
-    </div>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Event listeners', kind: 'table', routes: routes} %}
+        {% block section_body %}
+            <table class="nowo-ui-data-table">
+                <thead>
+                    <tr><th scope="col">Caso</th><th scope="col" class="nowo-ui-cell--wrap">Descripción</th><th scope="col">Acción</th></tr>
+                </thead>
+                <tbody>
+                    <tr data-testid="demo-case">
+                        <td><strong>access-denied (before_send_handler)</strong></td>
+                        <td class="nowo-ui-cell--wrap">Lanza <code class="nowo-ui-code">AccessDeniedException</code>. No debe enviarse a Sentry por diseño (403 puro filtrado).</td>
+                        <td><a href="{{ routes.access_denied }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                    <tr data-testid="demo-case">
+                        <td><strong>trigger-error (SDK automático)</strong></td>
+                        <td class="nowo-ui-cell--wrap">Excepción no capturada; el SDK de Sentry la registra automáticamente.</td>
+                        <td><a href="{{ routes.trigger_error }}" class="nowo-ui-btn nowo-ui-btn--outline nowo-ui-btn--sm">Probar</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

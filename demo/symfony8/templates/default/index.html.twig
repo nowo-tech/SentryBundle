@@ -3,17 +3,17 @@
 {% block title %}Inicio{% endblock %}
 
 {% block nowo_ui_page_header %}
-    <div class="nowo-ui-page-header">
-        <h1 class="nowo-ui-page-header__title">{{ message }}</h1>
-    </div>
+    {{ include(nowo_ui_partial('page_header'), {
+        title: message,
+        intro: 'Si ves esta página, el demo está funcionando correctamente.',
+        toolbar: '<a href="' ~ path('sentry_demo_index') ~ '" class="nowo-ui-btn nowo-ui-btn--primary">Ver rutas de demo del Sentry Bundle</a>',
+    }) }}
 {% endblock %}
 
 {% block body %}
-    <section class="nowo-ui-card">
-        <div class="nowo-ui-card__body">
-            <p>Si ves esta página, el demo está funcionando correctamente.</p>
+    {% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Web Profiler', kind: 'detail'} %}
+        {% block section_body %}
             <p>La barra del Web Profiler aparece abajo cuando <code class="nowo-ui-code">APP_DEBUG=1</code>.</p>
-            <a href="{{ path('sentry_demo_index') }}" class="nowo-ui-btn nowo-ui-btn--primary">Ver rutas de demo del Sentry Bundle</a>
-        </div>
-    </section>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}
