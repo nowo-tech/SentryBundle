@@ -48,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Demo: runs in UiKit's demo platform shell (`nowo-tech/ui-kit-bundle` ^2.60); the demo's own header is gone and the pages use the shell page headers and section cards. Demo only, no bundle change.
+
 ### Demo
 
 - The demo is built on UiKit (REQ-DEMO-014): `templates/base.html.twig` is UiKit's admin layout with its default theme and masthead instead of the Bootstrap CDN navbar, the pages use UiKit cards, badges, flashes and buttons, and no Bootstrap CSS/JS is loaded from a CDN. The demo requires `nowo-tech/ui-kit-bundle` `^2.53`. No bundle runtime change.
